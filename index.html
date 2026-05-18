@@ -1,742 +1,1619 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Employee Registration System</title>
+<title>Employee Onboarding · Modern HR Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  /* =========================================================
+     DESIGN TOKENS
+     ========================================================= */
   :root {
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-    --primary-light: #eef2ff;
+    /* Brand */
+    --brand-50:  #eef4ff;
+    --brand-100: #dbe7ff;
+    --brand-200: #bcd1ff;
+    --brand-300: #8eb1ff;
+    --brand-400: #5e87fb;
+    --brand-500: #3b63f3;
+    --brand-600: #2747e0;
+    --brand-700: #1f37b8;
+    --brand-800: #1f3192;
+    --brand-900: #1f2e74;
+
+    /* Accents */
+    --accent-violet: #8b5cf6;
+    --accent-pink:   #ec4899;
+    --accent-cyan:   #06b6d4;
+    --accent-emerald:#10b981;
+    --accent-amber:  #f59e0b;
+    --accent-rose:   #f43f5e;
+
+    /* Semantic */
     --success: #10b981;
-    --error: #ef4444;
+    --success-soft: #d1fae5;
+    --error:   #ef4444;
+    --error-soft: #fee2e2;
     --warning: #f59e0b;
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-    --radius: 8px;
-    --radius-lg: 12px;
+    --warning-soft: #fef3c7;
+    --info:    #06b6d4;
+
+    /* Surfaces (light) */
+    --bg:        #f5f7fb;
+    --surface:   rgba(255, 255, 255, 0.85);
+    --surface-2: #ffffff;
+    --surface-3: #f8fafc;
+    --border:    rgba(15, 23, 42, 0.08);
+    --border-strong: rgba(15, 23, 42, 0.16);
+    --text:      #0f172a;
+    --text-soft: #475569;
+    --text-mute: #94a3b8;
+    --hover:     rgba(15, 23, 42, 0.04);
+
+    /* Effects */
+    --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 8px 16px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 24px 48px -12px rgba(15, 23, 42, 0.18), 0 8px 16px -4px rgba(15, 23, 42, 0.08);
+    --shadow-xl: 0 40px 80px -16px rgba(15, 23, 42, 0.25);
+    --shadow-glow: 0 0 0 4px rgba(59, 99, 243, 0.15);
+    --shadow-ring: 0 0 0 3px rgba(59, 99, 243, 0.25);
+
+    --radius-sm: 8px;
+    --radius:    12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+
+    --grad-brand: linear-gradient(135deg, #3b63f3 0%, #8b5cf6 50%, #ec4899 100%);
+    --grad-brand-soft: linear-gradient(135deg, rgba(59,99,243,0.12), rgba(139,92,246,0.12), rgba(236,72,153,0.12));
+    --grad-cool: linear-gradient(135deg, #06b6d4, #3b63f3);
+    --grad-warm: linear-gradient(135deg, #f59e0b, #ec4899);
+    --grad-success: linear-gradient(135deg, #10b981, #06b6d4);
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* Dark theme */
+  [data-theme="dark"] {
+    --bg:        #0a0e1a;
+    --surface:   rgba(20, 26, 45, 0.75);
+    --surface-2: #141a2d;
+    --surface-3: #1a2138;
+    --border:    rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    --text:      #e2e8f0;
+    --text-soft: #94a3b8;
+    --text-mute: #64748b;
+    --hover:     rgba(255, 255, 255, 0.04);
+
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 8px 16px -4px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 24px 48px -12px rgba(0, 0, 0, 0.6);
+    --shadow-xl: 0 40px 80px -16px rgba(0, 0, 0, 0.7);
+  }
+
+  /* =========================================================
+     BASE
+     ========================================================= */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
     min-height: 100vh;
-    padding: 24px 16px;
-    color: var(--gray-800);
-    line-height: 1.5;
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    position: relative;
+    transition: background 0.4s var(--ease-out), color 0.4s var(--ease-out);
   }
 
-  .container {
-    max-width: 900px;
+  /* Animated gradient background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(59, 99, 243, 0.18), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 80% 30%, rgba(139, 92, 246, 0.18), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 50% 100%, rgba(236, 72, 153, 0.15), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 100% 80%, rgba(6, 182, 212, 0.12), transparent 60%);
+    animation: bgFloat 20s ease-in-out infinite alternate;
+  }
+
+  [data-theme="dark"] body::before {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(59, 99, 243, 0.25), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 80% 30%, rgba(139, 92, 246, 0.22), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 50% 100%, rgba(236, 72, 153, 0.18), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 100% 80%, rgba(6, 182, 212, 0.15), transparent 60%);
+  }
+
+  @keyframes bgFloat {
+    0%   { transform: translate(0, 0) scale(1); }
+    50%  { transform: translate(-2%, 1%) scale(1.05); }
+    100% { transform: translate(2%, -1%) scale(1); }
+  }
+
+  /* Floating decorative orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    z-index: -1;
+    pointer-events: none;
+    animation: orbFloat 25s ease-in-out infinite;
+  }
+  .orb-1 { width: 400px; height: 400px; background: var(--brand-400); top: -100px; left: -100px; animation-delay: 0s; }
+  .orb-2 { width: 350px; height: 350px; background: var(--accent-violet); top: 30%; right: -120px; animation-delay: -8s; }
+  .orb-3 { width: 300px; height: 300px; background: var(--accent-pink); bottom: -100px; left: 30%; animation-delay: -16s; }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%      { transform: translate(40px, -30px) scale(1.1); }
+    66%      { transform: translate(-30px, 30px) scale(0.95); }
+  }
+
+  /* =========================================================
+     LAYOUT
+     ========================================================= */
+  .page {
+    max-width: 1080px;
     margin: 0 auto;
-    background: #fff;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
+    padding: 32px 20px 64px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    animation: slideDown 0.6s var(--ease-out);
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .brand-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--grad-brand);
+    display: grid;
+    place-items: center;
+    color: white;
+    font-weight: 800;
+    font-size: 18px;
+    box-shadow: 0 8px 20px -4px rgba(59, 99, 243, 0.5);
+    position: relative;
     overflow: hidden;
   }
 
+  .brand-mark::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent 60%);
+  }
+
+  .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .brand-name { font-weight: 700; font-size: 16px; letter-spacing: -0.01em; }
+  .brand-sub  { font-size: 11px; color: var(--text-mute); font-weight: 500; }
+
+  .topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .icon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--brand-400);
+    color: var(--brand-500);
+  }
+
+  .icon-btn svg { width: 18px; height: 18px; }
+
+  /* =========================================================
+     CARD / CONTAINER
+     ========================================================= */
+  .container {
+    background: var(--surface);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    animation: cardIn 0.7s var(--ease-out) 0.1s both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* HERO HEADER */
   .header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: #fff;
-    padding: 32px 32px 24px;
+    position: relative;
+    padding: 40px 40px 32px;
+    color: white;
+    overflow: hidden;
+    background: var(--grad-brand);
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(255,255,255,0.25), transparent 40%),
+      radial-gradient(circle at 80% 100%, rgba(0,0,0,0.2), transparent 50%);
+    pointer-events: none;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0);
+    background-size: 28px 28px;
+    opacity: 0.4;
+    pointer-events: none;
+    animation: gridShift 30s linear infinite;
+  }
+
+  @keyframes gridShift {
+    from { background-position: 0 0; }
+    to   { background-position: 28px 28px; }
+  }
+
+  .header-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .header-text { max-width: 560px; }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+
+  .header-badge .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-emerald);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70%  { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
   }
 
   .header h1 {
-    font-size: 1.75rem;
-    margin-bottom: 4px;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #fff, #f0e7ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .header p {
-    opacity: 0.9;
-    font-size: 0.95rem;
+    opacity: 0.92;
+    font-size: 0.975rem;
+    max-width: 520px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 28px;
+    flex-shrink: 0;
+  }
+
+  .stat {
+    text-align: right;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+
+  /* =========================================================
+     STEPPER
+     ========================================================= */
+  .stepper-wrap {
+    background: var(--surface-3);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
   }
 
   .stepper {
     display: flex;
-    background: var(--gray-50);
-    border-bottom: 1px solid var(--gray-200);
+    align-items: center;
+    gap: 0;
     overflow-x: auto;
+    scrollbar-width: none;
   }
+  .stepper::-webkit-scrollbar { display: none; }
 
   .step {
     flex: 1;
-    min-width: 140px;
-    padding: 16px 12px;
-    text-align: center;
-    border-right: 1px solid var(--gray-200);
+    min-width: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     cursor: pointer;
-    transition: background 0.2s;
     position: relative;
+    padding: 4px 0;
+    transition: all 0.3s var(--ease-out);
   }
-
-  .step:last-child { border-right: none; }
-  .step:hover { background: var(--gray-100); }
-
-  .step.active {
-    background: #fff;
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  .step.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--primary);
-  }
-
-  .step.completed { color: var(--success); }
 
   .step-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px; height: 28px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: var(--gray-200);
-    color: var(--gray-600);
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 6px;
+    background: var(--surface-2);
+    border: 2px solid var(--border-strong);
+    color: var(--text-mute);
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.4s var(--ease-spring);
+    position: relative;
+    z-index: 2;
   }
 
-  .step.active .step-number { background: var(--primary); color: #fff; }
-  .step.completed .step-number { background: var(--success); color: #fff; }
+  .step-number svg { width: 18px; height: 18px; display: none; }
 
   .step-label {
-    display: block;
-    font-size: 0.85rem;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-mute);
+    margin-top: 8px;
+    transition: color 0.3s;
+    text-align: center;
   }
 
+  .step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border-strong);
+    position: relative;
+    overflow: hidden;
+    align-self: center;
+    margin-top: -22px;
+  }
+
+  .step-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--grad-brand);
+    transform: translateX(-100%);
+    transition: transform 0.5s var(--ease-out);
+  }
+
+  .step-line.filled::after { transform: translateX(0); }
+
+  .step:hover .step-number { transform: scale(1.05); border-color: var(--brand-400); color: var(--brand-500); }
+
+  .step.active .step-number {
+    background: var(--grad-brand);
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 8px 20px -4px rgba(59, 99, 243, 0.45);
+    transform: scale(1.08);
+  }
+  .step.active .step-label { color: var(--text); font-weight: 700; }
+
+  .step.completed .step-number {
+    background: var(--grad-success);
+    border-color: transparent;
+    color: white;
+  }
+  .step.completed .step-number .num { display: none; }
+  .step.completed .step-number svg { display: block; }
+  .step.completed .step-label { color: var(--success); }
+
+  /* Progress bar */
   .progress-bar {
-    height: 4px;
-    background: var(--gray-200);
+    height: 3px;
+    background: var(--border);
+    overflow: hidden;
   }
 
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-    transition: width 0.3s ease;
+    background: var(--grad-brand);
+    transition: width 0.6s var(--ease-out);
+    box-shadow: 0 0 12px rgba(59, 99, 243, 0.4);
+    position: relative;
   }
 
-  form { padding: 32px; }
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(100%); }
+  }
+
+  /* =========================================================
+     FORM
+     ========================================================= */
+  form { padding: 40px; }
 
   .form-step { display: none; }
-  .form-step.active { display: block; animation: fadeIn 0.3s; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+  .form-step.active {
+    display: block;
+    animation: stepIn 0.5s var(--ease-out);
   }
 
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .step-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--grad-brand-soft);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--brand-600);
+    border: 1px solid var(--border);
+  }
+
+  .step-icon svg { width: 24px; height: 24px; }
+
   .step-title {
-    font-size: 1.35rem;
-    color: var(--gray-900);
-    margin-bottom: 4px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 2px;
   }
 
   .step-subtitle {
-    color: var(--gray-500);
-    margin-bottom: 24px;
-    font-size: 0.95rem;
+    color: var(--text-soft);
+    font-size: 0.9375rem;
   }
 
   .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px 20px;
+    gap: 18px 20px;
   }
 
   .form-group { display: flex; flex-direction: column; }
   .form-group.full { grid-column: 1 / -1; }
 
   label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--gray-700);
-    margin-bottom: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 
-  label .required { color: var(--error); margin-left: 2px; }
+  label .required { color: var(--error); }
+
+  /* Inputs */
+  .input-wrap { position: relative; }
 
   input, select, textarea {
-    padding: 10px 12px;
-    border: 1px solid var(--gray-300);
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border-strong);
     border-radius: var(--radius);
-    font-size: 0.95rem;
+    font-size: 0.9375rem;
     font-family: inherit;
-    background: #fff;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    background: var(--surface-2);
+    color: var(--text);
+    transition: all 0.2s var(--ease-out);
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input::placeholder, textarea::placeholder { color: var(--text-mute); }
+
+  input:hover, select:hover, textarea:hover {
+    border-color: var(--brand-300);
   }
 
   input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    border-color: var(--brand-500);
+    box-shadow: var(--shadow-ring);
+    background: var(--surface-2);
   }
 
   input.error, select.error, textarea.error {
     border-color: var(--error);
+    background: var(--error-soft);
+    animation: shake 0.4s var(--ease-out);
+  }
+  [data-theme="dark"] input.error,
+  [data-theme="dark"] select.error,
+  [data-theme="dark"] textarea.error {
+    background: rgba(239, 68, 68, 0.08);
   }
 
-  input.success { border-color: var(--success); }
+  input.success, select.success {
+    border-color: var(--success);
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23475569' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+  [data-theme="dark"] select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%2394a3b8' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  }
 
   .error-msg {
     color: var(--error);
-    font-size: 0.8rem;
-    margin-top: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: 6px;
     min-height: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
+  .error-msg:not(:empty)::before { content: '⚠'; }
 
   .hint {
-    color: var(--gray-500);
-    font-size: 0.8rem;
-    margin-top: 4px;
+    color: var(--text-mute);
+    font-size: 0.75rem;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 
+  /* File upload */
   .file-upload {
-    border: 2px dashed var(--gray-300);
+    border: 2px dashed var(--border-strong);
     border-radius: var(--radius);
-    padding: 20px;
+    padding: 28px 20px;
     text-align: center;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: all 0.25s var(--ease-out);
+    background: var(--surface-3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .file-upload::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--grad-brand-soft);
+    opacity: 0;
+    transition: opacity 0.25s;
   }
 
   .file-upload:hover {
-    border-color: var(--primary);
-    background: var(--primary-light);
+    border-color: var(--brand-500);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
   }
+  .file-upload:hover::before { opacity: 1; }
+
+  .file-upload > * { position: relative; }
 
   .file-upload input[type="file"] { display: none; }
 
-  .file-upload-icon { font-size: 2rem; margin-bottom: 8px; }
+  .file-upload-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    display: grid;
+    place-items: center;
+    margin: 0 auto 12px;
+    color: var(--brand-500);
+    border: 1px solid var(--border);
+    transition: transform 0.3s var(--ease-spring);
+  }
+  .file-upload:hover .file-upload-icon { transform: scale(1.1) rotate(-5deg); }
+  .file-upload-icon svg { width: 24px; height: 24px; }
 
-  .file-name {
-    margin-top: 8px;
-    color: var(--success);
-    font-size: 0.85rem;
-    font-weight: 500;
+  .file-upload-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .file-upload-hint {
+    font-size: 0.75rem;
+    color: var(--text-mute);
+    margin-top: 4px;
   }
 
+  .file-name {
+    margin-top: 10px;
+    color: var(--success);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--success-soft);
+    border-radius: 100px;
+  }
+  [data-theme="dark"] .file-name { background: rgba(16, 185, 129, 0.15); }
+
+  /* Checkbox */
   .checkbox-group {
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.2s;
   }
+  .checkbox-group:hover { border-color: var(--brand-300); }
 
   .checkbox-group input[type="checkbox"] {
-    width: 18px; height: 18px;
-    margin-top: 2px;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
     cursor: pointer;
-    accent-color: var(--primary);
+    accent-color: var(--brand-500);
+    flex-shrink: 0;
   }
 
   .checkbox-group label {
     margin: 0;
     cursor: pointer;
-    font-weight: 400;
+    font-weight: 500;
+    color: var(--text-soft);
+    font-size: 0.875rem;
+    line-height: 1.5;
   }
 
+  /* =========================================================
+     ACTIONS / BUTTONS
+     ========================================================= */
   .actions {
     display: flex;
     justify-content: space-between;
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid var(--gray-200);
-  }
-
-  button {
-    padding: 10px 24px;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.05s;
-    font-family: inherit;
-  }
-
-  button:active { transform: translateY(1px); }
-
-  .btn-primary {
-    background: var(--primary);
-    color: #fff;
-  }
-
-  .btn-primary:hover { background: var(--primary-dark); }
-  .btn-primary:disabled {
-    background: var(--gray-300);
-    cursor: not-allowed;
-  }
-
-  .btn-secondary {
-    background: var(--gray-100);
-    color: var(--gray-700);
-  }
-
-  .btn-secondary:hover { background: var(--gray-200); }
-
-  .review-section {
-    background: var(--gray-50);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 16px;
-  }
-
-  .review-section h3 {
-    font-size: 1rem;
-    color: var(--gray-700);
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 12px;
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
   }
 
-  .review-section .edit-link {
-    font-size: 0.85rem;
-    color: var(--primary);
-    cursor: pointer;
-    font-weight: 500;
-    background: none;
-    border: none;
-    padding: 0;
-  }
-
-  .review-row {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    padding: 6px 0;
-    font-size: 0.9rem;
-    border-bottom: 1px solid var(--gray-200);
-  }
-
-  .review-row:last-child { border-bottom: none; }
-  .review-row .label { color: var(--gray-500); }
-  .review-row .value { color: var(--gray-900); font-weight: 500; }
-
-  .success-screen {
-    text-align: center;
-    padding: 48px 24px;
-  }
-
-  .success-icon {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: var(--success);
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    margin-bottom: 16px;
-  }
-
-  .success-screen h2 {
-    color: var(--gray-900);
-    margin-bottom: 8px;
-  }
-
-  .success-screen p {
-    color: var(--gray-600);
-    margin-bottom: 24px;
-  }
-
-  .employee-id {
-    background: var(--primary-light);
-    color: var(--primary-dark);
-    padding: 12px 20px;
-    border-radius: var(--radius);
-    font-family: 'SF Mono', Consolas, Monaco, monospace;
-    font-size: 1.1rem;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 20px;
-  }
-
-  .json-preview {
-    background: var(--gray-900);
-    color: #a5f3fc;
-    padding: 16px;
-    border-radius: var(--radius);
-    font-family: 'SF Mono', Consolas, Monaco, monospace;
-    font-size: 0.8rem;
-    text-align: left;
-    overflow-x: auto;
-    margin-top: 16px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: var(--gray-800);
-    color: #fff;
-    padding: 12px 18px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lg);
-    z-index: 1000;
-    transform: translateX(120%);
-    transition: transform 0.3s;
-    font-size: 0.9rem;
-  }
-
-  .toast.show { transform: translateX(0); }
-  .toast.success { background: var(--success); }
-  .toast.error { background: var(--error); }
-
-  .async-status {
-    font-size: 0.8rem;
-    margin-top: 4px;
+  .actions-meta {
+    font-size: 0.8125rem;
+    color: var(--text-mute);
     display: flex;
     align-items: center;
     gap: 6px;
   }
 
-  .async-status.checking { color: var(--gray-500); }
-  .async-status.valid { color: var(--success); }
-  .async-status.invalid { color: var(--error); }
+  button {
+    padding: 11px 22px;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s var(--ease-out);
+    position: relative;
+    overflow: hidden;
+  }
+
+  button:active { transform: translateY(1px) scale(0.98); }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  button svg { width: 16px; height: 16px; }
+
+  .btn-primary {
+    background: var(--grad-brand);
+    color: white;
+    box-shadow: 0 6px 16px -4px rgba(59, 99, 243, 0.45);
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -6px rgba(59, 99, 243, 0.6);
+  }
+  .btn-primary:hover::before { opacity: 1; }
+
+  .btn-secondary {
+    background: var(--surface-3);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--surface-2);
+    border-color: var(--brand-300);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* =========================================================
+     ASYNC STATUS / SPINNER
+     ========================================================= */
+  .async-status {
+    font-size: 0.75rem;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    height: 16px;
+  }
+
+  .async-status:empty { display: none; }
+  .async-status.checking { color: var(--text-mute); }
+  .async-status.valid    { color: var(--success); }
+  .async-status.invalid  { color: var(--error); }
 
   .spinner {
     width: 12px; height: 12px;
-    border: 2px solid var(--gray-300);
-    border-top-color: var(--primary);
+    border: 2px solid var(--border-strong);
+    border-top-color: var(--brand-500);
     border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-    display: inline-block;
+    animation: spin 0.7s linear infinite;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  @media (max-width: 640px) {
-    body { padding: 12px 8px; }
-    .header { padding: 20px; }
-    form { padding: 20px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .step-label { display: none; }
-    .step { min-width: 60px; padding: 12px 4px; }
-    .review-row { grid-template-columns: 1fr; gap: 2px; }
-    .actions { flex-direction: column-reverse; gap: 8px; }
-    .actions button { width: 100%; }
+  /* =========================================================
+     REVIEW SECTION
+     ========================================================= */
+  .review-grid {
+    display: grid;
+    gap: 16px;
   }
+
+  .review-section {
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    transition: all 0.25s var(--ease-out);
+  }
+
+  .review-section:hover {
+    border-color: var(--brand-300);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+  }
+
+  .review-section h3 {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .review-section h3 .review-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .review-section h3 .review-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--grad-brand-soft);
+    color: var(--brand-600);
+    display: grid;
+    place-items: center;
+  }
+  .review-section h3 .review-icon svg { width: 14px; height: 14px; }
+
+  .edit-link {
+    font-size: 0.8125rem;
+    color: var(--brand-600);
+    cursor: pointer;
+    font-weight: 600;
+    background: transparent;
+    border: 1px solid var(--brand-200);
+    padding: 5px 12px;
+    border-radius: 100px;
+    transition: all 0.2s;
+  }
+  .edit-link:hover {
+    background: var(--brand-500);
+    color: white;
+    border-color: var(--brand-500);
+  }
+
+  .review-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .review-row:last-child { border-bottom: none; }
+  .review-row .label { color: var(--text-mute); font-weight: 500; }
+  .review-row .value { color: var(--text); font-weight: 600; }
+
+  /* =========================================================
+     SUCCESS SCREEN
+     ========================================================= */
+  .success-screen {
+    text-align: center;
+    padding: 56px 24px 32px;
+    animation: stepIn 0.6s var(--ease-out);
+  }
+
+  .success-icon {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    background: var(--grad-success);
+    color: #fff;
+    display: inline-grid;
+    place-items: center;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.5);
+    animation: bounceIn 0.7s var(--ease-spring);
+  }
+
+  .success-icon svg { width: 48px; height: 48px; }
+
+  .success-icon::before, .success-icon::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--success);
+    opacity: 0;
+    animation: ripple 2s ease-out infinite;
+  }
+  .success-icon::after { animation-delay: 1s; }
+
+  @keyframes ripple {
+    0%   { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  @keyframes bounceIn {
+    0%   { transform: scale(0.3); opacity: 0; }
+    60%  { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  .success-screen h2 {
+    color: var(--text);
+    font-size: 1.875rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .success-screen p {
+    color: var(--text-soft);
+    margin-bottom: 24px;
+    font-size: 0.9375rem;
+  }
+
+  .employee-id {
+    background: var(--grad-brand-soft);
+    border: 1px solid var(--brand-200);
+    color: var(--brand-700);
+    padding: 14px 24px;
+    border-radius: var(--radius);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.125rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    letter-spacing: 0.04em;
+  }
+  [data-theme="dark"] .employee-id {
+    background: rgba(59, 99, 243, 0.15);
+    border-color: rgba(59, 99, 243, 0.3);
+    color: var(--brand-300);
+  }
+
+  .json-preview {
+    background: #0a0e1a;
+    color: #93c5fd;
+    padding: 20px;
+    border-radius: var(--radius);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    text-align: left;
+    overflow-x: auto;
+    margin-top: 12px;
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    line-height: 1.6;
+  }
+
+  details summary {
+    cursor: pointer;
+    color: var(--brand-600);
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary:hover { background: var(--hover); }
+  details summary::before {
+    content: '▶';
+    font-size: 10px;
+    transition: transform 0.2s;
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+
+  /* =========================================================
+     TOAST
+     ========================================================= */
+  .toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    background: var(--surface-2);
+    color: var(--text);
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    z-index: 1000;
+    transform: translateX(calc(100% + 32px));
+    transition: transform 0.4s var(--ease-spring);
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 260px;
+    max-width: 360px;
+    backdrop-filter: blur(20px);
+  }
+
+  .toast.show { transform: translateX(0); }
+
+  .toast-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .toast.success .toast-icon { background: var(--success); }
+  .toast.error .toast-icon   { background: var(--error); }
+  .toast.info .toast-icon    { background: var(--info); }
+
+  /* =========================================================
+     RESPONSIVE
+     ========================================================= */
+  @media (max-width: 720px) {
+    .page { padding: 16px 12px 32px; }
+    .header { padding: 28px 24px; }
+    .header h1 { font-size: 1.5rem; }
+    .header-stats { display: none; }
+    .stepper-wrap { padding: 16px 16px; }
+    form { padding: 24px 20px; }
+    .form-grid { grid-template-columns: 1fr; gap: 14px; }
+    .step-label { display: none; }
+    .step { min-width: 0; }
+    .step-line { display: none; }
+    .stepper { gap: 8px; justify-content: space-around; }
+    .review-row { grid-template-columns: 1fr; gap: 2px; }
+    .review-row .label { font-size: 0.75rem; }
+    .actions { flex-direction: column-reverse; gap: 10px; }
+    .actions button { width: 100%; justify-content: center; }
+    .actions-meta { display: none; }
+    .step-head { gap: 12px; }
+    .step-icon { width: 40px; height: 40px; }
+    .toast { top: auto; bottom: 16px; right: 16px; left: 16px; max-width: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 100px;
+    border: 2px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-mute); }
 </style>
 </head>
 <body>
-<div class="container" role="main">
-  <header class="header">
-    <h1>Employee Registration</h1>
-    <p>Welcome aboard! Please complete the steps below to set up your profile.</p>
-  </header>
 
-  <nav class="stepper" aria-label="Registration progress">
-    <div class="step active" data-step="1">
-      <span class="step-number">1</span>
-      <span class="step-label">Personal</span>
+<!-- Decorative orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="page">
+  <!-- Top bar -->
+  <div class="topbar">
+    <a class="brand" href="#">
+      <div class="brand-mark">N</div>
+      <div class="brand-text">
+        <span class="brand-name">Nexus HR</span>
+        <span class="brand-sub">Employee Onboarding</span>
+      </div>
+    </a>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle theme" title="Toggle theme">
+        <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="icon-btn" type="button" aria-label="Help" title="Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </button>
     </div>
-    <div class="step" data-step="2">
-      <span class="step-number">2</span>
-      <span class="step-label">Identity</span>
+  </div>
+
+  <div class="container" role="main">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="header-text">
+          <span class="header-badge"><span class="dot"></span> Secure onboarding · End-to-end encrypted</span>
+          <h1>Welcome aboard! Let's get you set up.</h1>
+          <p>Complete the steps below to finalize your profile. Your progress is auto-saved as you go.</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat">
+            <div class="stat-value" id="statStep">1<span style="opacity:0.6">/5</span></div>
+            <div class="stat-label">Step</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="statPct">20%</div>
+            <div class="stat-label">Complete</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- STEPPER -->
+    <div class="stepper-wrap">
+      <nav class="stepper" aria-label="Registration progress">
+        <div class="step active" data-step="1">
+          <div class="step-number">
+            <span class="num">1</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="step-label">Personal</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="2">
+          <div class="step-number">
+            <span class="num">2</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="step-label">Identity</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="3">
+          <div class="step-number">
+            <span class="num">3</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="step-label">Role</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="4">
+          <div class="step-number">
+            <span class="num">4</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="step-label">Payroll</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="5">
+          <div class="step-number">
+            <span class="num">5</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="step-label">Review</span>
+        </div>
+      </nav>
     </div>
-    <div class="step" data-step="3">
-      <span class="step-number">3</span>
-      <span class="step-label">Role</span>
-    </div>
-    <div class="step" data-step="4">
-      <span class="step-number">4</span>
-      <span class="step-label">Payroll</span>
-    </div>
-    <div class="step" data-step="5">
-      <span class="step-number">5</span>
-      <span class="step-label">Review</span>
-    </div>
-  </nav>
 
-  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 20%"></div></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 20%"></div></div>
 
-  <form id="regForm" novalidate>
+    <form id="regForm" novalidate>
 
-    <!-- STEP 1: Personal Details -->
-    <section class="form-step active" data-step="1" aria-labelledby="step1-title">
-      <h2 class="step-title" id="step1-title">Personal Details</h2>
-      <p class="step-subtitle">Tell us a little about yourself.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="firstName">First Name<span class="required">*</span></label>
-          <input type="text" id="firstName" name="firstName" required autocomplete="given-name" />
-          <div class="error-msg" data-error-for="firstName"></div>
+      <!-- STEP 1: Personal Details -->
+      <section class="form-step active" data-step="1" aria-labelledby="step1-title">
+        <div class="step-head">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <h2 class="step-title" id="step1-title">Personal Details</h2>
+            <p class="step-subtitle">Tell us a little about yourself — this helps us personalize your experience.</p>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="lastName">Last Name<span class="required">*</span></label>
-          <input type="text" id="lastName" name="lastName" required autocomplete="family-name" />
-          <div class="error-msg" data-error-for="lastName"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="firstName">First Name<span class="required">*</span></label>
+            <input type="text" id="firstName" name="firstName" required autocomplete="given-name" placeholder="Jane" />
+            <div class="error-msg" data-error-for="firstName"></div>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name<span class="required">*</span></label>
+            <input type="text" id="lastName" name="lastName" required autocomplete="family-name" placeholder="Doe" />
+            <div class="error-msg" data-error-for="lastName"></div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email<span class="required">*</span></label>
+            <input type="email" id="email" name="email" required autocomplete="email" placeholder="jane@company.com" />
+            <div class="async-status" id="emailStatus"></div>
+            <div class="error-msg" data-error-for="email"></div>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone<span class="required">*</span></label>
+            <input type="tel" id="phone" name="phone" required placeholder="+1 555 123 4567" autocomplete="tel" />
+            <div class="error-msg" data-error-for="phone"></div>
+          </div>
+          <div class="form-group">
+            <label for="dob">Date of Birth<span class="required">*</span></label>
+            <input type="date" id="dob" name="dob" required autocomplete="bday" />
+            <div class="error-msg" data-error-for="dob"></div>
+          </div>
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+              <option value="">Prefer not to say</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="non_binary">Non-binary</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label for="address">Address<span class="required">*</span></label>
+            <input type="text" id="address" name="address" required placeholder="123 Main Street, Apt 4B" autocomplete="street-address" />
+            <div class="error-msg" data-error-for="address"></div>
+          </div>
+          <div class="form-group">
+            <label for="city">City<span class="required">*</span></label>
+            <input type="text" id="city" name="city" required autocomplete="address-level2" placeholder="San Francisco" />
+            <div class="error-msg" data-error-for="city"></div>
+          </div>
+          <div class="form-group">
+            <label for="country">Country<span class="required">*</span></label>
+            <select id="country" name="country" required autocomplete="country">
+              <option value="">Select country</option>
+              <option value="US">🇺🇸 United States</option>
+              <option value="IN">🇮🇳 India</option>
+              <option value="UK">🇬🇧 United Kingdom</option>
+              <option value="CA">🇨🇦 Canada</option>
+              <option value="AU">🇦🇺 Australia</option>
+              <option value="DE">🇩🇪 Germany</option>
+              <option value="SG">🇸🇬 Singapore</option>
+            </select>
+            <div class="error-msg" data-error-for="country"></div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="email">Email<span class="required">*</span></label>
-          <input type="email" id="email" name="email" required autocomplete="email" />
-          <div class="async-status" id="emailStatus"></div>
-          <div class="error-msg" data-error-for="email"></div>
+        <div class="actions">
+          <span class="actions-meta">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+            Auto-saved
+          </span>
+          <button type="button" class="btn-primary" data-action="next">
+            Continue
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
         </div>
-        <div class="form-group">
-          <label for="phone">Phone<span class="required">*</span></label>
-          <input type="tel" id="phone" name="phone" required placeholder="+1 555 123 4567" autocomplete="tel" />
-          <div class="error-msg" data-error-for="phone"></div>
-        </div>
-        <div class="form-group">
-          <label for="dob">Date of Birth<span class="required">*</span></label>
-          <input type="date" id="dob" name="dob" required autocomplete="bday" />
-          <div class="error-msg" data-error-for="dob"></div>
-        </div>
-        <div class="form-group">
-          <label for="gender">Gender</label>
-          <select id="gender" name="gender">
-            <option value="">Prefer not to say</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="non_binary">Non-binary</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="form-group full">
-          <label for="address">Address<span class="required">*</span></label>
-          <input type="text" id="address" name="address" required placeholder="Street address" autocomplete="street-address" />
-          <div class="error-msg" data-error-for="address"></div>
-        </div>
-        <div class="form-group">
-          <label for="city">City<span class="required">*</span></label>
-          <input type="text" id="city" name="city" required autocomplete="address-level2" />
-          <div class="error-msg" data-error-for="city"></div>
-        </div>
-        <div class="form-group">
-          <label for="country">Country<span class="required">*</span></label>
-          <select id="country" name="country" required autocomplete="country">
-            <option value="">Select country</option>
-            <option value="US">United States</option>
-            <option value="IN">India</option>
-            <option value="UK">United Kingdom</option>
-            <option value="CA">Canada</option>
-            <option value="AU">Australia</option>
-            <option value="DE">Germany</option>
-            <option value="SG">Singapore</option>
-          </select>
-          <div class="error-msg" data-error-for="country"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <span></span>
-        <button type="button" class="btn-primary" data-action="next">Next: Identity →</button>
-      </div>
-    </section>
+      </section>
 
-    <!-- STEP 2: Identity Verification -->
-    <section class="form-step" data-step="2" aria-labelledby="step2-title">
-      <h2 class="step-title" id="step2-title">Identity Verification</h2>
-      <p class="step-subtitle">Upload a government-issued ID for verification.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="idType">ID Type<span class="required">*</span></label>
-          <select id="idType" name="idType" required>
-            <option value="">Select ID type</option>
-            <option value="passport">Passport</option>
-            <option value="drivers_license">Driver's License</option>
-            <option value="national_id">National ID</option>
-            <option value="aadhaar">Aadhaar</option>
-          </select>
-          <div class="error-msg" data-error-for="idType"></div>
+      <!-- STEP 2: Identity Verification -->
+      <section class="form-step" data-step="2" aria-labelledby="step2-title">
+        <div class="step-head">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <h2 class="step-title" id="step2-title">Identity Verification</h2>
+            <p class="step-subtitle">Upload a government-issued ID. All documents are encrypted at rest.</p>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="idNumber">ID Number<span class="required">*</span></label>
-          <input type="text" id="idNumber" name="idNumber" required />
-          <div class="error-msg" data-error-for="idNumber"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="idType">ID Type<span class="required">*</span></label>
+            <select id="idType" name="idType" required>
+              <option value="">Select ID type</option>
+              <option value="passport">Passport</option>
+              <option value="drivers_license">Driver's License</option>
+              <option value="national_id">National ID</option>
+              <option value="aadhaar">Aadhaar</option>
+            </select>
+            <div class="error-msg" data-error-for="idType"></div>
+          </div>
+          <div class="form-group">
+            <label for="idNumber">ID Number<span class="required">*</span></label>
+            <input type="text" id="idNumber" name="idNumber" required placeholder="ID document number" />
+            <div class="error-msg" data-error-for="idNumber"></div>
+          </div>
+          <div class="form-group full">
+            <label for="idDoc">Upload ID Document<span class="required">*</span></label>
+            <label class="file-upload" for="idDoc">
+              <div class="file-upload-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div class="file-upload-text">Click or drop file to upload</div>
+              <div class="file-upload-hint">PDF, JPG, PNG · Max 5 MB</div>
+              <input type="file" id="idDoc" name="idDoc" accept=".pdf,.jpg,.jpeg,.png" required />
+              <div class="file-name" id="idDocName"></div>
+            </label>
+            <div class="error-msg" data-error-for="idDoc"></div>
+          </div>
+          <div class="form-group full">
+            <label for="taxId">Tax ID / SSN<span class="required">*</span></label>
+            <input type="text" id="taxId" name="taxId" required placeholder="XXX-XX-XXXX" />
+            <div class="hint">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Encrypted and tokenized — never stored in plain text.
+            </div>
+            <div class="error-msg" data-error-for="taxId"></div>
+          </div>
         </div>
-        <div class="form-group full">
-          <label for="idDoc">Upload ID Document<span class="required">*</span></label>
-          <label class="file-upload" for="idDoc">
-            <div class="file-upload-icon">📄</div>
-            <div>Click to upload (PDF, JPG, PNG — max 5 MB)</div>
-            <input type="file" id="idDoc" name="idDoc" accept=".pdf,.jpg,.jpeg,.png" required />
-            <div class="file-name" id="idDocName"></div>
-          </label>
-          <div class="error-msg" data-error-for="idDoc"></div>
+        <div class="actions">
+          <button type="button" class="btn-secondary" data-action="prev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back
+          </button>
+          <button type="button" class="btn-primary" data-action="next">
+            Continue
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
         </div>
-        <div class="form-group full">
-          <label for="taxId">Tax ID / SSN<span class="required">*</span></label>
-          <input type="text" id="taxId" name="taxId" required placeholder="XXX-XX-XXXX" />
-          <div class="hint">Encrypted and tokenized — never stored in plain text.</div>
-          <div class="error-msg" data-error-for="taxId"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Role →</button>
-      </div>
-    </section>
+      </section>
 
-    <!-- STEP 3: Work / Role -->
-    <section class="form-step" data-step="3" aria-labelledby="step3-title">
-      <h2 class="step-title" id="step3-title">Work & Role Assignment</h2>
-      <p class="step-subtitle">Confirm your role and start details.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="jobTitle">Job Title<span class="required">*</span></label>
-          <input type="text" id="jobTitle" name="jobTitle" required />
-          <div class="error-msg" data-error-for="jobTitle"></div>
+      <!-- STEP 3: Work / Role -->
+      <section class="form-step" data-step="3" aria-labelledby="step3-title">
+        <div class="step-head">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <div>
+            <h2 class="step-title" id="step3-title">Work &amp; Role Assignment</h2>
+            <p class="step-subtitle">Confirm your role, team and start details.</p>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="department">Department<span class="required">*</span></label>
-          <select id="department" name="department" required>
-            <option value="">Select department</option>
-            <option value="engineering">Engineering</option>
-            <option value="product">Product</option>
-            <option value="design">Design</option>
-            <option value="marketing">Marketing</option>
-            <option value="sales">Sales</option>
-            <option value="hr">Human Resources</option>
-            <option value="finance">Finance</option>
-            <option value="operations">Operations</option>
-          </select>
-          <div class="error-msg" data-error-for="department"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="jobTitle">Job Title<span class="required">*</span></label>
+            <input type="text" id="jobTitle" name="jobTitle" required placeholder="Senior Software Engineer" />
+            <div class="error-msg" data-error-for="jobTitle"></div>
+          </div>
+          <div class="form-group">
+            <label for="department">Department<span class="required">*</span></label>
+            <select id="department" name="department" required>
+              <option value="">Select department</option>
+              <option value="engineering">Engineering</option>
+              <option value="product">Product</option>
+              <option value="design">Design</option>
+              <option value="marketing">Marketing</option>
+              <option value="sales">Sales</option>
+              <option value="hr">Human Resources</option>
+              <option value="finance">Finance</option>
+              <option value="operations">Operations</option>
+            </select>
+            <div class="error-msg" data-error-for="department"></div>
+          </div>
+          <div class="form-group">
+            <label for="employmentType">Employment Type<span class="required">*</span></label>
+            <select id="employmentType" name="employmentType" required>
+              <option value="">Select type</option>
+              <option value="full_time">Full-Time</option>
+              <option value="part_time">Part-Time</option>
+              <option value="contract">Contract</option>
+              <option value="intern">Intern</option>
+            </select>
+            <div class="error-msg" data-error-for="employmentType"></div>
+          </div>
+          <div class="form-group">
+            <label for="manager">Reporting Manager</label>
+            <input type="text" id="manager" name="manager" placeholder="Manager's full name" />
+          </div>
+          <div class="form-group">
+            <label for="startDate">Start Date<span class="required">*</span></label>
+            <input type="date" id="startDate" name="startDate" required />
+            <div class="error-msg" data-error-for="startDate"></div>
+          </div>
+          <div class="form-group">
+            <label for="workLocation">Work Location<span class="required">*</span></label>
+            <select id="workLocation" name="workLocation" required>
+              <option value="">Select location</option>
+              <option value="remote">🏠 Remote</option>
+              <option value="hybrid">🔀 Hybrid</option>
+              <option value="onsite">🏢 On-site</option>
+            </select>
+            <div class="error-msg" data-error-for="workLocation"></div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="employmentType">Employment Type<span class="required">*</span></label>
-          <select id="employmentType" name="employmentType" required>
-            <option value="">Select type</option>
-            <option value="full_time">Full-Time</option>
-            <option value="part_time">Part-Time</option>
-            <option value="contract">Contract</option>
-            <option value="intern">Intern</option>
-          </select>
-          <div class="error-msg" data-error-for="employmentType"></div>
+        <div class="actions">
+          <button type="button" class="btn-secondary" data-action="prev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back
+          </button>
+          <button type="button" class="btn-primary" data-action="next">
+            Continue
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
         </div>
-        <div class="form-group">
-          <label for="manager">Reporting Manager</label>
-          <input type="text" id="manager" name="manager" placeholder="Manager's full name" />
-        </div>
-        <div class="form-group">
-          <label for="startDate">Start Date<span class="required">*</span></label>
-          <input type="date" id="startDate" name="startDate" required />
-          <div class="error-msg" data-error-for="startDate"></div>
-        </div>
-        <div class="form-group">
-          <label for="workLocation">Work Location<span class="required">*</span></label>
-          <select id="workLocation" name="workLocation" required>
-            <option value="">Select location</option>
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="onsite">On-site</option>
-          </select>
-          <div class="error-msg" data-error-for="workLocation"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Payroll →</button>
-      </div>
-    </section>
+      </section>
 
-    <!-- STEP 4: Payroll & Banking -->
-    <section class="form-step" data-step="4" aria-labelledby="step4-title">
-      <h2 class="step-title" id="step4-title">Payroll & Banking</h2>
-      <p class="step-subtitle">Where should we send your salary?</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="bankName">Bank Name<span class="required">*</span></label>
-          <input type="text" id="bankName" name="bankName" required />
-          <div class="error-msg" data-error-for="bankName"></div>
+      <!-- STEP 4: Payroll & Banking -->
+      <section class="form-step" data-step="4" aria-labelledby="step4-title">
+        <div class="step-head">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <div>
+            <h2 class="step-title" id="step4-title">Payroll &amp; Banking</h2>
+            <p class="step-subtitle">Where should we send your salary? All financial data is PCI-DSS compliant.</p>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="accountHolder">Account Holder Name<span class="required">*</span></label>
-          <input type="text" id="accountHolder" name="accountHolder" required />
-          <div class="error-msg" data-error-for="accountHolder"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="bankName">Bank Name<span class="required">*</span></label>
+            <input type="text" id="bankName" name="bankName" required placeholder="Chase, HSBC, etc." />
+            <div class="error-msg" data-error-for="bankName"></div>
+          </div>
+          <div class="form-group">
+            <label for="accountHolder">Account Holder Name<span class="required">*</span></label>
+            <input type="text" id="accountHolder" name="accountHolder" required placeholder="As on bank account" />
+            <div class="error-msg" data-error-for="accountHolder"></div>
+          </div>
+          <div class="form-group">
+            <label for="accountNumber">Account Number<span class="required">*</span></label>
+            <input type="text" id="accountNumber" name="accountNumber" required inputmode="numeric" placeholder="Account number" />
+            <div class="error-msg" data-error-for="accountNumber"></div>
+          </div>
+          <div class="form-group">
+            <label for="routingCode">Routing / IFSC / Swift Code<span class="required">*</span></label>
+            <input type="text" id="routingCode" name="routingCode" required placeholder="Routing or SWIFT code" />
+            <div class="error-msg" data-error-for="routingCode"></div>
+          </div>
+          <div class="form-group full">
+            <label for="currency">Salary Currency<span class="required">*</span></label>
+            <select id="currency" name="currency" required>
+              <option value="">Select currency</option>
+              <option value="USD">💵 USD — US Dollar</option>
+              <option value="INR">🇮🇳 INR — Indian Rupee</option>
+              <option value="GBP">💷 GBP — British Pound</option>
+              <option value="EUR">💶 EUR — Euro</option>
+              <option value="CAD">🇨🇦 CAD — Canadian Dollar</option>
+              <option value="AUD">🇦🇺 AUD — Australian Dollar</option>
+              <option value="SGD">🇸🇬 SGD — Singapore Dollar</option>
+            </select>
+            <div class="error-msg" data-error-for="currency"></div>
+          </div>
+          <div class="form-group full">
+            <div class="checkbox-group">
+              <input type="checkbox" id="taxConsent" name="taxConsent" required />
+              <label for="taxConsent">I confirm that all banking and tax information provided is accurate, and authorize the deposit of salary to this account.<span class="required">*</span></label>
+            </div>
+            <div class="error-msg" data-error-for="taxConsent"></div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="accountNumber">Account Number<span class="required">*</span></label>
-          <input type="text" id="accountNumber" name="accountNumber" required inputmode="numeric" />
-          <div class="error-msg" data-error-for="accountNumber"></div>
+        <div class="actions">
+          <button type="button" class="btn-secondary" data-action="prev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back
+          </button>
+          <button type="button" class="btn-primary" data-action="next">
+            Review
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
         </div>
-        <div class="form-group">
-          <label for="routingCode">Routing / IFSC / Swift Code<span class="required">*</span></label>
-          <input type="text" id="routingCode" name="routingCode" required />
-          <div class="error-msg" data-error-for="routingCode"></div>
-        </div>
-        <div class="form-group">
-          <label for="currency">Salary Currency<span class="required">*</span></label>
-          <select id="currency" name="currency" required>
-            <option value="">Select currency</option>
-            <option value="USD">USD — US Dollar</option>
-            <option value="INR">INR — Indian Rupee</option>
-            <option value="GBP">GBP — British Pound</option>
-            <option value="EUR">EUR — Euro</option>
-            <option value="CAD">CAD — Canadian Dollar</option>
-            <option value="AUD">AUD — Australian Dollar</option>
-            <option value="SGD">SGD — Singapore Dollar</option>
-          </select>
-          <div class="error-msg" data-error-for="currency"></div>
-        </div>
-        <div class="form-group full checkbox-group">
-          <input type="checkbox" id="taxConsent" name="taxConsent" required />
-          <label for="taxConsent">I confirm that all banking and tax information provided is accurate, and authorize the deposit of salary to this account.<span class="required">*</span></label>
-        </div>
-        <div class="error-msg full" data-error-for="taxConsent"></div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Review →</button>
-      </div>
-    </section>
+      </section>
 
-    <!-- STEP 5: Review & Submit -->
-    <section class="form-step" data-step="5" aria-labelledby="step5-title">
-      <h2 class="step-title" id="step5-title">Review & Submit</h2>
-      <p class="step-subtitle">Please review your information before submitting.</p>
-      <div id="reviewContent"></div>
-      <div class="checkbox-group" style="margin-top: 20px;">
-        <input type="checkbox" id="finalConsent" name="finalConsent" required />
-        <label for="finalConsent">I confirm all the information above is accurate and agree to the company's privacy policy, code of conduct and terms of employment.<span class="required">*</span></label>
-      </div>
-      <div class="error-msg" data-error-for="finalConsent"></div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="submit" class="btn-primary" id="submitBtn">Submit Registration ✓</button>
-      </div>
-    </section>
+      <!-- STEP 5: Review & Submit -->
+      <section class="form-step" data-step="5" aria-labelledby="step5-title">
+        <div class="step-head">
+          <div class="step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <h2 class="step-title" id="step5-title">Review &amp; Submit</h2>
+            <p class="step-subtitle">Almost there! Take one last look at your information before submitting.</p>
+          </div>
+        </div>
+        <div id="reviewContent" class="review-grid"></div>
+        <div class="checkbox-group" style="margin-top: 20px;">
+          <input type="checkbox" id="finalConsent" name="finalConsent" required />
+          <label for="finalConsent">I confirm all the information above is accurate and agree to the company's privacy policy, code of conduct and terms of employment.<span class="required">*</span></label>
+        </div>
+        <div class="error-msg" data-error-for="finalConsent"></div>
+        <div class="actions">
+          <button type="button" class="btn-secondary" data-action="prev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back
+          </button>
+          <button type="submit" class="btn-primary" id="submitBtn">
+            Submit Registration
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+      </section>
 
-    <!-- SUCCESS SCREEN -->
-    <section class="form-step" data-step="6">
-      <div class="success-screen">
-        <div class="success-icon">✓</div>
-        <h2>Registration Complete!</h2>
-        <p>Welcome to the team. Your registration has been submitted successfully.</p>
-        <div class="employee-id" id="employeeId">EMP-XXXXXX</div>
-        <p style="font-size: 0.9rem; color: var(--gray-500);">A confirmation email has been sent. Our HR team will be in touch shortly.</p>
-        <details style="margin-top: 24px; text-align: left;">
-          <summary style="cursor: pointer; color: var(--primary); font-weight: 500;">View submission JSON</summary>
-          <pre class="json-preview" id="jsonPreview"></pre>
-        </details>
-        <button type="button" class="btn-secondary" style="margin-top: 24px;" onclick="resetForm()">Register Another Employee</button>
-      </div>
-    </section>
+      <!-- SUCCESS SCREEN -->
+      <section class="form-step" data-step="6">
+        <div class="success-screen">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2>You're all set! 🎉</h2>
+          <p>Welcome to the team. Your registration has been submitted successfully.</p>
+          <div class="employee-id" id="employeeId">EMP-XXXXXX</div>
+          <p style="font-size: 0.875rem; color: var(--text-mute);">A confirmation email has been sent. Our HR team will be in touch shortly.</p>
+          <details style="margin-top: 28px; text-align: left; max-width: 640px; margin-left: auto; margin-right: auto;">
+            <summary>View submission JSON</summary>
+            <pre class="json-preview" id="jsonPreview"></pre>
+          </details>
+          <button type="button" class="btn-secondary" style="margin-top: 28px;" onclick="resetForm()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Register Another Employee
+          </button>
+        </div>
+      </section>
 
-  </form>
+    </form>
+  </div>
+
+  <p style="text-align: center; margin-top: 24px; color: var(--text-mute); font-size: 0.8125rem;">
+    Built with <span style="color: var(--accent-pink);">♥</span> by Nexus HR · End-to-end encrypted · GDPR &amp; SOC 2 compliant
+  </p>
 </div>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span class="toast-icon" id="toastIcon">!</span>
+  <span id="toastMsg"></span>
+</div>
 
 <script>
 'use strict';
@@ -764,20 +1641,53 @@ const labels = {
 };
 
 const sectionMap = {
-  'Personal Details': ['firstName', 'lastName', 'email', 'phone', 'dob', 'gender', 'address', 'city', 'country'],
-  'Identity Verification': ['idType', 'idNumber', 'idDoc', 'taxId'],
-  'Work & Role': ['jobTitle', 'department', 'employmentType', 'manager', 'startDate', 'workLocation'],
-  'Payroll & Banking': ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency']
+  'Personal Details':       ['firstName', 'lastName', 'email', 'phone', 'dob', 'gender', 'address', 'city', 'country'],
+  'Identity Verification':  ['idType', 'idNumber', 'idDoc', 'taxId'],
+  'Work & Role':            ['jobTitle', 'department', 'employmentType', 'manager', 'startDate', 'workLocation'],
+  'Payroll & Banking':      ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency']
 };
 
 const sectionStepMap = {
-  'Personal Details': 1,
-  'Identity Verification': 2,
-  'Work & Role': 3,
-  'Payroll & Banking': 4
+  'Personal Details': 1, 'Identity Verification': 2, 'Work & Role': 3, 'Payroll & Banking': 4
 };
 
-// ---- Validation ----
+const sectionIcons = {
+  'Personal Details':      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  'Identity Verification': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  'Work & Role':           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+  'Payroll & Banking':     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>'
+};
+
+// =========================================================
+// THEME TOGGLE
+// =========================================================
+const themeToggle = document.getElementById('themeToggle');
+const iconSun = document.getElementById('iconSun');
+const iconMoon = document.getElementById('iconMoon');
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  iconSun.style.display  = theme === 'light' ? 'block' : 'none';
+  iconMoon.style.display = theme === 'dark'  ? 'block' : 'none';
+  try { localStorage.setItem('theme', theme); } catch (_) {}
+}
+
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.dataset.theme;
+  applyTheme(current === 'light' ? 'dark' : 'light');
+});
+
+(function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem('theme'); } catch (_) {}
+  if (saved) { applyTheme(saved); return; }
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(prefersDark ? 'dark' : 'light');
+})();
+
+// =========================================================
+// VALIDATION
+// =========================================================
 function validateField(name, value) {
   if (!value && !['gender', 'manager'].includes(name)) {
     if (name === 'idDoc' && !document.getElementById('idDoc').files.length) return 'Please upload a document.';
@@ -842,7 +1752,6 @@ function validateStep(step) {
     showError(name, msg);
     if (msg) valid = false;
   }
-  // Email duplicate state must be valid
   if (step === 1) {
     const emailStatus = document.getElementById('emailStatus');
     if (emailStatus.classList.contains('invalid')) {
@@ -853,7 +1762,9 @@ function validateStep(step) {
   return valid;
 }
 
-// ---- Async email validation (mocked) ----
+// =========================================================
+// ASYNC EMAIL VALIDATION (mocked)
+// =========================================================
 const TAKEN_EMAILS = ['admin@company.com', 'test@test.com', 'employee@corp.com'];
 let emailDebounce;
 document.getElementById('email').addEventListener('input', (e) => {
@@ -870,7 +1781,7 @@ document.getElementById('email').addEventListener('input', (e) => {
   emailDebounce = setTimeout(() => {
     if (TAKEN_EMAILS.includes(value.toLowerCase())) {
       status.className = 'async-status invalid';
-      status.innerHTML = '✗ Email already registered';
+      status.innerHTML = '✕ Email already registered';
     } else {
       status.className = 'async-status valid';
       status.innerHTML = '✓ Email is available';
@@ -878,7 +1789,9 @@ document.getElementById('email').addEventListener('input', (e) => {
   }, 700);
 });
 
-// ---- File handling ----
+// =========================================================
+// FILE HANDLING
+// =========================================================
 document.getElementById('idDoc').addEventListener('change', (e) => {
   const file = e.target.files[0];
   const out = document.getElementById('idDocName');
@@ -896,10 +1809,12 @@ document.getElementById('idDoc').addEventListener('change', (e) => {
   }
 });
 
-// ---- Real-time validation ----
+// =========================================================
+// REAL-TIME VALIDATION
+// =========================================================
 document.querySelectorAll('input, select').forEach(el => {
   el.addEventListener('blur', () => {
-    if (el.id && labels[el.id] !== undefined || ['taxConsent', 'finalConsent'].includes(el.id)) {
+    if ((el.id && labels[el.id] !== undefined) || ['taxConsent', 'finalConsent', 'idDoc'].includes(el.id)) {
       let value;
       if (el.type === 'checkbox') value = el.checked ? 'on' : '';
       else if (el.type === 'file') value = el.files.length ? el.files[0].name : '';
@@ -911,7 +1826,9 @@ document.querySelectorAll('input, select').forEach(el => {
   el.addEventListener('input', () => { if (el.classList.contains('error')) clearError(el.id); });
 });
 
-// ---- Navigation ----
+// =========================================================
+// NAVIGATION
+// =========================================================
 function goToStep(step) {
   document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
   const target = document.querySelector(`.form-step[data-step="${step}"]`);
@@ -923,8 +1840,20 @@ function goToStep(step) {
     s.classList.toggle('completed', n < step);
   });
 
+  // Step lines
+  const lines = document.querySelectorAll('.step-line');
+  lines.forEach((line, i) => {
+    line.classList.toggle('filled', step > i + 1);
+  });
+
   const pct = step <= TOTAL_STEPS ? (step / TOTAL_STEPS) * 100 : 100;
   document.getElementById('progressFill').style.width = pct + '%';
+
+  const statStep = document.getElementById('statStep');
+  const statPct  = document.getElementById('statPct');
+  if (statStep && step <= TOTAL_STEPS) statStep.innerHTML = `${step}<span style="opacity:0.6">/${TOTAL_STEPS}</span>`;
+  if (statPct  && step <= TOTAL_STEPS) statPct.textContent = `${Math.round(pct)}%`;
+  if (statPct  && step > TOTAL_STEPS)  { statStep.innerHTML = '✓'; statPct.textContent = '100%'; }
 
   currentStep = step;
   if (step === 5) renderReview();
@@ -938,7 +1867,7 @@ document.querySelectorAll('[data-action="next"]').forEach(btn => {
       saveDraft();
       goToStep(currentStep + 1);
     } else {
-      toast('Please fix the highlighted errors.', 'error');
+      toast('Please fix the highlighted errors', 'error');
     }
   });
 });
@@ -955,7 +1884,8 @@ document.querySelectorAll('.stepper .step').forEach(s => {
 });
 
 function saveStep(step) {
-  for (const name of stepFields[step].concat(step === 1 ? ['gender'] : []).concat(step === 3 ? ['manager'] : [])) {
+  const extras = step === 1 ? ['gender'] : (step === 3 ? ['manager'] : []);
+  for (const name of stepFields[step].concat(extras)) {
     const el = document.getElementById(name);
     if (!el) continue;
     if (el.type === 'checkbox') formData[name] = el.checked;
@@ -964,9 +1894,10 @@ function saveStep(step) {
   }
 }
 
-// ---- Review ----
+// =========================================================
+// REVIEW
+// =========================================================
 function renderReview() {
-  // collect everything
   for (let s = 1; s <= 4; s++) saveStep(s);
   const container = document.getElementById('reviewContent');
   container.innerHTML = '';
@@ -974,7 +1905,14 @@ function renderReview() {
     const div = document.createElement('div');
     div.className = 'review-section';
     const targetStep = sectionStepMap[section];
-    div.innerHTML = `<h3>${section} <button type="button" class="edit-link" data-go="${targetStep}">Edit</button></h3>`;
+    div.innerHTML = `
+      <h3>
+        <span class="review-title">
+          <span class="review-icon">${sectionIcons[section] || ''}</span>
+          ${section}
+        </span>
+        <button type="button" class="edit-link" data-go="${targetStep}">Edit</button>
+      </h3>`;
     for (const f of fields) {
       let v = formData[f];
       if (v == null || v === '') v = '—';
@@ -995,32 +1933,72 @@ function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-// ---- Submit ----
+// =========================================================
+// SUBMIT
+// =========================================================
 document.getElementById('regForm').addEventListener('submit', (e) => {
   e.preventDefault();
   if (!validateStep(5)) {
-    toast('Please confirm to submit.', 'error');
+    toast('Please confirm to submit', 'error');
     return;
   }
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  btn.textContent = 'Submitting...';
+  btn.innerHTML = '<span class="spinner" style="border-top-color:#fff;border-color:rgba(255,255,255,.4)"></span> Submitting...';
 
-  // Mock async submission
   setTimeout(() => {
     const empId = 'EMP-' + Math.floor(100000 + Math.random() * 900000);
     document.getElementById('employeeId').textContent = empId;
     const payload = { employeeId: empId, ...formData, finalConsent: document.getElementById('finalConsent').checked, submittedAt: new Date().toISOString() };
     document.getElementById('jsonPreview').textContent = JSON.stringify(payload, null, 2);
-    localStorage.removeItem('empRegDraft');
+    try { localStorage.removeItem('empRegDraft'); } catch (_) {}
     goToStep(6);
     toast('Registration submitted successfully!', 'success');
+    confettiBurst();
     btn.disabled = false;
-    btn.textContent = 'Submit Registration ✓';
+    btn.innerHTML = 'Submit Registration <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><polyline points="20 6 9 17 4 12"/></svg>';
   }, 1200);
 });
 
-// ---- Reset ----
+// =========================================================
+// CONFETTI 🎉
+// =========================================================
+function confettiBurst() {
+  const colors = ['#3b63f3', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#06b6d4'];
+  const N = 80;
+  for (let i = 0; i < N; i++) {
+    const piece = document.createElement('span');
+    const size = 6 + Math.random() * 6;
+    const left = 50 + (Math.random() - 0.5) * 30;
+    const dx = (Math.random() - 0.5) * 600;
+    const dy = -200 - Math.random() * 300;
+    const rot = (Math.random() - 0.5) * 720;
+    Object.assign(piece.style, {
+      position: 'fixed',
+      left: left + '%',
+      top: '40%',
+      width: size + 'px',
+      height: size * 0.4 + 'px',
+      background: colors[i % colors.length],
+      borderRadius: '2px',
+      pointerEvents: 'none',
+      zIndex: 9999,
+      transform: 'translate(0, 0) rotate(0deg)',
+      transition: 'transform 1.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 1.6s ease-out',
+      opacity: '1'
+    });
+    document.body.appendChild(piece);
+    requestAnimationFrame(() => {
+      piece.style.transform = `translate(${dx}px, ${dy + 600}px) rotate(${rot}deg)`;
+      piece.style.opacity = '0';
+    });
+    setTimeout(() => piece.remove(), 1800);
+  }
+}
+
+// =========================================================
+// RESET
+// =========================================================
 function resetForm() {
   document.getElementById('regForm').reset();
   for (const k in formData) delete formData[k];
@@ -1032,17 +2010,24 @@ function resetForm() {
   goToStep(1);
 }
 
-// ---- Toast ----
+// =========================================================
+// TOAST
+// =========================================================
 let toastTimer;
-function toast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
+function toast(msg, type = 'info') {
+  const t   = document.getElementById('toast');
+  const ic  = document.getElementById('toastIcon');
+  const txt = document.getElementById('toastMsg');
+  txt.textContent = msg;
+  ic.textContent = type === 'success' ? '✓' : type === 'error' ? '✕' : 'i';
   t.className = 'toast show ' + type;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ---- Draft autosave ----
+// =========================================================
+// DRAFT AUTOSAVE
+// =========================================================
 function saveDraft() {
   try { localStorage.setItem('empRegDraft', JSON.stringify({ formData, currentStep })); } catch (_) {}
 }
@@ -1060,16 +2045,26 @@ function loadDraft() {
       else if (el.type !== 'file' && typeof v === 'string') el.value = v;
       formData[k] = v;
     }
-    toast('Draft restored from your last session.', 'success');
+    toast('Draft restored from your last session', 'info');
   } catch (_) {}
 }
 
-// Periodic autosave on input
 document.querySelectorAll('input, select').forEach(el => {
   el.addEventListener('change', () => { saveStep(currentStep); saveDraft(); });
 });
 
 window.addEventListener('DOMContentLoaded', loadDraft);
+
+// =========================================================
+// KEYBOARD: Enter to advance
+// =========================================================
+document.getElementById('regForm').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && currentStep < TOTAL_STEPS) {
+    e.preventDefault();
+    const nextBtn = document.querySelector(`.form-step[data-step="${currentStep}"] [data-action="next"]`);
+    if (nextBtn) nextBtn.click();
+  }
+});
 </script>
 </body>
 </html>
