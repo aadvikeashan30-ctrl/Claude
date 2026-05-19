@@ -619,8 +619,20 @@
       <h1>AI Employee Monitoring <span class="ai-tag">AI</span></h1>
       <p>Real-time productivity, focus &amp; honesty analytics</p>
     </div>
-    <div class="live"><span class="dot"></span> Live · <span id="liveClock">--:--:--</span></div>
+    <div class="live"><span class="dot"></span> <span id="liveModeLabel">Demo data</span> · <span id="liveClock">--:--:--</span></div>
   </header>
+
+  <!-- LIVE MODE BAR -->
+  <div style="background:#fef3c7;border-bottom:1px solid #fde68a;padding:10px 32px;font-size:0.85rem;color:#78350f;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span aria-hidden="true">📡</span>
+    <span id="liveModeStatus"><strong>Demo mode:</strong> showing mock data. Connect to a monitoring server to see real employees.</span>
+    <span style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+      <input id="serverUrlInput" placeholder="http://localhost:3001" style="padding:4px 8px;border:1px solid #fcd34d;border-radius:4px;font-size:0.82rem;width:220px;font-family:inherit;" />
+      <button id="connectBtn" style="background:#f59e0b;color:#fff;border:none;padding:4px 12px;border-radius:4px;font-size:0.82rem;cursor:pointer;font-family:inherit;">Connect</button>
+      <button id="disconnectBtn" style="background:transparent;color:#78350f;border:1px solid #fcd34d;padding:4px 12px;border-radius:4px;font-size:0.82rem;cursor:pointer;display:none;font-family:inherit;">Disconnect</button>
+      <a href="login.html" style="color:#78350f;font-size:0.82rem;">Employee login →</a>
+    </span>
+  </div>
 
   <!-- PRIVACY -->
   <div class="privacy-banner">
@@ -773,7 +785,7 @@ function todayAt(h, m=0) {
 }
 function minutesAgo(mins) { return new Date(NOW.getTime() - mins * 60000); }
 
-const employees = [
+let employees = [
   {
     id: 'EMP-1042', name: 'Aarav Sharma', dept: 'Engineering', role: 'Senior Backend Engineer',
     loginTime: todayAt(8, 55), expectedLogin: todayAt(9, 0), logoutTime: null,
@@ -1514,6 +1526,128 @@ $('pauseBtn').onclick = () => {
   livePaused = !livePaused;
   $('pauseBtn').textContent = livePaused ? 'Resume live updates' : 'Pause live updates';
 };
+
+// =========================================================================
+// 7. LIVE MODE — fetch real sessions from monitoring server
+// =========================================================================
+const SERVER_URL_KEY = 'monitoring.serverUrl';
+let liveServerUrl = null;
+let livePollTimer = null;
+
+// Pre-fill input with stored URL or query param
+const urlParam = new URLSearchParams(location.search).get('server');
+const storedUrl = urlParam || localStorage.getItem(SERVER_URL_KEY) || '';
+$('serverUrlInput').value = storedUrl;
+
+function mapServerSession(s) {
+  // map a server session into the same shape the dashboard expects
+  const stats = s.stats || {};
+  const claimed = Number(s.claimedTasks) || 0;
+  const completed = Number(s.completedTasks) || 0;
+  return {
+    id: s.employee?.id || s.id,
+    name: s.employee?.name || '(unknown)',
+    dept: s.employee?.department || '—',
+    role: s.employee?.role || '—',
+    loginTime: new Date(s.loginAt),
+    expectedLogin: new Date(s.expectedLoginAt || s.loginAt),
+    logoutTime: s.logoutAt ? new Date(s.logoutAt) : null,
+    activeMinutes: stats.activeMin || 0,
+    idleMinutes: stats.idleMin || 0,
+    lastActivityAt: new Date(s.lastInputAt || s.lastHeartbeatAt || s.loginAt),
+    keyboardEvents: s.keyboardEvents || 0,
+    mouseEvents: s.mouseEvents || 0,
+    tabSwitches: s.tabSwitches || 0,
+    apps: { work: stats.activeMin || 0, neutral: 0, distracting: 0 },
+    websites: { work: 0, social: 0, gaming: 0, news: 0 },
+    gitCommits: 0,
+    filesModified: 0,
+    linesOfCodeNet: 0,
+    jira: { claimed, completed, inProgress: 0, total: Math.max(claimed, completed) },
+    meetings: { attended: 0, scheduled: 0 },
+    breaks: 0, breakMinutes: 0,
+    deadlines: [],
+    trend: [stats.productivityScore || 0, stats.productivityScore || 0, stats.productivityScore || 0,
+            stats.productivityScore || 0, stats.productivityScore || 0, stats.productivityScore || 0,
+            stats.productivityScore || 0],
+    _liveStatus: stats.status, // active/idle/offline from server
+    _serverProductivity: stats.productivityScore || 0,
+    _serverFocus: stats.focusScore || 0,
+    _serverDiscipline: stats.disciplineScore || 0,
+  };
+}
+
+async function fetchLiveSessions() {
+  try {
+    const r = await fetch(`${liveServerUrl}/api/sessions`);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    const mapped = data.sessions.map(mapServerSession);
+    if (mapped.length === 0) {
+      $('liveModeStatus').innerHTML = `<strong>Connected:</strong> ${liveServerUrl} · waiting for first employee login…`;
+      return;
+    }
+    employees = mapped;
+    if (!employees.find(e => e.id === selectedId)) selectedId = employees[0].id;
+    $('liveModeStatus').innerHTML = `<strong>Live:</strong> ${liveServerUrl} · ${mapped.length} session(s) · last refresh ${new Date().toLocaleTimeString()}`;
+    $('liveModeLabel').textContent = 'Live';
+    render();
+  } catch (err) {
+    $('liveModeStatus').innerHTML = `<strong style="color:#991b1b;">Connection lost:</strong> ${err.message}. Retrying…`;
+  }
+}
+
+async function connectLive(url) {
+  if (!url) return;
+  url = url.replace(/\/$/, '');
+  // verify reachable
+  try {
+    const r = await fetch(`${url}/api/health`);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    await r.json();
+  } catch (err) {
+    alert(`Could not reach ${url}: ${err.message}`);
+    return;
+  }
+  liveServerUrl = url;
+  localStorage.setItem(SERVER_URL_KEY, url);
+  livePaused = true;
+  if (livePollTimer) clearInterval(livePollTimer);
+  livePollTimer = setInterval(fetchLiveSessions, 5000);
+  fetchLiveSessions();
+  $('connectBtn').style.display = 'none';
+  $('disconnectBtn').style.display = '';
+  $('serverUrlInput').disabled = true;
+}
+
+function disconnectLive() {
+  if (livePollTimer) clearInterval(livePollTimer);
+  livePollTimer = null;
+  liveServerUrl = null;
+  localStorage.removeItem(SERVER_URL_KEY);
+  livePaused = false;
+  $('connectBtn').style.display = '';
+  $('disconnectBtn').style.display = 'none';
+  $('serverUrlInput').disabled = false;
+  $('liveModeLabel').textContent = 'Demo data';
+  $('liveModeStatus').innerHTML = `<strong>Demo mode:</strong> showing mock data. Connect to a monitoring server to see real employees.`;
+  // restore mock data — easiest: reload
+  location.reload();
+}
+
+$('connectBtn').addEventListener('click', () => {
+  const url = $('serverUrlInput').value.trim();
+  if (url) connectLive(url);
+});
+$('disconnectBtn').addEventListener('click', disconnectLive);
+$('serverUrlInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); $('connectBtn').click(); }
+});
+
+// auto-connect if a URL was previously saved
+if (storedUrl) {
+  setTimeout(() => connectLive(storedUrl), 100);
+}
 
 // initial render
 render();

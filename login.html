@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Employee Login — AI Monitoring</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --error: #ef4444;
+    --success: #10b981;
+    --gray-50: #f9fafb;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    color: var(--gray-900);
+  }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.18), 0 10px 10px -5px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 440px;
+    overflow: hidden;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    padding: 24px 28px;
+  }
+  .header h1 { font-size: 1.3rem; }
+  .header p { opacity: 0.9; font-size: 0.85rem; margin-top: 2px; }
+  form { padding: 24px 28px; }
+  .field { margin-bottom: 14px; }
+  label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 6px;
+  }
+  label .req { color: var(--error); }
+  input, select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+  }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+    font-size: 0.82rem;
+    color: #3730a3;
+  }
+  .consent input { width: auto; margin-top: 2px; flex-shrink: 0; }
+  .consent a { color: var(--primary-dark); }
+  button {
+    width: 100%;
+    padding: 11px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+    font-family: inherit;
+  }
+  button:hover { background: var(--primary-dark); }
+  button:disabled { background: var(--gray-300); cursor: not-allowed; }
+  .meta {
+    padding: 14px 28px;
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .server-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .server-status .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gray-300);
+  }
+  .server-status.ok .dot { background: var(--success); }
+  .server-status.bad .dot { background: var(--error); }
+  .server-config {
+    padding: 12px 28px;
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+    font-size: 0.82rem;
+    color: var(--gray-700);
+  }
+  .server-config input { padding: 6px 10px; font-size: 0.85rem; }
+  .server-config a { color: var(--primary); cursor: pointer; }
+  .alert {
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .alert.error { background: #fee2e2; color: #991b1b; display: block; }
+  .alert.info { background: #dbeafe; color: #1e40af; display: block; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h1>Employee Login</h1>
+      <p>Begin a monitored work session</p>
+    </div>
+
+    <form id="loginForm">
+      <div id="alert" class="alert"></div>
+
+      <div class="field">
+        <label for="name">Full name <span class="req">*</span></label>
+        <input id="name" name="name" required autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label for="email">Work email <span class="req">*</span></label>
+        <input id="email" name="email" type="email" required autocomplete="email" />
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="empId">Employee ID</label>
+          <input id="empId" name="empId" placeholder="EMP-1042" />
+        </div>
+        <div class="field">
+          <label for="department">Department</label>
+          <select id="department" name="department">
+            <option value="">Select…</option>
+            <option>Engineering</option>
+            <option>Product</option>
+            <option>Design</option>
+            <option>Marketing</option>
+            <option>Sales</option>
+            <option>HR</option>
+            <option>Finance</option>
+            <option>Operations</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="role">Role / job title</label>
+        <input id="role" name="role" placeholder="Backend Engineer" />
+      </div>
+
+      <div class="consent">
+        <input type="checkbox" id="consent" required />
+        <label for="consent" style="margin: 0; font-weight: 400;">
+          I understand that during this session the system will track my login time, active/idle time,
+          aggregate keyboard/mouse counts, and tab visibility on monitored pages.
+          No keystroke content, screen content, or personal data is recorded.
+        </label>
+      </div>
+
+      <button type="submit" id="submitBtn">Start session</button>
+    </form>
+
+    <div class="server-config">
+      <div>Monitoring server:
+        <input id="serverUrl" placeholder="http://localhost:3001" style="width: 60%;" />
+        <a id="testServer">test</a>
+      </div>
+      <div class="server-status" id="serverStatus" style="margin-top: 6px;">
+        <span class="dot"></span> <span class="label">checking…</span>
+      </div>
+    </div>
+
+    <div class="meta">
+      <a href="dashboard.html" style="color: var(--primary);">Admin dashboard →</a>
+      <span>v1.0</span>
+    </div>
+  </div>
+
+<script>
+'use strict';
+
+const $ = (id) => document.getElementById(id);
+const SERVER_KEY = 'monitoring.serverUrl';
+const SESSION_KEY = 'monitoring.session';
+
+// Pre-fill server URL
+const savedServer = localStorage.getItem(SERVER_KEY) || 'http://localhost:3001';
+$('serverUrl').value = savedServer;
+
+// If already logged in, redirect
+const existing = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+if (existing && existing.sessionId) {
+  showAlert('info', `Resuming session as ${existing.employee?.name || existing.employee?.email}…`);
+  setTimeout(() => location.href = 'workspace.html', 800);
+}
+
+async function checkServer() {
+  const url = $('serverUrl').value.trim();
+  const status = $('serverStatus');
+  const label = status.querySelector('.label');
+  status.classList.remove('ok', 'bad');
+  label.textContent = 'checking…';
+  try {
+    const r = await fetch(`${url}/api/health`, { method: 'GET' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    status.classList.add('ok');
+    label.textContent = `connected (${data.activeSessions} active · email ${data.emailConfigured ? 'on' : 'off'})`;
+    return true;
+  } catch (err) {
+    status.classList.add('bad');
+    label.textContent = `unreachable: ${err.message}`;
+    return false;
+  }
+}
+
+$('serverUrl').addEventListener('change', () => {
+  localStorage.setItem(SERVER_KEY, $('serverUrl').value.trim());
+  checkServer();
+});
+$('testServer').addEventListener('click', (e) => { e.preventDefault(); checkServer(); });
+checkServer();
+
+function showAlert(kind, msg) {
+  const el = $('alert');
+  el.className = 'alert ' + kind;
+  el.textContent = msg;
+}
+
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('submitBtn').disabled = true;
+  showAlert('', '');
+
+  const url = $('serverUrl').value.trim().replace(/\/$/, '');
+  localStorage.setItem(SERVER_KEY, url);
+
+  const payload = {
+    name: $('name').value.trim(),
+    email: $('email').value.trim(),
+    id: $('empId').value.trim() || undefined,
+    department: $('department').value || undefined,
+    role: $('role').value.trim() || undefined,
+    currentPage: 'workspace.html',
+  };
+
+  try {
+    const r = await fetch(`${url}/api/sessions/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+
+    localStorage.setItem(SESSION_KEY, JSON.stringify({
+      sessionId: data.sessionId,
+      employee: data.employee,
+      loginAt: data.loginAt,
+      expectedLoginAt: data.expectedLoginAt,
+      serverUrl: url,
+    }));
+
+    location.href = 'workspace.html';
+  } catch (err) {
+    showAlert('error', `Login failed: ${err.message}. Is the server running?`);
+    $('submitBtn').disabled = false;
+  }
+});
+</script>
+</body>
+</html>
