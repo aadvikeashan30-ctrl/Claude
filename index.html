@@ -1,326 +1,693 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeOrigin.ai | Employee Daily Status &amp; Sprint Tracker</title>
+    <title>CodeOrigin.ai | Daily Status Report</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
-            --bg-primary: #0a0a12;
-            --bg-secondary: #0f0f1a;
-            --bg-card: rgba(15, 15, 26, 0.7);
-            --gold-primary: #d4a017;
-            --gold-light: #f5d060;
-            --gold-gradient: linear-gradient(135deg, #d4a017, #f5d060);
-            --text-primary: #f0f0f5;
-            --text-secondary: #a0a0b8;
-            --text-muted: #6b6b80;
-            --border-color: rgba(212, 160, 23, 0.15);
-            --glass-bg: rgba(15, 15, 30, 0.6);
-            --glass-border: rgba(212, 160, 23, 0.1);
-            --blue: #4a90ff;
-            --cyan: #00e5ff;
-            --red: #ff4057;
-            --green: #00e676;
-            --shadow-gold: 0 0 30px rgba(212, 160, 23, 0.15);
-            --radius-lg: 16px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
+            --bg-primary: #000000;
+            --bg-card: #111111;
+            --bg-input: #0a0a0a;
+            --border: rgba(255,255,255,0.06);
+            --border-hover: rgba(212,160,23,0.2);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255,255,255,0.6);
+            --text-muted: rgba(255,255,255,0.3);
+            --text-label: rgba(255,255,255,0.5);
+            --accent: #d4a017;
+            --accent-light: #f5d060;
+            --accent-gradient: linear-gradient(135deg, #d4a017, #f5d060);
+            --error: #ef4444;
+            --success: #22c55e;
+            --radius: 16px;
+            --radius-input: 10px;
         }
+
         [data-theme="light"] {
-            --bg-primary: #f5f5fa;
-            --bg-secondary: #ffffff;
-            --bg-card: rgba(255,255,255,0.9);
-            --text-primary: #1a1a2e;
-            --text-secondary: #4a4a6a;
-            --text-muted: #8888a0;
-            --border-color: rgba(212, 160, 23, 0.25);
-            --glass-bg: rgba(255,255,255,0.8);
-            --glass-border: rgba(212, 160, 23, 0.2);
+            --bg-primary: #fafafa;
+            --bg-card: #ffffff;
+            --bg-input: #f5f5f5;
+            --border: rgba(0,0,0,0.08);
+            --border-hover: rgba(212,160,23,0.4);
+            --text-primary: #111111;
+            --text-secondary: rgba(0,0,0,0.6);
+            --text-muted: rgba(0,0,0,0.3);
+            --text-label: rgba(0,0,0,0.5);
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
-            position: relative;
-            transition: background 0.3s ease, color 0.3s ease;
+            transition: background 0.4s ease, color 0.4s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--gold-primary), var(--gold-light)); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--gold-light); }
 
-
-        /* Animated Background */
-        .bg-animated { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
-        .bg-animated::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(ellipse at 20% 50%, rgba(212,160,23,0.03) 0%, transparent 50%),
-                        radial-gradient(ellipse at 80% 20%, rgba(74,144,255,0.02) 0%, transparent 50%),
-                        radial-gradient(ellipse at 50% 80%, rgba(212,160,23,0.02) 0%, transparent 50%);
-            animation: bgShift 20s ease-in-out infinite;
+        /* Subtle Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 0% 0%, rgba(212,160,23,0.03) 0%, transparent 50%),
+                        radial-gradient(ellipse at 100% 100%, rgba(212,160,23,0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
-        @keyframes bgShift { 0%,100%{transform:translate(0,0) rotate(0deg)} 33%{transform:translate(-2%,1%) rotate(1deg)} 66%{transform:translate(1%,-1%) rotate(-0.5deg)} }
-        .floating-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: floatOrb 15s ease-in-out infinite; }
-        .floating-orb:nth-child(1) { width: 300px; height: 300px; top: 10%; left: 10%; background: rgba(212,160,23,0.08); animation-duration: 18s; }
-        .floating-orb:nth-child(2) { width: 200px; height: 200px; top: 60%; right: 10%; background: rgba(74,144,255,0.06); animation-delay: -5s; animation-duration: 22s; }
-        .floating-orb:nth-child(3) { width: 250px; height: 250px; bottom: 10%; left: 40%; background: rgba(212,160,23,0.05); animation-delay: -10s; animation-duration: 20s; }
-        @keyframes floatOrb { 0%,100%{transform:translate(0,0) scale(1)} 25%{transform:translate(30px,-20px) scale(1.05)} 50%{transform:translate(-20px,30px) scale(0.95)} 75%{transform:translate(20px,20px) scale(1.02)} }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
 
         /* Navbar */
-        .navbar-custom {
-            background: rgba(10,10,18,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border); padding: 0.8rem 0;
-            transition: all 0.3s ease; position: sticky; top: 0; z-index: 1000;
+        .navbar-main {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.3s ease;
         }
-        [data-theme="light"] .navbar-custom { background: rgba(255,255,255,0.9); }
-        .navbar-custom.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.3), 0 0 20px rgba(212,160,23,0.05); }
-        .logo-box {
-            width: 40px; height: 40px; border-radius: 10px; background: var(--gold-gradient);
+        [data-theme="light"] .navbar-main {
+            background: rgba(255,255,255,0.85);
+        }
+        .navbar-inner {
+            max-width: 720px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.3px;
+        }
+        .logo span { color: var(--accent); }
+        .nav-actions { display: flex; align-items: center; gap: 8px; }
+        .theme-toggle {
+            width: 36px; height: 36px;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1rem; color: #0a0a12;
-            position: relative; overflow: hidden;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
         }
-        .logo-box::after {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
-            animation: logoShine 3s ease-in-out infinite;
+        .theme-toggle:hover {
+            border-color: var(--border-hover);
+            color: var(--accent);
         }
-        @keyframes logoShine { 0%,100%{transform:translateX(-100%) rotate(45deg)} 50%{transform:translateX(100%) rotate(45deg)} }
-        .brand-text { font-family:'Space Grotesk',sans-serif; font-size:1.3rem; font-weight:700; color:var(--text-primary); margin-left:10px; }
-        .brand-text .gold { color: var(--gold-primary); }
-        .brand-tagline { font-size:0.65rem; color:var(--text-muted); letter-spacing:2px; text-transform:uppercase; margin-left:10px; margin-top:-2px; }
-        .system-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.2); border-radius:20px; padding:4px 12px; font-size:0.7rem; color:#00e5ff; font-weight:500; }
-        .system-badge .pulse-dot { width:6px; height:6px; border-radius:50%; background:#00e5ff; animation:pulse 2s ease-in-out infinite; }
-        @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,229,255,0.4)} 50%{opacity:0.7;box-shadow:0 0 0 6px rgba(0,229,255,0)} }
-        .theme-toggle { background:none; border:1px solid var(--glass-border); border-radius:8px; padding:6px 10px; color:var(--text-secondary); cursor:pointer; transition:all 0.3s ease; }
-        .theme-toggle:hover { border-color:var(--gold-primary); color:var(--gold-primary); }
 
 
         /* Hero */
-        .hero-section { text-align:center; padding:3rem 1rem 2rem; position:relative; z-index:1; }
-        .hero-section h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.5rem,4vw,2.5rem); font-weight:700; margin-bottom:0.5rem; background:linear-gradient(135deg,var(--text-primary),var(--gold-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-        .hero-section p { color:var(--text-secondary); font-size:clamp(0.85rem,2vw,1rem); max-width:500px; margin:0 auto; }
-
-        /* Glass Card */
-        .glass-card {
-            background:var(--glass-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-            border:1px solid var(--glass-border); border-radius:var(--radius-lg); padding:2rem;
-            box-shadow:0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02);
-            position:relative; z-index:1; opacity:0; transform:translateY(30px); transition:all 0.6s ease;
+        .hero {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 80px 24px 60px;
+            text-align: left;
+            position: relative;
+            z-index: 1;
         }
-        .glass-card.visible { opacity:1; transform:translateY(0); }
-        .section-header { display:flex; align-items:center; gap:10px; margin-bottom:1.5rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-color); }
-        .section-header .icon-circle { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.85rem; }
-        .section-header h3 { font-family:'Space Grotesk',sans-serif; font-size:1.1rem; font-weight:600; margin:0; }
-        .icon-blue { background:rgba(74,144,255,0.1); color:var(--blue); }
-        .icon-cyan { background:rgba(0,229,255,0.1); color:var(--cyan); }
-        .icon-gold { background:rgba(212,160,23,0.1); color:var(--gold-primary); }
-        .icon-red { background:rgba(255,64,87,0.1); color:var(--red); }
-        .icon-green { background:rgba(0,230,118,0.1); color:var(--green); }
-        .icon-purple { background:rgba(156,39,176,0.1); color:#ce93d8; }
+        .hero h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+        .hero p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 480px;
+        }
+
+        /* Progress Bar */
+        .progress-wrap {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 24px 32px;
+            position: relative;
+            z-index: 1;
+        }
+        .progress-bar-custom {
+            height: 3px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: 2px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+        }
+        .progress-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+
+        /* Main Container */
+        .main-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Cards */
+        .card-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: border-color 0.3s ease;
+            opacity: 0;
+            transform: translateY(16px);
+            animation: cardIn 0.5s ease forwards;
+        }
+        .card-section:hover {
+            border-color: var(--border-hover);
+        }
+        @keyframes cardIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-section:nth-child(1) { animation-delay: 0.05s; }
+        .card-section:nth-child(2) { animation-delay: 0.1s; }
+        .card-section:nth-child(3) { animation-delay: 0.15s; }
+        .card-section:nth-child(4) { animation-delay: 0.2s; }
+        .card-section:nth-child(5) { animation-delay: 0.25s; }
+        .card-section:nth-child(6) { animation-delay: 0.3s; }
+        .card-section:nth-child(7) { animation-delay: 0.35s; }
+        .card-section:nth-child(8) { animation-delay: 0.4s; }
+
+        /* Section Headers */
+        .section-title {
+            margin-bottom: 24px;
+        }
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--accent);
+            margin-bottom: 12px;
+            border-radius: 1px;
+        }
+        .section-title h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
 
         /* Form Controls */
-        .form-label-custom { font-size:0.8rem; font-weight:500; color:var(--text-secondary); margin-bottom:0.4rem; letter-spacing:0.3px; display:block; }
-        .form-label-custom .required { color:var(--red); margin-left:2px; }
-        .form-control-custom {
-            background:rgba(10,10,18,0.8); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm);
-            color:var(--text-primary); padding:0.7rem 1rem; font-size:0.9rem; width:100%;
-            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+        .field-group { margin-bottom: 20px; }
+        .field-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-label);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
         }
-        [data-theme="light"] .form-control-custom { background:rgba(245,245,250,0.9); border-color:rgba(0,0,0,0.1); color:#1a1a2e; }
-        .form-control-custom:focus { background:rgba(10,10,18,0.95); border-color:var(--gold-primary); box-shadow:0 0 0 3px rgba(212,160,23,0.1),0 0 20px rgba(212,160,23,0.05); color:var(--text-primary); outline:none; }
-        [data-theme="light"] .form-control-custom:focus { background:#fff; }
-        .form-control-custom::placeholder { color:var(--text-muted); }
-        .form-control-custom:read-only { background:rgba(10,10,18,0.5); border-color:rgba(255,255,255,0.03); color:var(--text-muted); }
-        textarea.form-control-custom { min-height:100px; resize:vertical; }
-        select.form-control-custom { cursor:pointer; }
-        .field-group { margin-bottom:1.2rem; }
-        .error-message { font-size:0.72rem; color:var(--red); margin-top:0.3rem; display:none; animation:errorIn 0.3s ease; }
-        .error-message.show { display:block; }
-        @keyframes errorIn { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:translateY(0)} }
-        .char-counter { font-size:0.7rem; color:var(--text-muted); text-align:right; margin-top:0.3rem; }
-        .char-counter.over-limit { color:var(--red); font-weight:600; }
+        .field-label .req { color: var(--error); margin-left: 2px; }
+        .field-label .opt { color: var(--text-muted); text-transform: none; letter-spacing: 0; font-weight: 400; }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--radius-input);
+            padding: 14px 16px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        [data-theme="light"] .form-input {
+            border-color: rgba(0,0,0,0.1);
+        }
+        .form-input::placeholder { color: var(--text-muted); }
+        .form-input:focus {
+            border-color: rgba(212,160,23,0.5);
+            box-shadow: 0 0 0 3px rgba(212,160,23,0.08);
+        }
+        .form-input:read-only {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        textarea.form-input {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        select.form-input {
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.3)' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        .error-msg {
+            font-size: 12px;
+            color: var(--error);
+            margin-top: 6px;
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+        .error-msg.show { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .char-counter {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 6px;
+        }
+        .char-counter.over { color: var(--error); }
+
+        .row-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 600px) {
+            .row-fields { grid-template-columns: 1fr; }
+        }
 
 
         /* Range Slider */
-        .range-slider { -webkit-appearance:none; width:100%; height:6px; border-radius:3px; background:rgba(255,255,255,0.1); outline:none; cursor:pointer; }
-        .range-slider::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--gold-gradient); box-shadow:0 0 10px rgba(212,160,23,0.3); cursor:pointer; }
-        .range-slider::-moz-range-thumb { width:20px; height:20px; border-radius:50%; background:var(--gold-primary); border:none; cursor:pointer; }
-        .range-value { font-family:'Space Grotesk',sans-serif; font-size:1.5rem; font-weight:700; color:var(--gold-primary); }
-
-        /* Progress Bar */
-        .progress-custom { height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden; }
-        .progress-custom .progress-bar-custom { height:100%; background:var(--gold-gradient); border-radius:4px; transition:width 0.5s ease; }
+        .range-wrap {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .range-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.08);
+            outline: none;
+            cursor: pointer;
+        }
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(212,160,23,0.3);
+        }
+        .range-slider::-moz-range-thumb {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: none;
+            cursor: pointer;
+        }
+        .range-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 48px;
+            text-align: right;
+        }
 
         /* Buttons */
-        .btn-submit {
-            background:var(--gold-gradient); border:none; border-radius:var(--radius-sm);
-            color:#0a0a12; font-weight:700; font-size:1rem; padding:0.85rem 2.5rem;
-            position:relative; overflow:hidden; transition:all 0.3s ease; letter-spacing:0.5px;
+        .btn-primary-gold {
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: var(--radius-input);
+            color: #000000;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 16px 48px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.2px;
         }
-        .btn-submit::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent); transition:left 0.6s ease; }
-        .btn-submit:hover::before { left:100%; }
-        .btn-submit:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(212,160,23,0.3); color:#0a0a12; }
-        .btn-submit:active { transform:translateY(0); }
-        .btn-submit:disabled { opacity:0.7; cursor:not-allowed; transform:none !important; }
-        .btn-glass { background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); border-radius:var(--radius-sm); color:var(--text-secondary); padding:0.6rem 1.2rem; font-size:0.85rem; transition:all 0.3s ease; cursor:pointer; }
-        .btn-glass:hover { border-color:var(--gold-primary); color:var(--gold-primary); background:rgba(212,160,23,0.05); }
-        .btn-danger-glass { background:rgba(255,64,87,0.05); border:1px solid rgba(255,64,87,0.2); color:var(--red); }
-        .btn-danger-glass:hover { background:rgba(255,64,87,0.1); border-color:var(--red); color:var(--red); }
-        .security-note { display:flex; align-items:center; gap:8px; font-size:0.72rem; color:var(--text-muted); margin-top:1rem; }
-        .security-note i { color:var(--gold-primary); }
+        .btn-primary-gold:hover {
+            filter: brightness(1.1);
+            color: #000000;
+        }
+        .btn-primary-gold:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-input);
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 13px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            border-color: var(--border-hover);
+            color: var(--accent);
+        }
+        .btn-danger {
+            background: transparent;
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: var(--radius-input);
+            color: var(--error);
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 13px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-danger:hover {
+            border-color: var(--error);
+            background: rgba(239,68,68,0.05);
+        }
+
+        .actions-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 32px;
+        }
+        .actions-bar .spacer { flex: 1; }
+
 
         /* Toast */
-        .toast-container { position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; }
-        .toast-custom {
-            background:rgba(15,15,26,0.95); backdrop-filter:blur(20px); border:1px solid var(--glass-border);
-            border-radius:var(--radius-md); padding:1rem 1.5rem; min-width:300px; max-width:400px;
-            display:flex; align-items:center; gap:12px; transform:translateX(120%);
-            transition:transform 0.4s cubic-bezier(0.4,0,0.2,1); box-shadow:0 10px 40px rgba(0,0,0,0.5);
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
-        [data-theme="light"] .toast-custom { background:rgba(255,255,255,0.95); }
-        .toast-custom.show { transform:translateX(0); }
-        .toast-custom.success { border-left:3px solid var(--green); }
-        .toast-custom.error { border-left:3px solid var(--red); }
-        .toast-custom.info { border-left:3px solid var(--blue); }
-        .toast-custom .toast-icon { font-size:1.2rem; }
-        .toast-custom.success .toast-icon { color:var(--green); }
-        .toast-custom.error .toast-icon { color:var(--red); }
-        .toast-custom.info .toast-icon { color:var(--blue); }
-        .toast-custom .toast-msg { font-size:0.85rem; color:var(--text-primary); }
+        .toast-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-primary);
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 280px;
+            backdrop-filter: blur(12px);
+        }
+        .toast-item.show { transform: translateY(0); opacity: 1; }
+        .toast-item.success { border-left: 3px solid var(--success); }
+        .toast-item.error { border-left: 3px solid var(--error); }
+        .toast-item.info { border-left: 3px solid var(--accent); }
+        .toast-icon { font-size: 14px; }
+        .toast-item.success .toast-icon { color: var(--success); }
+        .toast-item.error .toast-icon { color: var(--error); }
+        .toast-item.info .toast-icon { color: var(--accent); }
 
         /* Scroll to Top */
-        .scroll-top-btn { position:fixed; bottom:30px; right:30px; width:44px; height:44px; border-radius:50%; background:var(--gold-gradient); border:none; color:#0a0a12; font-size:1.1rem; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; visibility:hidden; transform:translateY(20px); transition:all 0.3s ease; z-index:999; box-shadow:0 4px 15px rgba(212,160,23,0.3); }
-        .scroll-top-btn.visible { opacity:1; visibility:visible; transform:translateY(0); }
-        .scroll-top-btn:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(212,160,23,0.4); }
+        .scroll-top {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(8px);
+            transition: all 0.3s ease;
+            z-index: 999;
+            font-size: 14px;
+        }
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .scroll-top:hover {
+            border-color: var(--border-hover);
+            color: var(--accent);
+        }
 
         /* Draft Indicator */
-        .draft-indicator { position:fixed; bottom:20px; left:20px; background:rgba(15,15,26,0.9); border:1px solid var(--glass-border); border-radius:20px; padding:6px 14px; font-size:0.7rem; color:var(--green); opacity:0; transition:opacity 0.3s ease; z-index:999; }
-        .draft-indicator.show { opacity:1; }
+        .draft-ind {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 11px;
+            color: var(--success);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+        }
+        .draft-ind.show { opacity: 1; }
 
-        /* Footer */
-        .footer-section { text-align:center; padding:2.5rem 1rem; border-top:1px solid var(--border-color); margin-top:3rem; position:relative; z-index:1; }
-        .footer-section .footer-brand { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1rem; color:var(--text-secondary); margin-bottom:0.3rem; }
-        .footer-section .footer-brand .gold { color:var(--gold-primary); }
-        .footer-section .footer-copy { font-size:0.72rem; color:var(--text-muted); }
 
         /* Modal */
-        .modal-custom .modal-content { background:var(--bg-secondary); border:1px solid var(--glass-border); border-radius:var(--radius-lg); color:var(--text-primary); }
-        .modal-custom .modal-header { border-bottom:1px solid var(--border-color); }
-        .modal-custom .modal-footer { border-top:1px solid var(--border-color); }
-        .modal-custom .btn-close { filter:invert(1); }
-        [data-theme="light"] .modal-custom .btn-close { filter:none; }
-        .preview-section { margin-bottom:1rem; padding:1rem; background:rgba(255,255,255,0.03); border-radius:var(--radius-sm); border-left:3px solid var(--gold-primary); }
-        .preview-section h6 { color:var(--gold-primary); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem; }
-        .preview-section p { color:var(--text-secondary); font-size:0.85rem; margin:0; white-space:pre-wrap; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 32px;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .modal-header h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .modal-close {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .modal-close:hover { border-color: var(--error); color: var(--error); }
+        .preview-block {
+            margin-bottom: 16px;
+            padding: 16px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 10px;
+            border-left: 2px solid var(--accent);
+        }
+        [data-theme="light"] .preview-block {
+            background: rgba(0,0,0,0.02);
+        }
+        .preview-block h6 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .preview-block p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 48px 24px;
+            position: relative;
+            z-index: 1;
+        }
+        .footer p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
 
         /* Responsive */
-        @media(max-width:768px) {
-            .glass-card { padding:1.5rem; }
-            .hero-section { padding:2rem 1rem 1.5rem; }
-            .brand-tagline { display:none; }
-            .toast-custom { min-width:unset; max-width:90vw; }
-            .toast-container { right:10px; left:10px; }
+        @media (max-width: 768px) {
+            .hero { padding: 60px 20px 40px; }
+            .hero h1 { font-size: 36px; }
+            .card-section { padding: 24px; }
+            .main-container { padding: 0 16px 60px; }
+            .progress-wrap { padding: 0 16px 24px; }
+            .navbar-inner { padding: 0 16px; }
+            .actions-bar { flex-direction: column; align-items: stretch; }
+            .actions-bar .spacer { display: none; }
+            .btn-primary-gold { width: 100%; text-align: center; }
         }
-        @media(max-width:576px) {
-            .glass-card { padding:1.2rem; border-radius:var(--radius-md); }
-            .section-header h3 { font-size:0.95rem; }
-            .btn-submit { width:100%; padding:0.8rem; }
-            .system-badge { font-size:0.6rem; padding:3px 8px; }
-            .scroll-top-btn { bottom:20px; right:20px; width:38px; height:38px; }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 28px; }
+            .card-section { padding: 20px; border-radius: 12px; }
+            .row-fields { grid-template-columns: 1fr; }
+            .modal-box { padding: 24px; margin: 16px; }
         }
-        @media(max-width:320px) { .hero-section h1 { font-size:1.3rem; } .glass-card { padding:1rem; } }
     </style>
 </head>
 <body>
-
-
-    <!-- Animated Background -->
-    <div class="bg-animated">
-        <div class="floating-orb"></div>
-        <div class="floating-orb"></div>
-        <div class="floating-orb"></div>
-    </div>
-
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Draft Indicator -->
-    <div class="draft-indicator" id="draftIndicator"><i class="fa-solid fa-floppy-disk me-1"></i>Draft saved</div>
+    <div class="draft-ind" id="draftIndicator"><i class="fa-solid fa-check" style="margin-right:6px"></i>Draft saved</div>
 
     <!-- Scroll to Top -->
-    <button class="scroll-top-btn" id="scrollTopBtn" title="Scroll to top"><i class="fa-solid fa-chevron-up"></i></button>
+    <button class="scroll-top" id="scrollTopBtn"><i class="fa-solid fa-arrow-up"></i></button>
 
     <!-- Navbar -->
-    <nav class="navbar-custom" id="mainNavbar">
-        <div class="container">
-            <div class="d-flex align-items-center justify-content-between w-100">
-                <div class="d-flex align-items-center">
-                    <div class="logo-box">CO</div>
-                    <div>
-                        <div class="brand-text">Code<span class="gold">Origin</span>.ai</div>
-                        <div class="brand-tagline">AI-Powered Solutions</div>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
-                        <i class="fa-solid fa-moon" id="themeIcon"></i>
-                    </button>
-                    <div class="system-badge">
-                        <div class="pulse-dot"></div>
-                        System Active
-                    </div>
-                </div>
+    <nav class="navbar-main">
+        <div class="navbar-inner">
+            <a class="logo" href="#">Code<span>Origin</span>.ai</a>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <h1><i class="fa-solid fa-chart-line me-2"></i>Employee Daily Status &amp; Sprint Tracker</h1>
-        <p>Submit your daily progress report securely. Track sprints, flag blockers, and keep your team aligned.</p>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>Daily Status Report</h1>
+        <p>Submit your daily progress, track blockers, and keep your team aligned.</p>
     </section>
 
+    <!-- Progress -->
+    <div class="progress-wrap">
+        <div class="progress-bar-custom">
+            <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+        <div class="progress-text"><span id="progressText">0</span>% complete</div>
+    </div>
+
     <!-- Main Form -->
-    <main class="container pb-4" style="max-width:820px;">
+    <main class="main-container">
         <form id="statusForm" novalidate>
 
-
-            <!-- Card 1: Employee Details -->
-            <div class="glass-card mb-4">
-                <div class="section-header">
-                    <div class="icon-circle icon-blue"><i class="fa-solid fa-user-tie"></i></div>
-                    <h3>Employee Details</h3>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Employee Name <span class="required">*</span></label>
-                        <input type="text" class="form-control-custom" id="employeeName" placeholder="Enter your full name" required>
-                        <div class="error-message" id="errName">Please enter your full name</div>
+            <!-- Employee Details -->
+            <div class="card-section">
+                <div class="section-title"><h3>Employee Details</h3></div>
+                <div class="row-fields">
+                    <div class="field-group">
+                        <label class="field-label">Employee Name <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="employeeName" placeholder="Your full name" required>
+                        <div class="error-msg" id="errName">Please enter your full name</div>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Employee Email <span class="required">*</span></label>
-                        <input type="email" class="form-control-custom" id="employeeEmail" placeholder="you@codeorigin.ai" required>
-                        <div class="error-message" id="errEmail">Please enter a valid email address</div>
+                    <div class="field-group">
+                        <label class="field-label">Employee Email <span class="req">*</span></label>
+                        <input type="email" class="form-input" id="employeeEmail" placeholder="you@codeorigin.ai" required>
+                        <div class="error-msg" id="errEmail">Please enter a valid email</div>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Employee ID <span class="required">*</span></label>
-                        <input type="text" class="form-control-custom" id="employeeId" placeholder="EMP-001" required>
-                        <div class="error-message" id="errEmpId">Please enter your Employee ID</div>
+                    <div class="field-group">
+                        <label class="field-label">Employee ID <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="employeeId" placeholder="EMP-001" required>
+                        <div class="error-msg" id="errEmpId">Please enter your Employee ID</div>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Department <span class="required">*</span></label>
-                        <select class="form-control-custom" id="department" required>
+                    <div class="field-group">
+                        <label class="field-label">Department <span class="req">*</span></label>
+                        <select class="form-input" id="department" required>
                             <option value="">Select Department</option>
                             <option value="Engineering">Engineering</option>
                             <option value="Design">Design</option>
@@ -331,924 +698,680 @@
                             <option value="Operations">Operations</option>
                             <option value="QA">QA</option>
                         </select>
-                        <div class="error-message" id="errDept">Please select a department</div>
+                        <div class="error-msg" id="errDept">Please select a department</div>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Designation <span class="required">*</span></label>
-                        <input type="text" class="form-control-custom" id="designation" placeholder="e.g. Senior Software Engineer" required>
-                        <div class="error-message" id="errDesig">Please enter your designation</div>
+
+                    <div class="field-group">
+                        <label class="field-label">Designation <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="designation" placeholder="e.g. Senior Software Engineer" required>
+                        <div class="error-msg" id="errDesig">Please enter your designation</div>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Direct Manager Email <span class="required">*</span></label>
-                        <input type="email" class="form-control-custom" id="managerEmail" placeholder="manager@codeorigin.ai" required>
-                        <div class="error-message" id="errManager">Please enter manager's valid email</div>
+                    <div class="field-group">
+                        <label class="field-label">Direct Manager Email <span class="req">*</span></label>
+                        <input type="email" class="form-input" id="managerEmail" placeholder="manager@codeorigin.ai" required>
+                        <div class="error-msg" id="errManager">Please enter manager's email</div>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">HR Email <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
-                        <input type="email" class="form-control-custom" id="hrEmail" placeholder="hr@codeorigin.ai" value="hr@codeorigin.ai">
+                    <div class="field-group">
+                        <label class="field-label">HR Email <span class="opt">(Optional)</span></label>
+                        <input type="email" class="form-input" id="hrEmail" placeholder="hr@codeorigin.ai" value="hr@codeorigin.ai">
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Team Lead Email <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
-                        <input type="email" class="form-control-custom" id="teamLeadEmail" placeholder="teamlead@codeorigin.ai">
+                    <div class="field-group">
+                        <label class="field-label">Team Lead Email <span class="opt">(Optional)</span></label>
+                        <input type="email" class="form-input" id="teamLeadEmail" placeholder="teamlead@codeorigin.ai">
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Date</label>
-                        <input type="text" class="form-control-custom" id="reportDate" readonly>
+                    <div class="field-group">
+                        <label class="field-label">Date</label>
+                        <input type="text" class="form-input" id="reportDate" readonly>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Login Time <span class="required">*</span></label>
-                        <input type="time" class="form-control-custom" id="loginTime" required>
-                        <div class="error-message" id="errLogin">Please enter your login time</div>
+                    <div class="field-group">
+                        <label class="field-label">Login Time <span class="req">*</span></label>
+                        <input type="time" class="form-input" id="loginTime" required>
+                        <div class="error-msg" id="errLogin">Please enter login time</div>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Logout Time <span class="required">*</span></label>
-                        <input type="time" class="form-control-custom" id="logoutTime" required>
-                        <div class="error-message" id="errLogout">Please enter your logout time</div>
+                    <div class="field-group">
+                        <label class="field-label">Logout Time <span class="req">*</span></label>
+                        <input type="time" class="form-input" id="logoutTime" required>
+                        <div class="error-msg" id="errLogout">Please enter logout time</div>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Total Working Hours</label>
-                        <input type="text" class="form-control-custom" id="totalHours" readonly placeholder="Auto-calculated">
+                    <div class="field-group">
+                        <label class="field-label">Total Working Hours</label>
+                        <input type="text" class="form-input" id="totalHours" readonly placeholder="Auto-calculated">
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Project Name <span class="required">*</span></label>
-                        <input type="text" class="form-control-custom" id="projectName" placeholder="e.g. Phoenix-v2" required>
-                        <div class="error-message" id="errProject">Please enter project name</div>
+                    <div class="field-group">
+                        <label class="field-label">Project Name <span class="req">*</span></label>
+                        <input type="text" class="form-input" id="projectName" placeholder="e.g. Phoenix-v2" required>
+                        <div class="error-msg" id="errProject">Please enter project name</div>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Sprint ID <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
-                        <input type="text" class="form-control-custom" id="sprintId" placeholder="SPR-042">
+                    <div class="field-group">
+                        <label class="field-label">Sprint ID <span class="opt">(Optional)</span></label>
+                        <input type="text" class="form-input" id="sprintId" placeholder="SPR-042">
                     </div>
                 </div>
             </div>
 
 
-            <!-- Card 2: Assigned Work Today -->
-            <div class="glass-card mb-4">
-                <div class="section-header">
-                    <div class="icon-circle icon-blue"><i class="fa-solid fa-list-check"></i></div>
-                    <h3>Assigned Work Today</h3>
-                </div>
+            <!-- Assigned Work -->
+            <div class="card-section">
+                <div class="section-title"><h3>Assigned Work Today</h3></div>
                 <div class="field-group">
-                    <label class="form-label-custom">Tasks assigned to you today <span class="required">*</span></label>
-                    <textarea class="form-control-custom" id="assignedWork" maxlength="2000" placeholder="- Task 1: Implement user authentication module&#10;- Task 2: Review PR #234 for API changes&#10;- Task 3: Fix pagination bug on dashboard" required></textarea>
-                    <div class="d-flex justify-content-between">
-                        <div class="error-message" id="errAssigned">Please describe your assigned work</div>
-                        <div class="char-counter" id="counterAssigned">0/2000</div>
+                    <label class="field-label">Tasks assigned to you today <span class="req">*</span></label>
+                    <textarea class="form-input" id="assignedWork" maxlength="2000" placeholder="- Task 1: Implement user authentication module&#10;- Task 2: Review PR #234&#10;- Task 3: Fix pagination bug" required></textarea>
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div class="error-msg" id="errAssigned">Please describe assigned work</div>
+                        <div class="char-counter" id="counterAssigned">0 / 2000</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 3: Completed Work & Hours -->
-            <div class="glass-card mb-4">
-                <div class="section-header">
-                    <div class="icon-circle icon-cyan"><i class="fa-solid fa-circle-check"></i></div>
-                    <h3>Completed Work &amp; Hours</h3>
-                </div>
+            <!-- Completed Work -->
+            <div class="card-section">
+                <div class="section-title"><h3>Completed Work &amp; Hours</h3></div>
                 <div class="field-group">
-                    <label class="form-label-custom">What did you complete? Include hours per task <span class="required">*</span></label>
-                    <textarea class="form-control-custom" id="completedWork" maxlength="2000" placeholder="- Auth module: 3 hrs (completed &amp; deployed)&#10;- PR #234 review: 1 hr (approved with comments)&#10;- Bug fix: 2 hrs (in testing phase)" required></textarea>
-                    <div class="d-flex justify-content-between">
-                        <div class="error-message" id="errCompleted">Please describe completed work</div>
-                        <div class="char-counter" id="counterCompleted">0/2000</div>
+                    <label class="field-label">What did you complete? Include hours per task <span class="req">*</span></label>
+                    <textarea class="form-input" id="completedWork" maxlength="2000" placeholder="- Auth module: 3 hrs (completed & deployed)&#10;- PR #234 review: 1 hr (approved)&#10;- Bug fix: 2 hrs (in testing)" required></textarea>
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div class="error-msg" id="errCompleted">Please describe completed work</div>
+                        <div class="char-counter" id="counterCompleted">0 / 2000</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 4: Pending Work / Carryover -->
-            <div class="glass-card mb-4">
-                <div class="section-header">
-                    <div class="icon-circle icon-gold"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <h3>Pending Work / Carryover</h3>
-                </div>
+            <!-- Pending Work -->
+            <div class="card-section">
+                <div class="section-title"><h3>Pending Work / Carryover</h3></div>
                 <div class="field-group">
-                    <label class="form-label-custom">Tasks not completed / carried over <span class="required">*</span></label>
-                    <textarea class="form-control-custom" id="pendingWork" maxlength="2000" placeholder="- Pagination fix: needs QA sign-off (ETA tomorrow)&#10;- Documentation update: 40% done, will continue&#10;- Unit tests for auth: blocked on API specs" required></textarea>
-                    <div class="d-flex justify-content-between">
-                        <div class="error-message" id="errPending">Please describe pending tasks</div>
-                        <div class="char-counter" id="counterPending">0/2000</div>
+                    <label class="field-label">Tasks not completed / carried over <span class="req">*</span></label>
+                    <textarea class="form-input" id="pendingWork" maxlength="2000" placeholder="- Pagination fix: needs QA sign-off&#10;- Documentation: 40% done&#10;- Unit tests: blocked on API specs" required></textarea>
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div class="error-msg" id="errPending">Please describe pending tasks</div>
+                        <div class="char-counter" id="counterPending">0 / 2000</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 5: Blockers / Issues -->
-            <div class="glass-card mb-4">
-                <div class="section-header">
-                    <div class="icon-circle icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <h3>Blockers / Issues</h3>
-                </div>
+            <!-- Blockers -->
+            <div class="card-section">
+                <div class="section-title"><h3>Blockers / Issues</h3></div>
                 <div class="field-group">
-                    <label class="form-label-custom">Any blockers or challenges? <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
-                    <textarea class="form-control-custom" id="blockers" maxlength="2000" placeholder="- Waiting on API credentials from DevOps team&#10;- Build failing on staging due to env config&#10;- Or type 'None' if no blockers"></textarea>
-                    <div class="char-counter" id="counterBlockers">0/2000</div>
-                </div>
-            </div>
-
-            <!-- Card 6: Tomorrow's Plan -->
-            <div class="glass-card mb-4">
-                <div class="section-header">
-                    <div class="icon-circle icon-green"><i class="fa-solid fa-forward"></i></div>
-                    <h3>Tomorrow's Plan</h3>
-                </div>
-                <div class="field-group">
-                    <label class="form-label-custom">Planned tasks for tomorrow <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
-                    <textarea class="form-control-custom" id="tomorrowPlan" maxlength="2000" placeholder="- Continue auth module testing&#10;- Start API integration for payments&#10;- Team standup at 10 AM"></textarea>
-                    <div class="char-counter" id="counterTomorrow">0/2000</div>
-                </div>
-            </div>
-
-            <!-- Card 7: Additional Notes -->
-            <div class="glass-card mb-4">
-                <div class="section-header">
-                    <div class="icon-circle icon-purple"><i class="fa-solid fa-note-sticky"></i></div>
-                    <h3>Additional Notes</h3>
-                </div>
-                <div class="field-group">
-                    <label class="form-label-custom">Any other information <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
-                    <textarea class="form-control-custom" id="additionalNotes" maxlength="2000" placeholder="Any additional context, learnings, suggestions, or notes for your manager..."></textarea>
-                    <div class="char-counter" id="counterNotes">0/2000</div>
+                    <label class="field-label">Any blockers or challenges? <span class="opt">(Optional)</span></label>
+                    <textarea class="form-input" id="blockers" maxlength="1000" placeholder="- Waiting on API documentation from backend team&#10;- CI/CD pipeline failing intermittently"></textarea>
+                    <div class="char-counter" id="counterBlockers">0 / 1000</div>
                 </div>
             </div>
 
 
-            <!-- Card 8: Priority & Status -->
-            <div class="glass-card mb-4">
-                <div class="section-header">
-                    <div class="icon-circle icon-gold"><i class="fa-solid fa-gauge-high"></i></div>
-                    <h3>Priority &amp; Status</h3>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Task Priority</label>
-                        <select class="form-control-custom" id="taskPriority">
+            <!-- Priority & Status -->
+            <div class="card-section">
+                <div class="section-title"><h3>Priority &amp; Status</h3></div>
+                <div class="row-fields">
+                    <div class="field-group">
+                        <label class="field-label">Priority Level <span class="req">*</span></label>
+                        <select class="form-input" id="priority" required>
+                            <option value="">Select Priority</option>
+                            <option value="Critical">Critical</option>
+                            <option value="High">High</option>
                             <option value="Medium">Medium</option>
                             <option value="Low">Low</option>
-                            <option value="High">High</option>
-                            <option value="Critical">Critical</option>
                         </select>
+                        <div class="error-msg" id="errPriority">Please select priority</div>
                     </div>
-                    <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Overall Status</label>
-                        <select class="form-control-custom" id="overallStatus">
+                    <div class="field-group">
+                        <label class="field-label">Task Status <span class="req">*</span></label>
+                        <select class="form-input" id="taskStatus" required>
+                            <option value="">Select Status</option>
                             <option value="On Track">On Track</option>
                             <option value="At Risk">At Risk</option>
                             <option value="Blocked">Blocked</option>
                             <option value="Completed">Completed</option>
                         </select>
+                        <div class="error-msg" id="errStatus">Please select status</div>
                     </div>
-                    <div class="col-12 field-group">
-                        <label class="form-label-custom">Completion Percentage</label>
-                        <div class="d-flex align-items-center gap-3">
-                            <input type="range" class="range-slider flex-grow-1" id="completionRange" min="0" max="100" value="50">
-                            <span class="range-value" id="rangeValue">50%</span>
-                        </div>
+                </div>
+                <div class="field-group" style="margin-top:8px">
+                    <label class="field-label">Overall Completion</label>
+                    <div class="range-wrap">
+                        <input type="range" class="range-slider" id="completionRange" min="0" max="100" value="50">
+                        <div class="range-value" id="rangeValue">50%</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 9: Submit Section -->
-            <div class="glass-card">
-                <div class="section-header">
-                    <div class="icon-circle icon-gold"><i class="fa-solid fa-paper-plane"></i></div>
-                    <h3>Submit Report</h3>
-                </div>
-                <!-- Progress indicator -->
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="form-label-custom mb-0">Form Completion</span>
-                        <span class="form-label-custom mb-0" id="progressText">0%</span>
-                    </div>
-                    <div class="progress-custom">
-                        <div class="progress-bar-custom" id="progressBar" style="width:0%"></div>
-                    </div>
-                </div>
-                <!-- Action buttons -->
-                <div class="d-flex flex-wrap gap-2 justify-content-center mb-3">
-                    <button type="button" class="btn-glass" id="previewBtn"><i class="fa-solid fa-eye me-1"></i>Preview Report</button>
-                    <button type="button" class="btn-glass" id="downloadPdfBtn"><i class="fa-solid fa-file-pdf me-1"></i>Download PDF</button>
-                    <button type="button" class="btn-glass" id="printBtn"><i class="fa-solid fa-print me-1"></i>Print</button>
-                    <button type="button" class="btn-glass" id="copyBtn"><i class="fa-solid fa-copy me-1"></i>Copy to Clipboard</button>
-                </div>
-                <div class="text-center">
-                    <button type="submit" class="btn btn-submit mb-2" id="submitBtn">
-                        <span id="btnText"><i class="fa-solid fa-paper-plane me-2"></i>Submit Daily Report</span>
-                        <span id="btnSpinner" style="display:none;"><span class="spinner-border spinner-border-sm me-2"></span>Sending...</span>
-                    </button>
-                    <br>
-                    <button type="button" class="btn-glass btn-danger-glass mt-2" id="clearBtn"><i class="fa-solid fa-trash-can me-1"></i>Clear Form</button>
-                </div>
-                <div class="security-note justify-content-center">
-                    <i class="fa-solid fa-lock"></i>
-                    <span>Your data is transmitted securely via encrypted channels. Reports are sent directly to your manager.</span>
+            <!-- Tomorrow's Plan -->
+            <div class="card-section">
+                <div class="section-title"><h3>Tomorrow's Plan</h3></div>
+                <div class="field-group">
+                    <label class="field-label">What will you work on tomorrow? <span class="opt">(Optional)</span></label>
+                    <textarea class="form-input" id="tomorrowPlan" maxlength="1000" placeholder="- Complete unit tests for auth module&#10;- Start API integration for dashboard&#10;- Team sync at 10 AM"></textarea>
+                    <div class="char-counter" id="counterTomorrow">0 / 1000</div>
                 </div>
             </div>
+
+            <!-- Additional Notes -->
+            <div class="card-section">
+                <div class="section-title"><h3>Additional Notes</h3></div>
+                <div class="field-group">
+                    <label class="field-label">Any other comments <span class="opt">(Optional)</span></label>
+                    <textarea class="form-input" id="additionalNotes" maxlength="1000" placeholder="Anything else to report..."></textarea>
+                    <div class="char-counter" id="counterNotes">0 / 1000</div>
+                </div>
+            </div>
+
+
+            <!-- Actions -->
+            <div class="card-section">
+                <div class="actions-bar">
+                    <button type="button" class="btn-secondary" id="previewBtn" title="Preview (Ctrl+P)">
+                        <i class="fa-solid fa-eye" style="margin-right:6px"></i>Preview
+                    </button>
+                    <button type="button" class="btn-secondary" id="copyBtn" title="Copy to clipboard">
+                        <i class="fa-solid fa-copy" style="margin-right:6px"></i>Copy
+                    </button>
+                    <button type="button" class="btn-secondary" id="pdfBtn" title="Download PDF">
+                        <i class="fa-solid fa-file-pdf" style="margin-right:6px"></i>PDF
+                    </button>
+                    <button type="button" class="btn-secondary" id="printBtn" title="Print">
+                        <i class="fa-solid fa-print" style="margin-right:6px"></i>Print
+                    </button>
+                    <button type="button" class="btn-danger" id="clearBtn" title="Clear form">
+                        <i class="fa-solid fa-trash" style="margin-right:6px"></i>Clear
+                    </button>
+                    <div class="spacer"></div>
+                    <button type="submit" class="btn-primary-gold" id="submitBtn">
+                        <i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>Submit Report
+                    </button>
+                </div>
+                <p style="font-size:11px;color:var(--text-muted);margin-top:16px">
+                    <i class="fa-solid fa-keyboard" style="margin-right:6px;color:var(--accent)"></i>
+                    Ctrl+S to save draft &bull; Ctrl+Enter to submit &bull; Ctrl+P to preview
+                </p>
+            </div>
+
         </form>
     </main>
 
-
-    <!-- Preview Modal -->
-    <div class="modal fade modal-custom" id="previewModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" style="font-family:'Space Grotesk',sans-serif;font-weight:600;">
-                        <i class="fa-solid fa-eye me-2" style="color:var(--gold-primary)"></i>Report Preview
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="previewBody"></div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-glass" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-submit" id="modalSubmitBtn"><i class="fa-solid fa-check me-1"></i>Looks Good, Submit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Clear Confirmation Modal -->
-    <div class="modal fade modal-custom" id="clearModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" style="font-family:'Space Grotesk',sans-serif;font-weight:600;">
-                        <i class="fa-solid fa-triangle-exclamation me-2" style="color:var(--red)"></i>Clear Form?
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p style="color:var(--text-secondary)">Are you sure you want to clear all form data? This will also remove your saved draft. This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-glass" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn-glass btn-danger-glass" id="confirmClearBtn"><i class="fa-solid fa-trash-can me-1"></i>Yes, Clear Everything</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Footer -->
-    <footer class="footer-section">
-        <div class="container">
-            <div class="footer-brand">Code<span class="gold">Origin</span>.ai</div>
-            <div class="footer-copy">&copy; 2026 CodeOrigin.ai &mdash; All Rights Reserved. Built for high-performance teams.</div>
-        </div>
+    <footer class="footer">
+        <p>&copy; 2026 CodeOrigin.ai</p>
     </footer>
 
-    <!-- Bootstrap JS -->
+    <!-- Preview Modal -->
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Report Preview</h3>
+                <button class="modal-close" id="closeModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="previewContent"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="modalCopyBtn"><i class="fa-solid fa-copy" style="margin-right:6px"></i>Copy</button>
+                <button type="button" class="btn-secondary" id="modalPdfBtn"><i class="fa-solid fa-file-pdf" style="margin-right:6px"></i>PDF</button>
+                <button type="button" class="btn-secondary" id="modalPrintBtn"><i class="fa-solid fa-print" style="margin-right:6px"></i>Print</button>
+            </div>
+        </div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-
     <script>
     (function() {
         'use strict';
 
-        // ===== Initialize EmailJS =====
+        // Initialize EmailJS
         emailjs.init('gzt0AvmB6crin7QwJ');
 
-        // ===== DOM References =====
-        var form = document.getElementById('statusForm');
-        var submitBtn = document.getElementById('submitBtn');
-        var btnText = document.getElementById('btnText');
-        var btnSpinner = document.getElementById('btnSpinner');
-        var previewBtn = document.getElementById('previewBtn');
-        var downloadPdfBtn = document.getElementById('downloadPdfBtn');
-        var printBtn = document.getElementById('printBtn');
-        var copyBtn = document.getElementById('copyBtn');
-        var clearBtn = document.getElementById('clearBtn');
-        var confirmClearBtn = document.getElementById('confirmClearBtn');
-        var modalSubmitBtn = document.getElementById('modalSubmitBtn');
-        var themeToggle = document.getElementById('themeToggle');
-        var themeIcon = document.getElementById('themeIcon');
-        var scrollTopBtn = document.getElementById('scrollTopBtn');
-        var draftIndicator = document.getElementById('draftIndicator');
-        var progressBar = document.getElementById('progressBar');
-        var progressText = document.getElementById('progressText');
-        var completionRange = document.getElementById('completionRange');
-        var rangeValue = document.getElementById('rangeValue');
-        var navbar = document.getElementById('mainNavbar');
+        // DOM Elements
+        const form = document.getElementById('statusForm');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        const draftIndicator = document.getElementById('draftIndicator');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const previewModal = document.getElementById('previewModal');
+        const previewContent = document.getElementById('previewContent');
+        const completionRange = document.getElementById('completionRange');
+        const rangeValue = document.getElementById('rangeValue');
 
-        // ===== Set Date =====
-        var today = new Date();
-        var options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-        document.getElementById('reportDate').value = today.toLocaleDateString('en-US', options);
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('reportDate').value = now.toLocaleDateString('en-US', options);
 
-        // ===== Theme Toggle =====
-        var savedTheme = localStorage.getItem('co_theme') || 'dark';
-        if (savedTheme === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            themeIcon.className = 'fa-solid fa-sun';
+        // Theme Toggle
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeIcon.className = theme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
         }
-        themeToggle.addEventListener('click', function() {
-            var current = document.documentElement.getAttribute('data-theme');
-            if (current === 'light') {
-                document.documentElement.removeAttribute('data-theme');
-                themeIcon.className = 'fa-solid fa-moon';
-                localStorage.setItem('co_theme', 'dark');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'light');
-                themeIcon.className = 'fa-solid fa-sun';
-                localStorage.setItem('co_theme', 'light');
-            }
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            setTheme(current === 'dark' ? 'light' : 'dark');
         });
 
 
-        // ===== Navbar Scroll Effect =====
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 20) { navbar.classList.add('scrolled'); }
-            else { navbar.classList.remove('scrolled'); }
-            // Scroll to top button
-            if (window.scrollY > 400) { scrollTopBtn.classList.add('visible'); }
-            else { scrollTopBtn.classList.remove('visible'); }
-        });
-        scrollTopBtn.addEventListener('click', function() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // ===== IntersectionObserver for Cards =====
-        var cards = document.querySelectorAll('.glass-card');
-        var observer = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting) { entry.target.classList.add('visible'); }
-            });
-        }, { threshold: 0.1 });
-        cards.forEach(function(card) { observer.observe(card); });
-
-        // ===== Toast Notification System =====
-        function showToast(type, message) {
-            var container = document.getElementById('toastContainer');
-            var toast = document.createElement('div');
-            toast.className = 'toast-custom ' + type;
-            var iconClass = type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info';
-            toast.innerHTML = '<i class="toast-icon fa-solid ' + iconClass + '"></i><span class="toast-msg">' + message + '</span>';
+        // Toast Notification
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            const toast = document.createElement('div');
+            toast.className = `toast-item ${type}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type]} toast-icon"></i><span>${message}</span>`;
             container.appendChild(toast);
-            setTimeout(function() { toast.classList.add('show'); }, 50);
-            setTimeout(function() {
+            requestAnimationFrame(() => toast.classList.add('show'));
+            setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(function() { toast.remove(); }, 400);
-            }, 5000);
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
 
-        // ===== Auto-Calculate Working Hours =====
-        var loginTime = document.getElementById('loginTime');
-        var logoutTime = document.getElementById('logoutTime');
-        var totalHours = document.getElementById('totalHours');
+        // Auto-calculate Working Hours
+        const loginTime = document.getElementById('loginTime');
+        const logoutTime = document.getElementById('logoutTime');
+        const totalHours = document.getElementById('totalHours');
 
-        function calculateHours() {
-            var login = loginTime.value;
-            var logout = logoutTime.value;
-            if (login && logout) {
-                var loginParts = login.split(':');
-                var logoutParts = logout.split(':');
-                var loginMin = parseInt(loginParts[0]) * 60 + parseInt(loginParts[1]);
-                var logoutMin = parseInt(logoutParts[0]) * 60 + parseInt(logoutParts[1]);
-                var diff = logoutMin - loginMin;
-                if (diff < 0) diff += 24 * 60; // handle overnight
-                var hours = Math.floor(diff / 60);
-                var mins = diff % 60;
-                totalHours.value = hours + 'h ' + mins + 'm';
-            } else {
-                totalHours.value = '';
+        function calcHours() {
+            if (loginTime.value && logoutTime.value) {
+                const [lh, lm] = loginTime.value.split(':').map(Number);
+                const [oh, om] = logoutTime.value.split(':').map(Number);
+                let diff = (oh * 60 + om) - (lh * 60 + lm);
+                if (diff < 0) diff += 1440;
+                const hrs = Math.floor(diff / 60);
+                const mins = diff % 60;
+                totalHours.value = `${hrs}h ${mins}m`;
             }
         }
-        loginTime.addEventListener('change', calculateHours);
-        logoutTime.addEventListener('change', calculateHours);
+        loginTime.addEventListener('change', calcHours);
+        logoutTime.addEventListener('change', calcHours);
 
-        // ===== Completion Range Slider =====
-        completionRange.addEventListener('input', function() {
-            rangeValue.textContent = this.value + '%';
+        // Range Slider
+        completionRange.addEventListener('input', () => {
+            rangeValue.textContent = completionRange.value + '%';
         });
 
-
-        // ===== Character Counters =====
-        var textareas = [
-            { id: 'assignedWork', counter: 'counterAssigned' },
-            { id: 'completedWork', counter: 'counterCompleted' },
-            { id: 'pendingWork', counter: 'counterPending' },
-            { id: 'blockers', counter: 'counterBlockers' },
-            { id: 'tomorrowPlan', counter: 'counterTomorrow' },
-            { id: 'additionalNotes', counter: 'counterNotes' }
+        // Character Counters
+        const counters = [
+            { id: 'assignedWork', counter: 'counterAssigned', max: 2000 },
+            { id: 'completedWork', counter: 'counterCompleted', max: 2000 },
+            { id: 'pendingWork', counter: 'counterPending', max: 2000 },
+            { id: 'blockers', counter: 'counterBlockers', max: 1000 },
+            { id: 'tomorrowPlan', counter: 'counterTomorrow', max: 1000 },
+            { id: 'additionalNotes', counter: 'counterNotes', max: 1000 }
         ];
-        textareas.forEach(function(item) {
-            var ta = document.getElementById(item.id);
-            var counter = document.getElementById(item.counter);
-            ta.addEventListener('input', function() {
-                var len = ta.value.length;
-                counter.textContent = len + '/2000';
-                if (len > 2000) { counter.classList.add('over-limit'); }
-                else { counter.classList.remove('over-limit'); }
-            });
-        });
-
-        // ===== Progress Indicator =====
-        var requiredFields = ['employeeName','employeeEmail','employeeId','department','designation','managerEmail','loginTime','logoutTime','projectName','assignedWork','completedWork','pendingWork'];
-
-        function updateProgress() {
-            var filled = 0;
-            requiredFields.forEach(function(id) {
-                var el = document.getElementById(id);
-                if (el && el.value.trim() !== '') filled++;
-            });
-            var pct = Math.round((filled / requiredFields.length) * 100);
-            progressBar.style.width = pct + '%';
-            progressText.textContent = pct + '%';
-        }
-        // Listen to all inputs for progress
-        requiredFields.forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) {
-                el.addEventListener('input', updateProgress);
-                el.addEventListener('change', updateProgress);
-            }
-        });
-
-        // ===== Auto-Save Draft =====
-        var DRAFT_KEY = 'co_daily_draft';
-        var saveTimeout = null;
-
-        function getAllFormData() {
-            var data = {};
-            var allInputs = form.querySelectorAll('input, textarea, select');
-            allInputs.forEach(function(el) {
-                if (el.id && !el.readOnly) { data[el.id] = el.value; }
-            });
-            data.completionRange = completionRange.value;
-            return data;
-        }
-
-        function saveDraft() {
-            var data = getAllFormData();
-            localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
-            draftIndicator.classList.add('show');
-            setTimeout(function() { draftIndicator.classList.remove('show'); }, 2000);
-        }
-
-        function restoreDraft() {
-            var saved = localStorage.getItem(DRAFT_KEY);
-            if (saved) {
-                try {
-                    var data = JSON.parse(saved);
-                    Object.keys(data).forEach(function(key) {
-                        var el = document.getElementById(key);
-                        if (el && !el.readOnly) { el.value = data[key]; }
-                    });
-                    if (data.completionRange) {
-                        completionRange.value = data.completionRange;
-                        rangeValue.textContent = data.completionRange + '%';
-                    }
-                    // Update counters
-                    textareas.forEach(function(item) {
-                        var ta = document.getElementById(item.id);
-                        var counter = document.getElementById(item.counter);
-                        counter.textContent = ta.value.length + '/2000';
-                    });
-                    calculateHours();
-                    updateProgress();
-                    showToast('info', 'Draft restored from your last session');
-                } catch(e) { /* ignore parse errors */ }
-            }
-        }
-
-        // Debounced save on input
-        form.addEventListener('input', function() {
-            if (saveTimeout) clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(saveDraft, 2000);
-        });
-        form.addEventListener('change', function() {
-            if (saveTimeout) clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(saveDraft, 2000);
-        });
-        // Also save every 30 seconds
-        setInterval(saveDraft, 30000);
-        // Restore on load
-        restoreDraft();
-
-
-        // ===== Form Validation =====
-        function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
-
-        function showError(id) { var el = document.getElementById(id); if (el) el.classList.add('show'); }
-        function hideError(id) { var el = document.getElementById(id); if (el) el.classList.remove('show'); }
-        function clearAllErrors() { document.querySelectorAll('.error-message').forEach(function(e) { e.classList.remove('show'); }); }
-
-        function validateForm() {
-            var valid = true;
-            clearAllErrors();
-            var checks = [
-                { id:'employeeName', err:'errName', type:'text' },
-                { id:'employeeEmail', err:'errEmail', type:'email' },
-                { id:'employeeId', err:'errEmpId', type:'text' },
-                { id:'department', err:'errDept', type:'select' },
-                { id:'designation', err:'errDesig', type:'text' },
-                { id:'managerEmail', err:'errManager', type:'email' },
-                { id:'loginTime', err:'errLogin', type:'text' },
-                { id:'logoutTime', err:'errLogout', type:'text' },
-                { id:'projectName', err:'errProject', type:'text' },
-                { id:'assignedWork', err:'errAssigned', type:'text' },
-                { id:'completedWork', err:'errCompleted', type:'text' },
-                { id:'pendingWork', err:'errPending', type:'text' }
-            ];
-            var firstError = null;
-            checks.forEach(function(check) {
-                var el = document.getElementById(check.id);
-                var val = el ? el.value.trim() : '';
-                var failed = false;
-                if (check.type === 'email') { if (!val || !isValidEmail(val)) failed = true; }
-                else if (check.type === 'select') { if (!val) failed = true; }
-                else { if (!val) failed = true; }
-                if (failed) {
-                    showError(check.err);
-                    valid = false;
-                    if (!firstError) firstError = el;
-                }
-            });
-            if (firstError) { firstError.scrollIntoView({ behavior:'smooth', block:'center' }); }
-            return valid;
-        }
-
-        // Real-time validation clearing
-        requiredFields.forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) {
-                el.addEventListener('input', function() {
-                    var errEl = el.parentElement.querySelector('.error-message');
-                    if (errEl) errEl.classList.remove('show');
+        counters.forEach(({ id, counter, max }) => {
+            const el = document.getElementById(id);
+            const cEl = document.getElementById(counter);
+            if (el && cEl) {
+                el.addEventListener('input', () => {
+                    const len = el.value.length;
+                    cEl.textContent = `${len} / ${max}`;
+                    cEl.classList.toggle('over', len >= max);
                 });
             }
         });
 
 
-        // ===== Build Report Text =====
-        function buildReportText() {
-            var report = '';
-            report += '════════════════════════════════════════\n';
-            report += '   DAILY STATUS REPORT - CodeOrigin.ai\n';
-            report += '════════════════════════════════════════\n\n';
-            report += 'Date: ' + document.getElementById('reportDate').value + '\n';
-            report += 'Employee: ' + document.getElementById('employeeName').value + '\n';
-            report += 'Email: ' + document.getElementById('employeeEmail').value + '\n';
-            report += 'Employee ID: ' + document.getElementById('employeeId').value + '\n';
-            report += 'Department: ' + document.getElementById('department').value + '\n';
-            report += 'Designation: ' + document.getElementById('designation').value + '\n';
-            report += 'Project: ' + document.getElementById('projectName').value + '\n';
-            var sprint = document.getElementById('sprintId').value;
-            if (sprint) report += 'Sprint ID: ' + sprint + '\n';
-            report += 'Login: ' + document.getElementById('loginTime').value + '\n';
-            report += 'Logout: ' + document.getElementById('logoutTime').value + '\n';
-            report += 'Total Hours: ' + (document.getElementById('totalHours').value || 'N/A') + '\n';
-            report += 'Priority: ' + document.getElementById('taskPriority').value + '\n';
-            report += 'Status: ' + document.getElementById('overallStatus').value + '\n';
-            report += 'Completion: ' + completionRange.value + '%\n';
-            report += '\n────────────────────────────────────────\n';
-            report += 'ASSIGNED WORK TODAY:\n────────────────────────────────────────\n';
-            report += document.getElementById('assignedWork').value + '\n';
-            report += '\n────────────────────────────────────────\n';
-            report += 'COMPLETED WORK & HOURS:\n────────────────────────────────────────\n';
-            report += document.getElementById('completedWork').value + '\n';
-            report += '\n────────────────────────────────────────\n';
-            report += 'PENDING WORK / CARRYOVER:\n────────────────────────────────────────\n';
-            report += document.getElementById('pendingWork').value + '\n';
-            var blockers = document.getElementById('blockers').value;
-            if (blockers) {
-                report += '\n────────────────────────────────────────\n';
-                report += 'BLOCKERS / ISSUES:\n────────────────────────────────────────\n';
-                report += blockers + '\n';
-            }
-            var tomorrow = document.getElementById('tomorrowPlan').value;
-            if (tomorrow) {
-                report += '\n────────────────────────────────────────\n';
-                report += "TOMORROW'S PLAN:\n────────────────────────────────────────\n";
-                report += tomorrow + '\n';
-            }
-            var notes = document.getElementById('additionalNotes').value;
-            if (notes) {
-                report += '\n────────────────────────────────────────\n';
-                report += 'ADDITIONAL NOTES:\n────────────────────────────────────────\n';
-                report += notes + '\n';
-            }
-            report += '\n════════════════════════════════════════\n';
-            report += '  Submitted via CodeOrigin.ai Tracker\n';
-            report += '════════════════════════════════════════\n';
-            return report;
+        // Progress Indicator
+        function updateProgress() {
+            const fields = ['employeeName','employeeEmail','employeeId','department','designation',
+                'managerEmail','loginTime','logoutTime','projectName','assignedWork','completedWork',
+                'pendingWork','priority','taskStatus'];
+            let filled = 0;
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value.trim()) filled++;
+            });
+            const pct = Math.round((filled / fields.length) * 100);
+            progressBar.style.width = pct + '%';
+            progressText.textContent = pct;
+        }
+        form.addEventListener('input', updateProgress);
+        form.addEventListener('change', updateProgress);
+
+        // Auto-Save Draft
+        const DRAFT_KEY = 'dailyStatusDraft_v2';
+        const draftFields = ['employeeName','employeeEmail','employeeId','department','designation',
+            'managerEmail','hrEmail','teamLeadEmail','loginTime','logoutTime','projectName',
+            'sprintId','assignedWork','completedWork','pendingWork','blockers','priority',
+            'taskStatus','completionRange','tomorrowPlan','additionalNotes'];
+
+        function saveDraft() {
+            const data = {};
+            draftFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) data[id] = el.value;
+            });
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+            draftIndicator.classList.add('show');
+            setTimeout(() => draftIndicator.classList.remove('show'), 2000);
         }
 
-
-        // ===== Preview Modal =====
-        function buildPreviewHTML() {
-            var html = '';
-            html += '<div class="preview-section"><h6><i class="fa-solid fa-user me-1"></i>Employee Info</h6>';
-            html += '<p><strong>Name:</strong> ' + document.getElementById('employeeName').value + '<br>';
-            html += '<strong>Email:</strong> ' + document.getElementById('employeeEmail').value + '<br>';
-            html += '<strong>ID:</strong> ' + document.getElementById('employeeId').value + '<br>';
-            html += '<strong>Department:</strong> ' + document.getElementById('department').value + '<br>';
-            html += '<strong>Designation:</strong> ' + document.getElementById('designation').value + '<br>';
-            html += '<strong>Project:</strong> ' + document.getElementById('projectName').value;
-            var sprint = document.getElementById('sprintId').value;
-            if (sprint) html += ' | <strong>Sprint:</strong> ' + sprint;
-            html += '</p></div>';
-            html += '<div class="preview-section"><h6><i class="fa-solid fa-clock me-1"></i>Time</h6>';
-            html += '<p><strong>Date:</strong> ' + document.getElementById('reportDate').value + '<br>';
-            html += '<strong>Login:</strong> ' + document.getElementById('loginTime').value + ' | <strong>Logout:</strong> ' + document.getElementById('logoutTime').value + '<br>';
-            html += '<strong>Total Hours:</strong> ' + (document.getElementById('totalHours').value || 'N/A') + '</p></div>';
-            html += '<div class="preview-section" style="border-left-color:var(--blue)"><h6><i class="fa-solid fa-list-check me-1"></i>Assigned Work</h6>';
-            html += '<p>' + document.getElementById('assignedWork').value.replace(/\n/g, '<br>') + '</p></div>';
-            html += '<div class="preview-section" style="border-left-color:var(--cyan)"><h6><i class="fa-solid fa-circle-check me-1"></i>Completed Work</h6>';
-            html += '<p>' + document.getElementById('completedWork').value.replace(/\n/g, '<br>') + '</p></div>';
-            html += '<div class="preview-section" style="border-left-color:var(--gold-primary)"><h6><i class="fa-solid fa-clock-rotate-left me-1"></i>Pending Work</h6>';
-            html += '<p>' + document.getElementById('pendingWork').value.replace(/\n/g, '<br>') + '</p></div>';
-            var blockers = document.getElementById('blockers').value;
-            if (blockers) {
-                html += '<div class="preview-section" style="border-left-color:var(--red)"><h6><i class="fa-solid fa-triangle-exclamation me-1"></i>Blockers</h6>';
-                html += '<p>' + blockers.replace(/\n/g, '<br>') + '</p></div>';
-            }
-            var tomorrow = document.getElementById('tomorrowPlan').value;
-            if (tomorrow) {
-                html += '<div class="preview-section" style="border-left-color:var(--green)"><h6><i class="fa-solid fa-forward me-1"></i>Tomorrow\'s Plan</h6>';
-                html += '<p>' + tomorrow.replace(/\n/g, '<br>') + '</p></div>';
-            }
-            var notes = document.getElementById('additionalNotes').value;
-            if (notes) {
-                html += '<div class="preview-section" style="border-left-color:#ce93d8"><h6><i class="fa-solid fa-note-sticky me-1"></i>Additional Notes</h6>';
-                html += '<p>' + notes.replace(/\n/g, '<br>') + '</p></div>';
-            }
-            html += '<div class="preview-section"><h6><i class="fa-solid fa-gauge-high me-1"></i>Status</h6>';
-            html += '<p><strong>Priority:</strong> ' + document.getElementById('taskPriority').value + ' | ';
-            html += '<strong>Status:</strong> ' + document.getElementById('overallStatus').value + ' | ';
-            html += '<strong>Completion:</strong> ' + completionRange.value + '%</p></div>';
-            return html;
+        function loadDraft() {
+            const saved = localStorage.getItem(DRAFT_KEY);
+            if (!saved) return;
+            try {
+                const data = JSON.parse(saved);
+                draftFields.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && data[id] !== undefined) {
+                        el.value = data[id];
+                        if (id === 'completionRange') {
+                            rangeValue.textContent = data[id] + '%';
+                        }
+                    }
+                });
+                // Update char counters
+                counters.forEach(({ id, counter, max }) => {
+                    const el = document.getElementById(id);
+                    const cEl = document.getElementById(counter);
+                    if (el && cEl) {
+                        cEl.textContent = `${el.value.length} / ${max}`;
+                    }
+                });
+                calcHours();
+                updateProgress();
+            } catch(e) {}
         }
+        loadDraft();
 
-        previewBtn.addEventListener('click', function() {
-            document.getElementById('previewBody').innerHTML = buildPreviewHTML();
-            var modal = new bootstrap.Modal(document.getElementById('previewModal'));
-            modal.show();
+        let saveTimer;
+        form.addEventListener('input', () => {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(saveDraft, 1500);
+        });
+        form.addEventListener('change', () => {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(saveDraft, 500);
         });
 
 
-        // ===== Email Submission =====
-        function submitReport() {
-            if (!validateForm()) return;
-            if (!confirm('Are you sure you want to submit this daily report?')) return;
+        // Validation
+        function validateForm() {
+            let valid = true;
+            const validations = [
+                { id: 'employeeName', err: 'errName', check: v => v.trim().length >= 2 },
+                { id: 'employeeEmail', err: 'errEmail', check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+                { id: 'employeeId', err: 'errEmpId', check: v => v.trim().length >= 1 },
+                { id: 'department', err: 'errDept', check: v => v !== '' },
+                { id: 'designation', err: 'errDesig', check: v => v.trim().length >= 2 },
+                { id: 'managerEmail', err: 'errManager', check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+                { id: 'loginTime', err: 'errLogin', check: v => v !== '' },
+                { id: 'logoutTime', err: 'errLogout', check: v => v !== '' },
+                { id: 'projectName', err: 'errProject', check: v => v.trim().length >= 1 },
+                { id: 'assignedWork', err: 'errAssigned', check: v => v.trim().length >= 10 },
+                { id: 'completedWork', err: 'errCompleted', check: v => v.trim().length >= 10 },
+                { id: 'pendingWork', err: 'errPending', check: v => v.trim().length >= 5 },
+                { id: 'priority', err: 'errPriority', check: v => v !== '' },
+                { id: 'taskStatus', err: 'errStatus', check: v => v !== '' }
+            ];
 
-            // Show spinner
-            btnText.style.display = 'none';
-            btnSpinner.style.display = 'inline';
+            validations.forEach(({ id, err, check }) => {
+                const el = document.getElementById(id);
+                const errEl = document.getElementById(err);
+                if (!check(el.value)) {
+                    errEl.classList.add('show');
+                    el.style.borderColor = 'var(--error)';
+                    valid = false;
+                } else {
+                    errEl.classList.remove('show');
+                    el.style.borderColor = '';
+                }
+            });
+            return valid;
+        }
+
+        // Clear error on input
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('input', () => {
+                input.style.borderColor = '';
+                const errEl = input.parentElement.querySelector('.error-msg');
+                if (errEl) errEl.classList.remove('show');
+            });
+        });
+
+
+        // Generate Report Text
+        function getReportText() {
+            return `DAILY STATUS REPORT
+================================
+Date: ${document.getElementById('reportDate').value}
+
+EMPLOYEE INFORMATION
+--------------------
+Name: ${document.getElementById('employeeName').value}
+Email: ${document.getElementById('employeeEmail').value}
+ID: ${document.getElementById('employeeId').value}
+Department: ${document.getElementById('department').value}
+Designation: ${document.getElementById('designation').value}
+Manager: ${document.getElementById('managerEmail').value}
+Project: ${document.getElementById('projectName').value}
+Sprint: ${document.getElementById('sprintId').value || 'N/A'}
+Login: ${document.getElementById('loginTime').value}
+Logout: ${document.getElementById('logoutTime').value}
+Total Hours: ${document.getElementById('totalHours').value || 'N/A'}
+
+ASSIGNED WORK TODAY
+-------------------
+${document.getElementById('assignedWork').value}
+
+COMPLETED WORK & HOURS
+-----------------------
+${document.getElementById('completedWork').value}
+
+PENDING WORK / CARRYOVER
+-------------------------
+${document.getElementById('pendingWork').value}
+
+BLOCKERS / ISSUES
+-----------------
+${document.getElementById('blockers').value || 'None'}
+
+PRIORITY & STATUS
+-----------------
+Priority: ${document.getElementById('priority').value}
+Status: ${document.getElementById('taskStatus').value}
+Completion: ${document.getElementById('completionRange').value}%
+
+TOMORROW'S PLAN
+---------------
+${document.getElementById('tomorrowPlan').value || 'N/A'}
+
+ADDITIONAL NOTES
+----------------
+${document.getElementById('additionalNotes').value || 'None'}
+
+================================
+Submitted via CodeOrigin.ai Daily Status Tracker`;
+        }
+
+
+        // Preview Modal
+        function showPreview() {
+            const sections = [
+                { title: 'Employee', content: `${document.getElementById('employeeName').value} (${document.getElementById('employeeId').value})\n${document.getElementById('designation').value} - ${document.getElementById('department').value}\n${document.getElementById('reportDate').value}` },
+                { title: 'Working Hours', content: `Login: ${document.getElementById('loginTime').value || '-'} | Logout: ${document.getElementById('logoutTime').value || '-'} | Total: ${document.getElementById('totalHours').value || '-'}` },
+                { title: 'Assigned Work', content: document.getElementById('assignedWork').value || '-' },
+                { title: 'Completed Work', content: document.getElementById('completedWork').value || '-' },
+                { title: 'Pending Work', content: document.getElementById('pendingWork').value || '-' },
+                { title: 'Blockers', content: document.getElementById('blockers').value || 'None' },
+                { title: 'Status', content: `Priority: ${document.getElementById('priority').value || '-'} | Status: ${document.getElementById('taskStatus').value || '-'} | Completion: ${document.getElementById('completionRange').value}%` },
+                { title: "Tomorrow's Plan", content: document.getElementById('tomorrowPlan').value || 'N/A' },
+                { title: 'Additional Notes', content: document.getElementById('additionalNotes').value || 'None' }
+            ];
+            previewContent.innerHTML = sections.map(s =>
+                `<div class="preview-block"><h6>${s.title}</h6><p>${s.content}</p></div>`
+            ).join('');
+            previewModal.classList.add('active');
+        }
+
+        document.getElementById('previewBtn').addEventListener('click', showPreview);
+        document.getElementById('closeModal').addEventListener('click', () => previewModal.classList.remove('active'));
+        previewModal.addEventListener('click', (e) => {
+            if (e.target === previewModal) previewModal.classList.remove('active');
+        });
+
+        // Copy to Clipboard
+        function copyReport() {
+            navigator.clipboard.writeText(getReportText()).then(() => {
+                showToast('Report copied to clipboard', 'success');
+            }).catch(() => showToast('Failed to copy', 'error'));
+        }
+        document.getElementById('copyBtn').addEventListener('click', copyReport);
+        document.getElementById('modalCopyBtn').addEventListener('click', copyReport);
+
+
+        // PDF Download
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const text = getReportText();
+            const lines = doc.splitTextToSize(text, 170);
+            doc.setFont('helvetica');
+            doc.setFontSize(10);
+
+            let y = 15;
+            const pageHeight = doc.internal.pageSize.height;
+            lines.forEach(line => {
+                if (y > pageHeight - 15) {
+                    doc.addPage();
+                    y = 15;
+                }
+                doc.text(line, 20, y);
+                y += 5;
+            });
+
+            const name = document.getElementById('employeeName').value || 'report';
+            const date = new Date().toISOString().slice(0, 10);
+            doc.save(`DailyStatus_${name.replace(/\s+/g, '_')}_${date}.pdf`);
+            showToast('PDF downloaded', 'success');
+        }
+        document.getElementById('pdfBtn').addEventListener('click', downloadPDF);
+        document.getElementById('modalPdfBtn').addEventListener('click', downloadPDF);
+
+        // Print
+        function printReport() {
+            const printWin = window.open('', '_blank');
+            printWin.document.write(`<html><head><title>Daily Status Report</title><style>
+                body{font-family:monospace;padding:40px;font-size:13px;line-height:1.6;max-width:700px;margin:0 auto}
+                pre{white-space:pre-wrap}
+            </style></head><body><pre>${getReportText()}</pre></body></html>`);
+            printWin.document.close();
+            printWin.print();
+        }
+        document.getElementById('printBtn').addEventListener('click', printReport);
+        document.getElementById('modalPrintBtn').addEventListener('click', printReport);
+
+        // Clear Form
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear the form? This cannot be undone.')) {
+                form.reset();
+                localStorage.removeItem(DRAFT_KEY);
+                rangeValue.textContent = '50%';
+                completionRange.value = 50;
+                document.getElementById('reportDate').value = now.toLocaleDateString('en-US', options);
+                totalHours.value = '';
+                counters.forEach(({ counter }) => {
+                    const el = document.getElementById(counter);
+                    if (el) el.textContent = '0 / ' + (el.textContent.split('/')[1] || '2000').trim();
+                });
+                document.querySelectorAll('.error-msg').forEach(e => e.classList.remove('show'));
+                document.querySelectorAll('.form-input').forEach(e => e.style.borderColor = '');
+                updateProgress();
+                showToast('Form cleared', 'info');
+            }
+        });
+
+
+        // Form Submit (EmailJS)
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!validateForm()) {
+                showToast('Please fix the errors above', 'error');
+                const firstErr = document.querySelector('.error-msg.show');
+                if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:8px"></i>Submitting...';
 
-            // Build CC list
-            var ccEmails = [];
-            var empEmail = document.getElementById('employeeEmail').value.trim();
-            var mgrEmail = document.getElementById('managerEmail').value.trim();
-            var tlEmail = document.getElementById('teamLeadEmail').value.trim();
-            var hrEmailVal = document.getElementById('hrEmail').value.trim();
-            if (empEmail) ccEmails.push(empEmail);
-            if (mgrEmail) ccEmails.push(mgrEmail);
-            if (tlEmail) ccEmails.push(tlEmail);
-            if (hrEmailVal) ccEmails.push(hrEmailVal);
-
-            var templateParams = {
+            const templateParams = {
                 employee_name: document.getElementById('employeeName').value,
-                employee_email: empEmail,
+                employee_email: document.getElementById('employeeEmail').value,
                 employee_id: document.getElementById('employeeId').value,
                 department: document.getElementById('department').value,
                 designation: document.getElementById('designation').value,
-                manager_email: mgrEmail,
-                hr_email: hrEmailVal,
-                team_lead_email: tlEmail,
+                manager_email: document.getElementById('managerEmail').value,
+                hr_email: document.getElementById('hrEmail').value,
+                team_lead_email: document.getElementById('teamLeadEmail').value,
                 report_date: document.getElementById('reportDate').value,
                 login_time: document.getElementById('loginTime').value,
                 logout_time: document.getElementById('logoutTime').value,
-                total_hours: document.getElementById('totalHours').value || 'N/A',
+                total_hours: document.getElementById('totalHours').value,
                 project_name: document.getElementById('projectName').value,
-                sprint_id: document.getElementById('sprintId').value || 'N/A',
+                sprint_id: document.getElementById('sprintId').value,
                 assigned_work: document.getElementById('assignedWork').value,
                 completed_work: document.getElementById('completedWork').value,
                 pending_work: document.getElementById('pendingWork').value,
                 blockers: document.getElementById('blockers').value || 'None',
+                priority: document.getElementById('priority').value,
+                task_status: document.getElementById('taskStatus').value,
+                completion: document.getElementById('completionRange').value + '%',
                 tomorrow_plan: document.getElementById('tomorrowPlan').value || 'N/A',
-                additional_notes: document.getElementById('additionalNotes').value || 'N/A',
-                task_priority: document.getElementById('taskPriority').value,
-                overall_status: document.getElementById('overallStatus').value,
-                completion_percentage: completionRange.value + '%',
-                cc_emails: ccEmails.join(',')
+                additional_notes: document.getElementById('additionalNotes').value || 'None'
             };
 
             emailjs.send('service_mc808ed', 'template_qf9u9op', templateParams)
-                .then(function(response) {
-                    showToast('success', 'Report submitted successfully! Check your email for confirmation.');
-                    // Clear work fields but keep employee details
-                    document.getElementById('assignedWork').value = '';
-                    document.getElementById('completedWork').value = '';
-                    document.getElementById('pendingWork').value = '';
-                    document.getElementById('blockers').value = '';
-                    document.getElementById('tomorrowPlan').value = '';
-                    document.getElementById('additionalNotes').value = '';
-                    completionRange.value = 50;
-                    rangeValue.textContent = '50%';
-                    // Reset counters
-                    textareas.forEach(function(item) {
-                        document.getElementById(item.counter).textContent = '0/2000';
-                    });
-                    updateProgress();
-                    // Reset button
-                    btnText.style.display = 'inline';
-                    btnSpinner.style.display = 'none';
-                    submitBtn.disabled = false;
+                .then(() => {
+                    showToast('Report submitted successfully!', 'success');
+                    localStorage.removeItem(DRAFT_KEY);
+                    submitBtn.innerHTML = '<i class="fa-solid fa-check" style="margin-right:8px"></i>Submitted';
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>Submit Report';
+                    }, 3000);
                 })
-                .catch(function(error) {
-                    showToast('error', 'Failed to send report: ' + (error.text || 'Unknown error'));
-                    btnText.style.display = 'inline';
-                    btnSpinner.style.display = 'none';
+                .catch((err) => {
+                    showToast('Submission failed. Please try again.', 'error');
                     submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane" style="margin-right:8px"></i>Submit Report';
+                    console.error('EmailJS Error:', err);
                 });
-        }
-
-        // Form submit handler
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            submitReport();
-        });
-
-        // Modal submit button
-        modalSubmitBtn.addEventListener('click', function() {
-            var modal = bootstrap.Modal.getInstance(document.getElementById('previewModal'));
-            if (modal) modal.hide();
-            submitReport();
         });
 
 
-        // ===== Download PDF =====
-        downloadPdfBtn.addEventListener('click', function() {
-            var jsPDF = window.jspdf.jsPDF;
-            var doc = new jsPDF();
-            var margin = 15;
-            var y = 20;
-            var pageWidth = doc.internal.pageSize.getWidth();
-
-            doc.setFontSize(18);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Daily Status Report', pageWidth / 2, y, { align: 'center' });
-            y += 8;
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text('CodeOrigin.ai - Employee Sprint Tracker', pageWidth / 2, y, { align: 'center' });
-            y += 12;
-
-            doc.setDrawColor(212, 160, 23);
-            doc.line(margin, y, pageWidth - margin, y);
-            y += 10;
-
-            var sections = [
-                { title: 'Employee Details', content: 'Name: ' + document.getElementById('employeeName').value + '\nEmail: ' + document.getElementById('employeeEmail').value + '\nID: ' + document.getElementById('employeeId').value + '\nDepartment: ' + document.getElementById('department').value + '\nDesignation: ' + document.getElementById('designation').value + '\nProject: ' + document.getElementById('projectName').value + '\nDate: ' + document.getElementById('reportDate').value + '\nLogin: ' + document.getElementById('loginTime').value + ' | Logout: ' + document.getElementById('logoutTime').value + '\nTotal Hours: ' + (document.getElementById('totalHours').value || 'N/A') },
-                { title: 'Assigned Work', content: document.getElementById('assignedWork').value },
-                { title: 'Completed Work', content: document.getElementById('completedWork').value },
-                { title: 'Pending Work', content: document.getElementById('pendingWork').value },
-                { title: 'Blockers', content: document.getElementById('blockers').value || 'None' },
-                { title: "Tomorrow's Plan", content: document.getElementById('tomorrowPlan').value || 'N/A' },
-                { title: 'Status', content: 'Priority: ' + document.getElementById('taskPriority').value + ' | Status: ' + document.getElementById('overallStatus').value + ' | Completion: ' + completionRange.value + '%' }
-            ];
-
-            sections.forEach(function(section) {
-                if (y > 260) { doc.addPage(); y = 20; }
-                doc.setFontSize(11);
-                doc.setFont('helvetica', 'bold');
-                doc.text(section.title, margin, y);
-                y += 6;
-                doc.setFontSize(9);
-                doc.setFont('helvetica', 'normal');
-                var lines = doc.splitTextToSize(section.content, pageWidth - 2 * margin);
-                lines.forEach(function(line) {
-                    if (y > 275) { doc.addPage(); y = 20; }
-                    doc.text(line, margin, y);
-                    y += 5;
-                });
-                y += 6;
-            });
-
-            var fileName = 'DailyReport_' + document.getElementById('employeeName').value.replace(/\s+/g, '_') + '_' + new Date().toISOString().slice(0, 10) + '.pdf';
-            doc.save(fileName);
-            showToast('success', 'PDF downloaded successfully!');
-        });
-
-        // ===== Print Report =====
-        printBtn.addEventListener('click', function() {
-            var printContent = '<html><head><title>Daily Status Report - CodeOrigin.ai</title>';
-            printContent += '<style>body{font-family:Arial,sans-serif;padding:20px;color:#333} h1{color:#d4a017;font-size:20px;border-bottom:2px solid #d4a017;padding-bottom:8px} h2{color:#333;font-size:14px;margin-top:16px;margin-bottom:4px} p{font-size:12px;white-space:pre-wrap;margin:0 0 8px} .meta{background:#f5f5f5;padding:10px;border-radius:4px;margin-bottom:12px}</style>';
-            printContent += '</head><body>';
-            printContent += '<h1>Daily Status Report - CodeOrigin.ai</h1>';
-            printContent += '<div class="meta"><p><strong>Employee:</strong> ' + document.getElementById('employeeName').value + ' | <strong>Date:</strong> ' + document.getElementById('reportDate').value + '</p>';
-            printContent += '<p><strong>Department:</strong> ' + document.getElementById('department').value + ' | <strong>Project:</strong> ' + document.getElementById('projectName').value + '</p>';
-            printContent += '<p><strong>Login:</strong> ' + document.getElementById('loginTime').value + ' | <strong>Logout:</strong> ' + document.getElementById('logoutTime').value + ' | <strong>Hours:</strong> ' + (document.getElementById('totalHours').value || 'N/A') + '</p></div>';
-            printContent += '<h2>Assigned Work</h2><p>' + document.getElementById('assignedWork').value + '</p>';
-            printContent += '<h2>Completed Work</h2><p>' + document.getElementById('completedWork').value + '</p>';
-            printContent += '<h2>Pending Work</h2><p>' + document.getElementById('pendingWork').value + '</p>';
-            printContent += '<h2>Blockers</h2><p>' + (document.getElementById('blockers').value || 'None') + '</p>';
-            printContent += '<h2>Tomorrow\'s Plan</h2><p>' + (document.getElementById('tomorrowPlan').value || 'N/A') + '</p>';
-            printContent += '<h2>Status</h2><p>Priority: ' + document.getElementById('taskPriority').value + ' | Status: ' + document.getElementById('overallStatus').value + ' | Completion: ' + completionRange.value + '%</p>';
-            printContent += '<hr><p style="font-size:10px;color:#888;text-align:center">Generated by CodeOrigin.ai Sprint Tracker</p>';
-            printContent += '</body></html>';
-            var printWindow = window.open('', '_blank');
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-            printWindow.print();
-        });
-
-
-        // ===== Copy to Clipboard =====
-        copyBtn.addEventListener('click', function() {
-            var reportText = buildReportText();
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(reportText).then(function() {
-                    showToast('success', 'Report copied to clipboard!');
-                }).catch(function() {
-                    fallbackCopy(reportText);
-                });
-            } else {
-                fallbackCopy(reportText);
-            }
-        });
-
-        function fallbackCopy(text) {
-            var textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-9999px';
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                showToast('success', 'Report copied to clipboard!');
-            } catch(e) {
-                showToast('error', 'Failed to copy. Please try again.');
-            }
-            document.body.removeChild(textArea);
-        }
-
-        // ===== Clear Form =====
-        clearBtn.addEventListener('click', function() {
-            var modal = new bootstrap.Modal(document.getElementById('clearModal'));
-            modal.show();
-        });
-
-        confirmClearBtn.addEventListener('click', function() {
-            var allInputs = form.querySelectorAll('input, textarea, select');
-            allInputs.forEach(function(el) {
-                if (!el.readOnly) {
-                    if (el.tagName === 'SELECT') { el.selectedIndex = 0; }
-                    else { el.value = ''; }
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 's') {
+                    e.preventDefault();
+                    saveDraft();
+                    showToast('Draft saved', 'info');
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    form.dispatchEvent(new Event('submit'));
+                } else if (e.key === 'p') {
+                    e.preventDefault();
+                    showPreview();
                 }
-            });
-            // Reset specific defaults
-            document.getElementById('hrEmail').value = 'hr@codeorigin.ai';
-            completionRange.value = 50;
-            rangeValue.textContent = '50%';
-            // Clear counters
-            textareas.forEach(function(item) {
-                document.getElementById(item.counter).textContent = '0/2000';
-                document.getElementById(item.counter).classList.remove('over-limit');
-            });
-            // Clear localStorage draft
-            localStorage.removeItem(DRAFT_KEY);
-            // Reset progress
-            updateProgress();
-            clearAllErrors();
-            totalHours.value = '';
-            // Close modal
-            var modal = bootstrap.Modal.getInstance(document.getElementById('clearModal'));
-            if (modal) modal.hide();
-            showToast('info', 'Form cleared successfully');
+            }
+            if (e.key === 'Escape' && previewModal.classList.contains('active')) {
+                previewModal.classList.remove('active');
+            }
+        });
+
+        // Scroll to Top
+        window.addEventListener('scroll', () => {
+            scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+        });
+        scrollTopBtn.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // ===== Keyboard Shortcuts =====
-        document.addEventListener('keydown', function(e) {
-            // Ctrl+S - Save draft
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                saveDraft();
-                showToast('info', 'Draft saved!');
-            }
-            // Ctrl+Enter - Submit
-            if (e.ctrlKey && e.key === 'Enter') {
-                e.preventDefault();
-                submitReport();
-            }
-            // Ctrl+P - Print
-            if (e.ctrlKey && e.key === 'p') {
-                e.preventDefault();
-                printBtn.click();
-            }
-            // Escape - Close modals
-            if (e.key === 'Escape') {
-                var openModals = document.querySelectorAll('.modal.show');
-                openModals.forEach(function(m) {
-                    var instance = bootstrap.Modal.getInstance(m);
-                    if (instance) instance.hide();
-                });
-            }
-        });
-
-        // ===== Initial Progress Update =====
+        // Initial progress
         updateProgress();
-
     })();
     </script>
 </body>
