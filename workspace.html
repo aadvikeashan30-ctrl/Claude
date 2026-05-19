@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Workspace — AI Monitoring</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --primary-light: #eef2ff;
+    --success: #10b981;
+    --error: #ef4444;
+    --warning: #f59e0b;
+    --info: #0ea5e9;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 24px 16px;
+    color: var(--gray-800);
+  }
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.18);
+    overflow: hidden;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header .who { display: flex; align-items: center; gap: 14px; }
+  .header .who .avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1rem;
+  }
+  .header .name { font-size: 1.1rem; font-weight: 700; }
+  .header .meta { font-size: 0.85rem; opacity: 0.9; }
+  .header .live {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.15);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+  .header .live.idle { background: rgba(245,158,11,0.3); }
+  .header .live.offline { background: rgba(156,163,175,0.3); }
+  .header .live .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 1.6s infinite;
+  }
+  .header .live.idle .dot { background: var(--warning); animation: none; }
+  .header .live.offline .dot { background: #9ca3af; animation: none; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+  }
+  .privacy {
+    background: #e0f2fe;
+    border-bottom: 1px solid #bae6fd;
+    padding: 10px 28px;
+    font-size: 0.82rem;
+    color: #075985;
+  }
+  .privacy strong { color: #0c4a6e; }
+  .main { padding: 24px 28px 28px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .stat {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .stat .label {
+    font-size: 0.72rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .stat .value {
+    font-size: 1.5rem;
+    color: var(--gray-900);
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .stat .sub {
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    margin-top: 2px;
+  }
+  .scores {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .score {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .score .label {
+    font-size: 0.72rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .score .value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 4px 0 8px;
+  }
+  .bar { height: 6px; background: var(--gray-200); border-radius: 999px; overflow: hidden; }
+  .bar-fill { height: 100%; transition: width 0.3s; border-radius: 999px; }
+  .bar-fill.high { background: linear-gradient(90deg,#34d399,#10b981); }
+  .bar-fill.med  { background: linear-gradient(90deg,#fbbf24,#f59e0b); }
+  .bar-fill.low  { background: linear-gradient(90deg,#fb7185,#ef4444); }
+  .section {
+    margin-bottom: 24px;
+  }
+  .section h2 {
+    font-size: 0.95rem;
+    color: var(--gray-700);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .tasks {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+  .tasks-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .tasks-row:last-child { margin-bottom: 0; }
+  .tasks-row label {
+    font-size: 0.88rem;
+    color: var(--gray-700);
+  }
+  .tasks-row input {
+    width: 80px;
+    padding: 6px 10px;
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    text-align: center;
+  }
+  .tasks .hint { font-size: 0.78rem; color: var(--gray-500); margin-top: 4px; }
+  .tasks .hint.warn { color: var(--error); }
+  .work-area {
+    background: var(--gray-50);
+    border: 1px dashed var(--gray-300);
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--gray-500);
+    font-size: 0.9rem;
+  }
+  .work-area b { color: var(--gray-700); }
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary { background: var(--gray-100); color: var(--gray-700); }
+  .btn-secondary:hover { background: var(--gray-200); }
+  .btn-danger { background: var(--error); color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+  .footer {
+    padding: 14px 28px;
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .error-toast {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <div class="who">
+      <div class="avatar" id="avatar">--</div>
+      <div>
+        <div class="name" id="empName">…</div>
+        <div class="meta" id="empMeta">…</div>
+      </div>
+    </div>
+    <div class="live" id="liveStatus"><span class="dot"></span> <span id="liveLabel">connecting…</span></div>
+  </header>
+
+  <div class="privacy">
+    🔒 <strong>You are being monitored on this page.</strong>
+    Tracked: login time, active/idle, keyboard &amp; mouse activity counts, tab visibility.
+    <strong>Not</strong> tracked: keystroke content, screens, personal data.
+  </div>
+
+  <main class="main">
+    <div class="error-toast" id="errorToast"></div>
+
+    <section class="grid">
+      <div class="stat">
+        <div class="label">Login</div>
+        <div class="value" id="loginTime">--:--</div>
+        <div class="sub" id="loginSub">on time</div>
+      </div>
+      <div class="stat">
+        <div class="label">Active time</div>
+        <div class="value" id="activeTime">0h 0m</div>
+        <div class="sub" id="activeSub">today's session</div>
+      </div>
+      <div class="stat">
+        <div class="label">Idle time</div>
+        <div class="value" id="idleTime">0h 0m</div>
+        <div class="sub" id="idleSub">no input &gt; 5 min</div>
+      </div>
+      <div class="stat">
+        <div class="label">Status</div>
+        <div class="value" id="statusValue">—</div>
+        <div class="sub" id="statusSub">last update <span id="lastBeat">—</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Live scores</h2>
+      <div class="scores">
+        <div class="score">
+          <div class="label">Productivity</div>
+          <div class="value" id="prodValue">—</div>
+          <div class="bar"><div class="bar-fill" id="prodBar" style="width:0"></div></div>
+        </div>
+        <div class="score">
+          <div class="label">Focus</div>
+          <div class="value" id="focusValue">—</div>
+          <div class="bar"><div class="bar-fill" id="focusBar" style="width:0"></div></div>
+        </div>
+        <div class="score">
+          <div class="label">Discipline</div>
+          <div class="value" id="discValue">—</div>
+          <div class="bar"><div class="bar-fill" id="discBar" style="width:0"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Self-reported task progress (used for honesty signal)</h2>
+      <div class="tasks">
+        <div class="tasks-row">
+          <label for="claimedTasks">Tasks completed today (your estimate)</label>
+          <input id="claimedTasks" type="number" min="0" value="0" />
+        </div>
+        <div class="tasks-row">
+          <label for="completedTasks">Tasks marked done in tracker (Jira/Trello/etc.)</label>
+          <input id="completedTasks" type="number" min="0" value="0" />
+        </div>
+        <div class="hint" id="tasksHint">Match these regularly so the system trusts your reporting.</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Your work area</h2>
+      <div class="work-area">
+        <p><b>Keep this tab open while you work.</b></p>
+        <p style="margin-top: 6px;">The tracker is running here. Activity in <em>this</em> page (and any monitored internal tools that include <code>tracker.js</code>) is captured.</p>
+        <p style="margin-top: 6px; color: var(--gray-400); font-size: 0.82rem;">Note: a browser tracker can't see other apps or websites. For OS-wide tracking, a desktop agent is required.</p>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button class="btn btn-secondary" id="forceBeatBtn">Send heartbeat now</button>
+      <button class="btn btn-secondary" onclick="location.href='dashboard.html'">Open admin dashboard</button>
+      <button class="btn btn-danger" id="logoutBtn" style="margin-left:auto;">End session &amp; log out</button>
+    </div>
+  </main>
+
+  <div class="footer">
+    <span id="sessionId">session: —</span>
+    <span id="serverInfo">server: —</span>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const $ = (id) => document.getElementById(id);
+const SESSION_KEY = 'monitoring.session';
+const session = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+
+if (!session || !session.sessionId) {
+  location.href = 'login.html';
+}
+
+// Configure tracker
+window.MONITORING_SERVER_URL = session.serverUrl;
+
+// Initial render of header / footer
+const emp = session.employee || {};
+$('avatar').textContent = (emp.name || '??').split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
+$('empName').textContent = emp.name || '(no name)';
+$('empMeta').textContent = `${emp.role || ''}${emp.role && emp.department ? ' · ' : ''}${emp.department || ''} ${emp.id ? '· ' + emp.id : ''}`.trim() || emp.email;
+$('sessionId').textContent = `session: ${session.sessionId.slice(0, 8)}…`;
+$('serverInfo').textContent = `server: ${session.serverUrl}`;
+
+const loginAt = new Date(session.loginAt);
+const expected = new Date(session.expectedLoginAt);
+const lateMin = Math.max(0, Math.round((loginAt - expected) / 60000));
+$('loginTime').textContent = loginAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+$('loginSub').textContent = lateMin > 15 ? `${lateMin} min late` : 'on time';
+if (lateMin > 15) $('loginSub').style.color = 'var(--error)';
+
+function fmtDur(min) { return `${Math.floor(min/60)}h ${min%60}m`; }
+function scoreClass(n) { return n >= 80 ? 'high' : n >= 60 ? 'med' : 'low'; }
+
+function applyStats(stats) {
+  if (!stats) return;
+  $('activeTime').textContent = fmtDur(stats.activeMin);
+  $('idleTime').textContent = fmtDur(stats.idleMin);
+  $('statusValue').textContent = stats.status[0].toUpperCase() + stats.status.slice(1);
+  $('lastBeat').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const live = $('liveStatus');
+  live.classList.remove('idle', 'offline');
+  if (stats.status === 'idle') live.classList.add('idle');
+  if (stats.status === 'offline') live.classList.add('offline');
+  $('liveLabel').textContent = stats.status.toUpperCase();
+
+  $('prodValue').textContent = stats.productivityScore;
+  $('focusValue').textContent = stats.focusScore;
+  $('discValue').textContent = stats.disciplineScore;
+
+  const setBar = (id, val) => {
+    const el = $(id);
+    el.style.width = val + '%';
+    el.className = 'bar-fill ' + scoreClass(val);
+  };
+  setBar('prodBar', stats.productivityScore);
+  setBar('focusBar', stats.focusScore);
+  setBar('discBar', stats.disciplineScore);
+}
+
+window.addEventListener('monitoring:stats', (e) => applyStats(e.detail));
+window.addEventListener('monitoring:error', (e) => {
+  $('errorToast').textContent = `Couldn't reach monitoring server: ${e.detail}. Tracking continues locally and will resync when the server is back.`;
+  $('errorToast').style.display = 'block';
+});
+
+// Self-reported task inputs persist & feed the next heartbeat
+function syncTasksToStorage() {
+  localStorage.setItem('monitoring.claimedTasks', $('claimedTasks').value);
+  localStorage.setItem('monitoring.completedTasks', $('completedTasks').value);
+  const claimed = Number($('claimedTasks').value || 0);
+  const done = Number($('completedTasks').value || 0);
+  if (claimed > done && claimed > 0) {
+    $('tasksHint').textContent = `Reported ${claimed} done but only ${done} are confirmed in the tracker — this lowers your honesty score.`;
+    $('tasksHint').className = 'hint warn';
+  } else {
+    $('tasksHint').textContent = 'Match these regularly so the system trusts your reporting.';
+    $('tasksHint').className = 'hint';
+  }
+}
+$('claimedTasks').value = localStorage.getItem('monitoring.claimedTasks') || '0';
+$('completedTasks').value = localStorage.getItem('monitoring.completedTasks') || '0';
+$('claimedTasks').addEventListener('change', syncTasksToStorage);
+$('completedTasks').addEventListener('change', syncTasksToStorage);
+syncTasksToStorage();
+
+// Logout & manual heartbeat hooks
+$('logoutBtn').addEventListener('click', async () => {
+  if (!confirm('End your monitored session and log out?')) return;
+  if (window.MonitoringTracker) await window.MonitoringTracker.logout();
+  else { localStorage.removeItem(SESSION_KEY); location.href = 'login.html'; }
+});
+$('forceBeatBtn').addEventListener('click', () => {
+  if (window.MonitoringTracker) window.MonitoringTracker.forceHeartbeat();
+});
+
+// React if server kicks us out
+window.addEventListener('load', () => {
+  if (window.MonitoringTracker) {
+    window.MonitoringTracker.onSessionEnded = () => {
+      alert('Your session ended on the server. Logging in again.');
+      location.href = 'login.html';
+    };
+  }
+});
+</script>
+<script src="tracker.js"></script>
+</body>
+</html>
