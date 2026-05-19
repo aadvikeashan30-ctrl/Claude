@@ -40,29 +40,73 @@
     line-height: 1.5;
   }
 
+
   .container {
-    max-width: 900px;
+    max-width: 960px;
     margin: 0 auto;
     background: #fff;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     overflow: hidden;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .header {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: #fff;
     padding: 32px 32px 24px;
+    position: relative;
+    overflow: hidden;
   }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 300px; height: 300px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -40%; left: -10%;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite reverse;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+  }
+
 
   .header h1 {
     font-size: 1.75rem;
     margin-bottom: 4px;
+    position: relative;
+    animation: fadeInLeft 0.5s 0.2s both;
   }
 
   .header p {
     opacity: 0.9;
     font-size: 0.95rem;
+    position: relative;
+    animation: fadeInLeft 0.5s 0.4s both;
+  }
+
+  @keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
   .stepper {
@@ -74,17 +118,17 @@
 
   .step {
     flex: 1;
-    min-width: 140px;
+    min-width: 120px;
     padding: 16px 12px;
     text-align: center;
     border-right: 1px solid var(--gray-200);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
   }
 
   .step:last-child { border-right: none; }
-  .step:hover { background: var(--gray-100); }
+  .step:hover { background: var(--gray-100); transform: translateY(-2px); }
 
   .step.active {
     background: #fff;
@@ -98,9 +142,16 @@
     bottom: 0; left: 0; right: 0;
     height: 3px;
     background: var(--primary);
+    animation: scaleX 0.3s ease;
+  }
+
+  @keyframes scaleX {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
   }
 
   .step.completed { color: var(--success); }
+
 
   .step-number {
     display: inline-flex;
@@ -113,47 +164,76 @@
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 6px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .step.active .step-number { background: var(--primary); color: #fff; }
-  .step.completed .step-number { background: var(--success); color: #fff; }
+  .step.active .step-number {
+    background: var(--primary);
+    color: #fff;
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(79,70,229,0.4);
+  }
+
+  .step.completed .step-number {
+    background: var(--success);
+    color: #fff;
+    animation: checkBounce 0.4s ease;
+  }
+
+  @keyframes checkBounce {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
 
   .step-label {
     display: block;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   .progress-bar {
     height: 4px;
     background: var(--gray-200);
+    position: relative;
+    overflow: hidden;
   }
 
   .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-    transition: width 0.3s ease;
+    background: linear-gradient(90deg, var(--primary), #a855f7, var(--primary-dark));
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
 
   form { padding: 32px; }
 
   .form-step { display: none; }
-  .form-step.active { display: block; animation: fadeIn 0.3s; }
+  .form-step.active { display: block; animation: stepIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
   }
+
 
   .step-title {
     font-size: 1.35rem;
     color: var(--gray-900);
     margin-bottom: 4px;
+    animation: fadeInLeft 0.4s 0.1s both;
   }
 
   .step-subtitle {
     color: var(--gray-500);
     margin-bottom: 24px;
     font-size: 0.95rem;
+    animation: fadeInLeft 0.4s 0.2s both;
   }
 
   .form-grid {
@@ -162,7 +242,28 @@
     gap: 16px 20px;
   }
 
-  .form-group { display: flex; flex-direction: column; }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    animation: fieldAppear 0.4s ease both;
+  }
+
+  .form-group:nth-child(1) { animation-delay: 0.05s; }
+  .form-group:nth-child(2) { animation-delay: 0.1s; }
+  .form-group:nth-child(3) { animation-delay: 0.15s; }
+  .form-group:nth-child(4) { animation-delay: 0.2s; }
+  .form-group:nth-child(5) { animation-delay: 0.25s; }
+  .form-group:nth-child(6) { animation-delay: 0.3s; }
+  .form-group:nth-child(7) { animation-delay: 0.35s; }
+  .form-group:nth-child(8) { animation-delay: 0.4s; }
+  .form-group:nth-child(9) { animation-delay: 0.45s; }
+  .form-group:nth-child(10) { animation-delay: 0.5s; }
+
+  @keyframes fieldAppear {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   .form-group.full { grid-column: 1 / -1; }
 
   label {
@@ -170,37 +271,57 @@
     font-weight: 500;
     color: var(--gray-700);
     margin-bottom: 6px;
+    transition: color 0.2s;
   }
 
   label .required { color: var(--error); margin-left: 2px; }
 
+
   input, select, textarea {
     padding: 10px 12px;
-    border: 1px solid var(--gray-300);
+    border: 1.5px solid var(--gray-300);
     border-radius: var(--radius);
     font-size: 0.95rem;
     font-family: inherit;
     background: #fff;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+    transform: translateY(-1px);
+  }
+
+  input:hover, select:hover, textarea:hover {
+    border-color: var(--gray-400);
   }
 
   input.error, select.error, textarea.error {
     border-color: var(--error);
+    animation: shake 0.4s ease;
   }
 
-  input.success { border-color: var(--success); }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+  }
+
+  input.success {
+    border-color: var(--success);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  }
 
   .error-msg {
     color: var(--error);
     font-size: 0.8rem;
     margin-top: 4px;
     min-height: 16px;
+    transition: all 0.2s;
   }
 
   .hint {
@@ -209,23 +330,44 @@
     margin-top: 4px;
   }
 
+  /* Floating label effect */
+  .form-group.focused label {
+    color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+
   .file-upload {
     border: 2px dashed var(--gray-300);
     border-radius: var(--radius);
-    padding: 20px;
+    padding: 24px;
     text-align: center;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
   }
 
   .file-upload:hover {
     border-color: var(--primary);
     background: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79,70,229,0.1);
+  }
+
+  .file-upload.dragover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    transform: scale(1.02);
   }
 
   .file-upload input[type="file"] { display: none; }
+  .file-upload-icon { font-size: 2rem; margin-bottom: 8px; animation: bounce 2s infinite; }
 
-  .file-upload-icon { font-size: 2rem; margin-bottom: 8px; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
 
   .file-name {
     margin-top: 8px;
@@ -233,6 +375,40 @@
     font-size: 0.85rem;
     font-weight: 500;
   }
+
+  .photo-upload {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 3px dashed var(--gray-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto 16px;
+  }
+
+  .photo-upload:hover {
+    border-color: var(--primary);
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(79,70,229,0.2);
+  }
+
+  .photo-upload img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  .photo-upload .photo-placeholder {
+    text-align: center;
+    color: var(--gray-400);
+    font-size: 0.75rem;
+  }
+
+  .photo-upload .photo-placeholder span { font-size: 2rem; display: block; }
+
 
   .checkbox-group {
     display: flex;
@@ -245,6 +421,17 @@
     margin-top: 2px;
     cursor: pointer;
     accent-color: var(--primary);
+    transition: transform 0.2s;
+  }
+
+  .checkbox-group input[type="checkbox"]:checked {
+    animation: checkPop 0.3s ease;
+  }
+
+  @keyframes checkPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
   }
 
   .checkbox-group label {
@@ -268,21 +455,46 @@
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.15s, transform 0.05s;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: inherit;
+    position: relative;
+    overflow: hidden;
   }
 
-  button:active { transform: translateY(1px); }
+  button::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s, height 0.4s;
+  }
+
+  button:active::after {
+    width: 200px; height: 200px;
+  }
+
+  button:active { transform: translateY(1px) scale(0.98); }
 
   .btn-primary {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: #fff;
+    box-shadow: 0 4px 12px rgba(79,70,229,0.3);
   }
 
-  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-dark), #3730a3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79,70,229,0.4);
+  }
+
   .btn-primary:disabled {
     background: var(--gray-300);
     cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
   }
 
   .btn-secondary {
@@ -290,14 +502,32 @@
     color: var(--gray-700);
   }
 
-  .btn-secondary:hover { background: var(--gray-200); }
+  .btn-secondary:hover {
+    background: var(--gray-200);
+    transform: translateY(-1px);
+  }
+
 
   .review-section {
     background: var(--gray-50);
     border-radius: var(--radius);
     padding: 16px 20px;
     margin-bottom: 16px;
+    animation: fieldAppear 0.3s ease both;
+    transition: transform 0.2s, box-shadow 0.2s;
   }
+
+  .review-section:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .review-section:nth-child(1) { animation-delay: 0.1s; }
+  .review-section:nth-child(2) { animation-delay: 0.2s; }
+  .review-section:nth-child(3) { animation-delay: 0.3s; }
+  .review-section:nth-child(4) { animation-delay: 0.4s; }
+  .review-section:nth-child(5) { animation-delay: 0.5s; }
+  .review-section:nth-child(6) { animation-delay: 0.6s; }
 
   .review-section h3 {
     font-size: 1rem;
@@ -315,7 +545,13 @@
     font-weight: 500;
     background: none;
     border: none;
-    padding: 0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .review-section .edit-link:hover {
+    background: var(--primary-light);
   }
 
   .review-row {
@@ -329,6 +565,7 @@
   .review-row:last-child { border-bottom: none; }
   .review-row .label { color: var(--gray-500); }
   .review-row .value { color: var(--gray-900); font-weight: 500; }
+
 
   .success-screen {
     text-align: center;
@@ -345,16 +582,25 @@
     justify-content: center;
     font-size: 2.5rem;
     margin-bottom: 16px;
+    animation: successPop 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes successPop {
+    0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+    60% { transform: scale(1.2) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
   }
 
   .success-screen h2 {
     color: var(--gray-900);
     margin-bottom: 8px;
+    animation: fadeInLeft 0.4s 0.3s both;
   }
 
   .success-screen p {
     color: var(--gray-600);
     margin-bottom: 24px;
+    animation: fadeInLeft 0.4s 0.4s both;
   }
 
   .employee-id {
@@ -367,6 +613,7 @@
     font-weight: 600;
     display: inline-block;
     margin-bottom: 20px;
+    animation: fadeInLeft 0.4s 0.5s both;
   }
 
   .json-preview {
@@ -383,6 +630,7 @@
     overflow-y: auto;
   }
 
+
   .toast {
     position: fixed;
     top: 20px;
@@ -394,7 +642,7 @@
     box-shadow: var(--shadow-lg);
     z-index: 1000;
     transform: translateX(120%);
-    transition: transform 0.3s;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     font-size: 0.9rem;
   }
 
@@ -425,20 +673,215 @@
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* Lip sync indicator - real-time data sync visual */
+  .sync-indicator {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: var(--gray-800);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 999;
+  }
+
+  .sync-indicator.active {
+    opacity: 1;
+    animation: pulse 1.5s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(79,70,229,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(79,70,229,0); }
+  }
+
+  .sync-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: blink 1s ease infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+
+  /* Signature pad */
+  .signature-pad {
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius);
+    background: #fafafa;
+    cursor: crosshair;
+    touch-action: none;
+    transition: border-color 0.2s;
+  }
+
+  .signature-pad:hover { border-color: var(--primary); }
+
+  .signature-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .signature-actions button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  /* Skills tags */
+  .skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .skill-tag {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    animation: tagPop 0.3s ease;
+  }
+
+  @keyframes tagPop {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .skill-tag .remove-skill {
+    cursor: pointer;
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .skill-tag .remove-skill:hover { color: var(--error); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .modal-overlay.show .modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal h2 { margin-bottom: 16px; font-size: 1.25rem; }
+  .modal p { margin-bottom: 12px; font-size: 0.9rem; color: var(--gray-600); line-height: 1.6; }
+
+  /* Password strength */
+  .password-strength {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--gray-200);
+    margin-top: 6px;
+    overflow: hidden;
+  }
+
+  .password-strength .bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s, background 0.3s;
+  }
+
+  .strength-text {
+    font-size: 0.75rem;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+
+  /* Typing animation for synced fields */
+  .typing-effect {
+    border-right: 2px solid var(--primary);
+    animation: typing-cursor 0.5s step-end infinite alternate;
+  }
+
+  @keyframes typing-cursor {
+    50% { border-color: transparent; }
+  }
+
+  /* Field fill animation */
+  .field-synced {
+    animation: syncFlash 0.6s ease;
+  }
+
+  @keyframes syncFlash {
+    0% { background: var(--primary-light); }
+    100% { background: #fff; }
+  }
+
+  /* Download button */
+  .btn-download {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+  }
+
+  .btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16,185,129,0.4);
+  }
+
   @media (max-width: 640px) {
     body { padding: 12px 8px; }
     .header { padding: 20px; }
     form { padding: 20px; }
     .form-grid { grid-template-columns: 1fr; }
     .step-label { display: none; }
-    .step { min-width: 60px; padding: 12px 4px; }
+    .step { min-width: 50px; padding: 12px 4px; }
     .review-row { grid-template-columns: 1fr; gap: 2px; }
     .actions { flex-direction: column-reverse; gap: 8px; }
     .actions button { width: 100%; }
+    .sync-indicator { display: none; }
   }
 </style>
 </head>
 <body>
+
+
 <div class="container" role="main">
   <header class="header">
     <h1>Employee Registration</h1>
@@ -464,18 +907,38 @@
     </div>
     <div class="step" data-step="5">
       <span class="step-number">5</span>
+      <span class="step-label">Emergency</span>
+    </div>
+    <div class="step" data-step="6">
+      <span class="step-number">6</span>
+      <span class="step-label">Account</span>
+    </div>
+    <div class="step" data-step="7">
+      <span class="step-number">7</span>
       <span class="step-label">Review</span>
     </div>
   </nav>
 
-  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 20%"></div></div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 14.3%"></div></div>
 
   <form id="regForm" novalidate>
+
 
     <!-- STEP 1: Personal Details -->
     <section class="form-step active" data-step="1" aria-labelledby="step1-title">
       <h2 class="step-title" id="step1-title">Personal Details</h2>
       <p class="step-subtitle">Tell us a little about yourself.</p>
+
+      <!-- Profile Photo -->
+      <label class="photo-upload" for="profilePhoto" title="Upload profile photo">
+        <div class="photo-placeholder" id="photoPlaceholder">
+          <span>📷</span>
+          Upload Photo
+        </div>
+        <img id="photoPreview" style="display:none;" alt="Profile preview" />
+        <input type="file" id="profilePhoto" name="profilePhoto" accept=".jpg,.jpeg,.png" />
+      </label>
+
       <div class="form-grid">
         <div class="form-group">
           <label for="firstName">First Name<span class="required">*</span></label>
@@ -524,6 +987,14 @@
           <div class="error-msg" data-error-for="city"></div>
         </div>
         <div class="form-group">
+          <label for="state">State / Province</label>
+          <input type="text" id="state" name="state" autocomplete="address-level1" />
+        </div>
+        <div class="form-group">
+          <label for="zipCode">ZIP / Postal Code</label>
+          <input type="text" id="zipCode" name="zipCode" autocomplete="postal-code" />
+        </div>
+        <div class="form-group">
           <label for="country">Country<span class="required">*</span></label>
           <select id="country" name="country" required autocomplete="country">
             <option value="">Select country</option>
@@ -543,6 +1014,7 @@
         <button type="button" class="btn-primary" data-action="next">Next: Identity →</button>
       </div>
     </section>
+
 
     <!-- STEP 2: Identity Verification -->
     <section class="form-step" data-step="2" aria-labelledby="step2-title">
@@ -567,9 +1039,9 @@
         </div>
         <div class="form-group full">
           <label for="idDoc">Upload ID Document<span class="required">*</span></label>
-          <label class="file-upload" for="idDoc">
+          <label class="file-upload" for="idDoc" id="idDocUpload">
             <div class="file-upload-icon">📄</div>
-            <div>Click to upload (PDF, JPG, PNG — max 5 MB)</div>
+            <div>Click or drag to upload (PDF, JPG, PNG — max 5 MB)</div>
             <input type="file" id="idDoc" name="idDoc" accept=".pdf,.jpg,.jpeg,.png" required />
             <div class="file-name" id="idDocName"></div>
           </label>
@@ -588,10 +1060,11 @@
       </div>
     </section>
 
+
     <!-- STEP 3: Work / Role -->
     <section class="form-step" data-step="3" aria-labelledby="step3-title">
       <h2 class="step-title" id="step3-title">Work & Role Assignment</h2>
-      <p class="step-subtitle">Confirm your role and start details.</p>
+      <p class="step-subtitle">Confirm your role, skills, and start details.</p>
       <div class="form-grid">
         <div class="form-group">
           <label for="jobTitle">Job Title<span class="required">*</span></label>
@@ -643,12 +1116,34 @@
           </select>
           <div class="error-msg" data-error-for="workLocation"></div>
         </div>
+        <div class="form-group full">
+          <label for="skills">Skills & Qualifications</label>
+          <input type="text" id="skills" name="skills" placeholder="Type a skill and press Enter" />
+          <div class="hint">Press Enter to add each skill</div>
+          <div class="skills-container" id="skillsContainer"></div>
+        </div>
+        <div class="form-group full">
+          <label for="equipment">Equipment Preferences</label>
+          <select id="equipment" name="equipment">
+            <option value="">Select preferred equipment</option>
+            <option value="macbook_pro">MacBook Pro</option>
+            <option value="macbook_air">MacBook Air</option>
+            <option value="dell_xps">Dell XPS</option>
+            <option value="thinkpad">Lenovo ThinkPad</option>
+            <option value="custom">Custom (specify in notes)</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label for="accessibility">Accessibility / Special Needs</label>
+          <textarea id="accessibility" name="accessibility" rows="2" placeholder="Any accessibility requirements or accommodations needed..."></textarea>
+        </div>
       </div>
       <div class="actions">
         <button type="button" class="btn-secondary" data-action="prev">← Back</button>
         <button type="button" class="btn-primary" data-action="next">Next: Payroll →</button>
       </div>
     </section>
+
 
     <!-- STEP 4: Payroll & Banking -->
     <section class="form-step" data-step="4" aria-labelledby="step4-title">
@@ -663,12 +1158,18 @@
         <div class="form-group">
           <label for="accountHolder">Account Holder Name<span class="required">*</span></label>
           <input type="text" id="accountHolder" name="accountHolder" required />
+          <div class="async-status" id="accountHolderSync"></div>
           <div class="error-msg" data-error-for="accountHolder"></div>
         </div>
         <div class="form-group">
           <label for="accountNumber">Account Number<span class="required">*</span></label>
           <input type="text" id="accountNumber" name="accountNumber" required inputmode="numeric" />
           <div class="error-msg" data-error-for="accountNumber"></div>
+        </div>
+        <div class="form-group">
+          <label for="confirmAccountNumber">Confirm Account Number<span class="required">*</span></label>
+          <input type="text" id="confirmAccountNumber" name="confirmAccountNumber" required inputmode="numeric" />
+          <div class="error-msg" data-error-for="confirmAccountNumber"></div>
         </div>
         <div class="form-group">
           <label for="routingCode">Routing / IFSC / Swift Code<span class="required">*</span></label>
@@ -697,16 +1198,135 @@
       </div>
       <div class="actions">
         <button type="button" class="btn-secondary" data-action="prev">← Back</button>
+        <button type="button" class="btn-primary" data-action="next">Next: Emergency →</button>
+      </div>
+    </section>
+
+
+    <!-- STEP 5: Emergency Contact & Additional -->
+    <section class="form-step" data-step="5" aria-labelledby="step5-title">
+      <h2 class="step-title" id="step5-title">Emergency Contact & Additional Info</h2>
+      <p class="step-subtitle">Who should we contact in case of emergency?</p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="emergencyName">Contact Name<span class="required">*</span></label>
+          <input type="text" id="emergencyName" name="emergencyName" required />
+          <div class="error-msg" data-error-for="emergencyName"></div>
+        </div>
+        <div class="form-group">
+          <label for="emergencyRelation">Relationship<span class="required">*</span></label>
+          <select id="emergencyRelation" name="emergencyRelation" required>
+            <option value="">Select relationship</option>
+            <option value="spouse">Spouse</option>
+            <option value="parent">Parent</option>
+            <option value="sibling">Sibling</option>
+            <option value="friend">Friend</option>
+            <option value="other">Other</option>
+          </select>
+          <div class="error-msg" data-error-for="emergencyRelation"></div>
+        </div>
+        <div class="form-group">
+          <label for="emergencyPhone">Contact Phone<span class="required">*</span></label>
+          <input type="tel" id="emergencyPhone" name="emergencyPhone" required placeholder="+1 555 123 4567" />
+          <div class="error-msg" data-error-for="emergencyPhone"></div>
+        </div>
+        <div class="form-group">
+          <label for="emergencyEmail">Contact Email</label>
+          <input type="email" id="emergencyEmail" name="emergencyEmail" placeholder="optional" />
+        </div>
+        <div class="form-group full">
+          <label for="bloodGroup">Blood Group</label>
+          <select id="bloodGroup" name="bloodGroup">
+            <option value="">Select blood group</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label for="medicalConditions">Medical Conditions / Allergies</label>
+          <textarea id="medicalConditions" name="medicalConditions" rows="2" placeholder="Any known conditions or allergies (optional)..."></textarea>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
+        <button type="button" class="btn-primary" data-action="next">Next: Account →</button>
+      </div>
+    </section>
+
+
+    <!-- STEP 6: Account Setup & Signature -->
+    <section class="form-step" data-step="6" aria-labelledby="step6-title">
+      <h2 class="step-title" id="step6-title">Account Setup & Signature</h2>
+      <p class="step-subtitle">Create your employee account and sign digitally.</p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="username">Username<span class="required">*</span></label>
+          <input type="text" id="username" name="username" required placeholder="e.g., john.smith" />
+          <div class="async-status" id="usernameStatus"></div>
+          <div class="error-msg" data-error-for="username"></div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password<span class="required">*</span></label>
+          <input type="password" id="password" name="password" required placeholder="Min 8 chars, 1 uppercase, 1 number" />
+          <div class="password-strength"><div class="bar" id="passwordBar"></div></div>
+          <div class="strength-text" id="strengthText"></div>
+          <div class="error-msg" data-error-for="password"></div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password<span class="required">*</span></label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required />
+          <div class="error-msg" data-error-for="confirmPassword"></div>
+        </div>
+        <div class="form-group">
+          <label for="securityQuestion">Security Question<span class="required">*</span></label>
+          <select id="securityQuestion" name="securityQuestion" required>
+            <option value="">Select a question</option>
+            <option value="pet">What is the name of your first pet?</option>
+            <option value="school">What school did you attend in grade 6?</option>
+            <option value="city">In what city were you born?</option>
+            <option value="movie">What is your favorite movie?</option>
+          </select>
+          <div class="error-msg" data-error-for="securityQuestion"></div>
+        </div>
+        <div class="form-group full">
+          <label for="securityAnswer">Security Answer<span class="required">*</span></label>
+          <input type="text" id="securityAnswer" name="securityAnswer" required />
+          <div class="error-msg" data-error-for="securityAnswer"></div>
+        </div>
+        <div class="form-group full">
+          <label>Digital Signature<span class="required">*</span></label>
+          <canvas id="signaturePad" class="signature-pad" width="500" height="150"></canvas>
+          <div class="signature-actions">
+            <button type="button" class="btn-secondary" id="clearSignature">Clear</button>
+            <span class="hint" style="margin-left: auto; margin-top: 4px;">Draw your signature above</span>
+          </div>
+          <div class="error-msg" data-error-for="signature"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
         <button type="button" class="btn-primary" data-action="next">Next: Review →</button>
       </div>
     </section>
 
-    <!-- STEP 5: Review & Submit -->
-    <section class="form-step" data-step="5" aria-labelledby="step5-title">
-      <h2 class="step-title" id="step5-title">Review & Submit</h2>
+
+    <!-- STEP 7: Review & Submit -->
+    <section class="form-step" data-step="7" aria-labelledby="step7-title">
+      <h2 class="step-title" id="step7-title">Review & Submit</h2>
       <p class="step-subtitle">Please review your information before submitting.</p>
       <div id="reviewContent"></div>
       <div class="checkbox-group" style="margin-top: 20px;">
+        <input type="checkbox" id="termsConsent" name="termsConsent" required />
+        <label for="termsConsent">I have read and agree to the <a href="#" id="openTerms" style="color:var(--primary);">Terms & Conditions</a>.<span class="required">*</span></label>
+      </div>
+      <div class="error-msg" data-error-for="termsConsent"></div>
+      <div class="checkbox-group" style="margin-top: 8px;">
         <input type="checkbox" id="finalConsent" name="finalConsent" required />
         <label for="finalConsent">I confirm all the information above is accurate and agree to the company's privacy policy, code of conduct and terms of employment.<span class="required">*</span></label>
       </div>
@@ -718,13 +1338,17 @@
     </section>
 
     <!-- SUCCESS SCREEN -->
-    <section class="form-step" data-step="6">
+    <section class="form-step" data-step="8">
       <div class="success-screen">
         <div class="success-icon">✓</div>
         <h2>Registration Complete!</h2>
         <p>Welcome to the team. Your registration has been submitted successfully.</p>
         <div class="employee-id" id="employeeId">EMP-XXXXXX</div>
         <p style="font-size: 0.9rem; color: var(--gray-500);">A confirmation email has been sent. Our HR team will be in touch shortly.</p>
+        <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button type="button" class="btn-download" id="downloadBtn">⬇ Download Summary (PDF)</button>
+          <button type="button" class="btn-secondary" id="printBtn">🖨 Print</button>
+        </div>
         <details style="margin-top: 24px; text-align: left;">
           <summary style="cursor: pointer; color: var(--primary); font-weight: 500;">View submission JSON</summary>
           <pre class="json-preview" id="jsonPreview"></pre>
@@ -736,52 +1360,89 @@
   </form>
 </div>
 
+
+<!-- Sync indicator -->
+<div class="sync-indicator" id="syncIndicator">
+  <div class="sync-dot"></div>
+  <span>Syncing data...</span>
+</div>
+
+<!-- Toast -->
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Terms Modal -->
+<div class="modal-overlay" id="termsModal">
+  <div class="modal">
+    <h2>Terms & Conditions</h2>
+    <p><strong>1. Employment Agreement:</strong> By completing this registration, you acknowledge that you are entering into an employment relationship with the company, subject to verification of all provided information.</p>
+    <p><strong>2. Data Privacy:</strong> All personal data collected will be processed in accordance with applicable data protection laws (GDPR/CCPA). Your information will only be used for employment-related purposes.</p>
+    <p><strong>3. Code of Conduct:</strong> You agree to abide by the company's code of conduct, anti-harassment policies, and professional standards as outlined in the employee handbook.</p>
+    <p><strong>4. Confidentiality:</strong> You agree to maintain the confidentiality of proprietary information and trade secrets during and after your employment.</p>
+    <p><strong>5. Equipment Policy:</strong> Company-provided equipment remains the property of the organization and must be returned upon termination of employment.</p>
+    <p><strong>6. Intellectual Property:</strong> Any work product created during employment will be the property of the company unless otherwise agreed in writing.</p>
+    <button type="button" class="btn-primary" id="closeTerms" style="margin-top: 16px;">I Understand</button>
+  </div>
+</div>
+
 
 <script>
 'use strict';
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 7;
 let currentStep = 1;
 const formData = {};
+let skillsList = [];
 
 const stepFields = {
   1: ['firstName', 'lastName', 'email', 'phone', 'dob', 'address', 'city', 'country'],
   2: ['idType', 'idNumber', 'idDoc', 'taxId'],
   3: ['jobTitle', 'department', 'employmentType', 'startDate', 'workLocation'],
-  4: ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency', 'taxConsent'],
-  5: ['finalConsent']
+  4: ['bankName', 'accountHolder', 'accountNumber', 'confirmAccountNumber', 'routingCode', 'currency', 'taxConsent'],
+  5: ['emergencyName', 'emergencyRelation', 'emergencyPhone'],
+  6: ['username', 'password', 'confirmPassword', 'securityQuestion', 'securityAnswer'],
+  7: ['termsConsent', 'finalConsent']
 };
 
 const labels = {
   firstName: 'First Name', lastName: 'Last Name', email: 'Email', phone: 'Phone',
-  dob: 'Date of Birth', gender: 'Gender', address: 'Address', city: 'City', country: 'Country',
+  dob: 'Date of Birth', gender: 'Gender', address: 'Address', city: 'City',
+  state: 'State', zipCode: 'ZIP Code', country: 'Country',
   idType: 'ID Type', idNumber: 'ID Number', idDoc: 'ID Document', taxId: 'Tax ID',
   jobTitle: 'Job Title', department: 'Department', employmentType: 'Employment Type',
   manager: 'Manager', startDate: 'Start Date', workLocation: 'Work Location',
+  skills: 'Skills', equipment: 'Equipment', accessibility: 'Accessibility',
   bankName: 'Bank Name', accountHolder: 'Account Holder', accountNumber: 'Account Number',
-  routingCode: 'Routing/IFSC', currency: 'Currency'
+  routingCode: 'Routing/IFSC', currency: 'Currency',
+  emergencyName: 'Emergency Contact', emergencyRelation: 'Relationship',
+  emergencyPhone: 'Emergency Phone', emergencyEmail: 'Emergency Email',
+  bloodGroup: 'Blood Group', medicalConditions: 'Medical Conditions',
+  username: 'Username', securityQuestion: 'Security Question'
 };
 
 const sectionMap = {
-  'Personal Details': ['firstName', 'lastName', 'email', 'phone', 'dob', 'gender', 'address', 'city', 'country'],
+  'Personal Details': ['firstName', 'lastName', 'email', 'phone', 'dob', 'gender', 'address', 'city', 'state', 'zipCode', 'country'],
   'Identity Verification': ['idType', 'idNumber', 'idDoc', 'taxId'],
-  'Work & Role': ['jobTitle', 'department', 'employmentType', 'manager', 'startDate', 'workLocation'],
-  'Payroll & Banking': ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency']
+  'Work & Role': ['jobTitle', 'department', 'employmentType', 'manager', 'startDate', 'workLocation', 'skills', 'equipment', 'accessibility'],
+  'Payroll & Banking': ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency'],
+  'Emergency Contact': ['emergencyName', 'emergencyRelation', 'emergencyPhone', 'emergencyEmail', 'bloodGroup', 'medicalConditions'],
+  'Account': ['username', 'securityQuestion']
 };
 
 const sectionStepMap = {
   'Personal Details': 1,
   'Identity Verification': 2,
   'Work & Role': 3,
-  'Payroll & Banking': 4
+  'Payroll & Banking': 4,
+  'Emergency Contact': 5,
+  'Account': 6
 };
+
 
 // ---- Validation ----
 function validateField(name, value) {
-  if (!value && !['gender', 'manager'].includes(name)) {
+  if (!value && !['gender', 'manager', 'state', 'zipCode', 'equipment', 'accessibility', 'emergencyEmail', 'bloodGroup', 'medicalConditions'].includes(name)) {
     if (name === 'idDoc' && !document.getElementById('idDoc').files.length) return 'Please upload a document.';
-    if (name === 'taxConsent' || name === 'finalConsent') {
+    if (['taxConsent', 'finalConsent', 'termsConsent'].includes(name)) {
       const cb = document.getElementById(name);
       if (cb && !cb.checked) return 'You must agree to continue.';
       return '';
@@ -793,6 +1454,7 @@ function validateField(name, value) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email address.';
       break;
     case 'phone':
+    case 'emergencyPhone':
       if (!/^[+\d][\d\s\-()]{6,}$/.test(value)) return 'Enter a valid phone number.';
       break;
     case 'dob': {
@@ -814,7 +1476,25 @@ function validateField(name, value) {
       if (value.replace(/\D/g, '').length < 4) return 'Enter a valid Tax ID / SSN.';
       break;
     case 'accountNumber':
-      if (!/^\d{6,20}$/.test(value.replace(/\s/g, ''))) return 'Account number should be 6–20 digits.';
+      if (!/^\d{6,20}$/.test(value.replace(/\s/g, ''))) return 'Account number should be 6-20 digits.';
+      break;
+    case 'confirmAccountNumber': {
+      const acct = document.getElementById('accountNumber').value.trim();
+      if (value !== acct) return 'Account numbers do not match.';
+      break;
+    }
+    case 'password':
+      if (value.length < 8) return 'Password must be at least 8 characters.';
+      if (!/[A-Z]/.test(value)) return 'Include at least one uppercase letter.';
+      if (!/\d/.test(value)) return 'Include at least one number.';
+      break;
+    case 'confirmPassword': {
+      const pw = document.getElementById('password').value;
+      if (value !== pw) return 'Passwords do not match.';
+      break;
+    }
+    case 'username':
+      if (!/^[a-zA-Z][a-zA-Z0-9._]{2,}$/.test(value)) return 'Username must start with a letter, min 3 chars.';
       break;
   }
   return '';
@@ -831,7 +1511,8 @@ function clearError(name) { showError(name, ''); }
 
 function validateStep(step) {
   let valid = true;
-  for (const name of stepFields[step]) {
+  const fields = stepFields[step] || [];
+  for (const name of fields) {
     const el = document.getElementById(name);
     if (!el) continue;
     let value;
@@ -842,16 +1523,23 @@ function validateStep(step) {
     showError(name, msg);
     if (msg) valid = false;
   }
-  // Email duplicate state must be valid
   if (step === 1) {
     const emailStatus = document.getElementById('emailStatus');
-    if (emailStatus.classList.contains('invalid')) {
+    if (emailStatus && emailStatus.classList.contains('invalid')) {
       showError('email', 'This email is already registered.');
+      valid = false;
+    }
+  }
+  if (step === 6) {
+    // Check signature
+    if (!signatureData) {
+      showError('signature', 'Please provide your digital signature.');
       valid = false;
     }
   }
   return valid;
 }
+
 
 // ---- Async email validation (mocked) ----
 const TAKEN_EMAILS = ['admin@company.com', 'test@test.com', 'employee@corp.com'];
@@ -867,7 +1555,9 @@ document.getElementById('email').addEventListener('input', (e) => {
   }
   status.className = 'async-status checking';
   status.innerHTML = '<span class="spinner"></span> Checking availability...';
+  showSyncIndicator();
   emailDebounce = setTimeout(() => {
+    hideSyncIndicator();
     if (TAKEN_EMAILS.includes(value.toLowerCase())) {
       status.className = 'async-status invalid';
       status.innerHTML = '✗ Email already registered';
@@ -877,6 +1567,124 @@ document.getElementById('email').addEventListener('input', (e) => {
     }
   }, 700);
 });
+
+// ---- Async username validation ----
+const TAKEN_USERNAMES = ['admin', 'root', 'john.smith', 'test'];
+let usernameDebounce;
+document.getElementById('username').addEventListener('input', (e) => {
+  clearTimeout(usernameDebounce);
+  const status = document.getElementById('usernameStatus');
+  const value = e.target.value.trim();
+  if (!value || value.length < 3) {
+    status.className = 'async-status';
+    status.innerHTML = '';
+    return;
+  }
+  status.className = 'async-status checking';
+  status.innerHTML = '<span class="spinner"></span> Checking username...';
+  showSyncIndicator();
+  usernameDebounce = setTimeout(() => {
+    hideSyncIndicator();
+    if (TAKEN_USERNAMES.includes(value.toLowerCase())) {
+      status.className = 'async-status invalid';
+      status.innerHTML = '✗ Username already taken';
+    } else {
+      status.className = 'async-status valid';
+      status.innerHTML = '✓ Username available';
+    }
+  }, 600);
+});
+
+// ---- Password strength meter ----
+document.getElementById('password').addEventListener('input', (e) => {
+  const val = e.target.value;
+  const bar = document.getElementById('passwordBar');
+  const text = document.getElementById('strengthText');
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (val.length >= 12) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/\d/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+
+  const levels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Excellent'];
+  const colors = ['', '#ef4444', '#f59e0b', '#eab308', '#10b981', '#059669'];
+  const widths = ['0%', '20%', '40%', '60%', '80%', '100%'];
+
+  bar.style.width = widths[score];
+  bar.style.background = colors[score];
+  text.textContent = levels[score];
+  text.style.color = colors[score];
+});
+
+
+// ---- LIP SYNC: Auto-populate / field synchronization ----
+// Sync first+last name to account holder in payroll
+function syncFields() {
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const fullName = [firstName, lastName].filter(Boolean).join(' ');
+
+  // Auto-populate account holder name from personal details
+  const accountHolder = document.getElementById('accountHolder');
+  if (accountHolder && !accountHolder.dataset.userEdited && fullName) {
+    accountHolder.value = fullName;
+    accountHolder.classList.add('field-synced');
+    setTimeout(() => accountHolder.classList.remove('field-synced'), 600);
+    const syncStatus = document.getElementById('accountHolderSync');
+    if (syncStatus) {
+      syncStatus.className = 'async-status valid';
+      syncStatus.innerHTML = '⟳ Auto-synced from personal details';
+    }
+  }
+
+  // Auto-suggest username from name
+  const username = document.getElementById('username');
+  if (username && !username.dataset.userEdited && firstName && lastName) {
+    username.value = (firstName + '.' + lastName).toLowerCase().replace(/[^a-z.]/g, '');
+    username.classList.add('field-synced');
+    setTimeout(() => username.classList.remove('field-synced'), 600);
+  }
+}
+
+// Mark fields as user-edited to stop auto-sync
+document.getElementById('accountHolder').addEventListener('input', function() {
+  this.dataset.userEdited = 'true';
+});
+document.getElementById('username').addEventListener('input', function() {
+  this.dataset.userEdited = 'true';
+});
+
+// Trigger sync when name fields change
+document.getElementById('firstName').addEventListener('change', syncFields);
+document.getElementById('lastName').addEventListener('change', syncFields);
+
+// Auto-set currency based on country selection
+document.getElementById('country').addEventListener('change', (e) => {
+  const currencyMap = { US: 'USD', IN: 'INR', UK: 'GBP', CA: 'CAD', AU: 'AUD', DE: 'EUR', SG: 'SGD' };
+  const currency = document.getElementById('currency');
+  const mapped = currencyMap[e.target.value];
+  if (mapped && !currency.dataset.userEdited) {
+    currency.value = mapped;
+    currency.classList.add('field-synced');
+    setTimeout(() => currency.classList.remove('field-synced'), 600);
+    showSyncIndicator();
+    setTimeout(hideSyncIndicator, 1000);
+  }
+});
+
+document.getElementById('currency').addEventListener('change', function() {
+  this.dataset.userEdited = 'true';
+});
+
+// ---- Sync indicator ----
+function showSyncIndicator() {
+  document.getElementById('syncIndicator').classList.add('active');
+}
+function hideSyncIndicator() {
+  document.getElementById('syncIndicator').classList.remove('active');
+}
+
 
 // ---- File handling ----
 document.getElementById('idDoc').addEventListener('change', (e) => {
@@ -896,19 +1704,147 @@ document.getElementById('idDoc').addEventListener('change', (e) => {
   }
 });
 
-// ---- Real-time validation ----
-document.querySelectorAll('input, select').forEach(el => {
+// Drag & drop for file upload
+const fileUploadArea = document.getElementById('idDocUpload');
+if (fileUploadArea) {
+  ['dragenter', 'dragover'].forEach(evt => {
+    fileUploadArea.addEventListener(evt, (e) => {
+      e.preventDefault();
+      fileUploadArea.classList.add('dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    fileUploadArea.addEventListener(evt, (e) => {
+      e.preventDefault();
+      fileUploadArea.classList.remove('dragover');
+    });
+  });
+  fileUploadArea.addEventListener('drop', (e) => {
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      const input = document.getElementById('idDoc');
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      input.files = dt.files;
+      input.dispatchEvent(new Event('change'));
+    }
+  });
+}
+
+// Profile photo upload
+document.getElementById('profilePhoto').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    if (file.size > 5 * 1024 * 1024) {
+      toast('Photo too large (max 5 MB).', 'error');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      document.getElementById('photoPreview').src = ev.target.result;
+      document.getElementById('photoPreview').style.display = 'block';
+      document.getElementById('photoPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+
+// ---- Skills handling ----
+document.getElementById('skills').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const value = e.target.value.trim();
+    if (value && !skillsList.includes(value)) {
+      skillsList.push(value);
+      renderSkills();
+      e.target.value = '';
+    }
+  }
+});
+
+function renderSkills() {
+  const container = document.getElementById('skillsContainer');
+  container.innerHTML = '';
+  skillsList.forEach((skill, idx) => {
+    const tag = document.createElement('span');
+    tag.className = 'skill-tag';
+    tag.innerHTML = `${escapeHtml(skill)} <span class="remove-skill" data-idx="${idx}">&times;</span>`;
+    container.appendChild(tag);
+  });
+  container.querySelectorAll('.remove-skill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      skillsList.splice(parseInt(btn.dataset.idx), 1);
+      renderSkills();
+    });
+  });
+}
+
+// ---- Signature Pad ----
+let signatureData = null;
+const canvas = document.getElementById('signaturePad');
+const ctx = canvas.getContext('2d');
+let isDrawing = false;
+let lastX = 0, lastY = 0;
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+  return [x * (canvas.width / rect.width), y * (canvas.height / rect.height)];
+}
+
+canvas.addEventListener('mousedown', (e) => { isDrawing = true; [lastX, lastY] = getPos(e); });
+canvas.addEventListener('mousemove', (e) => { if (isDrawing) draw(e); });
+canvas.addEventListener('mouseup', () => { isDrawing = false; signatureData = canvas.toDataURL(); });
+canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+
+canvas.addEventListener('touchstart', (e) => { e.preventDefault(); isDrawing = true; [lastX, lastY] = getPos(e); });
+canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (isDrawing) draw(e); });
+canvas.addEventListener('touchend', () => { isDrawing = false; signatureData = canvas.toDataURL(); });
+
+function draw(e) {
+  const [x, y] = getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(x, y);
+  ctx.strokeStyle = '#1f2937';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+  [lastX, lastY] = [x, y];
+}
+
+document.getElementById('clearSignature').addEventListener('click', () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  signatureData = null;
+});
+
+
+// ---- Real-time validation with focus effects ----
+document.querySelectorAll('input, select, textarea').forEach(el => {
+  el.addEventListener('focus', () => {
+    const group = el.closest('.form-group');
+    if (group) group.classList.add('focused');
+  });
   el.addEventListener('blur', () => {
-    if (el.id && labels[el.id] !== undefined || ['taxConsent', 'finalConsent'].includes(el.id)) {
+    const group = el.closest('.form-group');
+    if (group) group.classList.remove('focused');
+    if (el.id && (labels[el.id] !== undefined || ['taxConsent', 'finalConsent', 'termsConsent', 'confirmAccountNumber', 'confirmPassword'].includes(el.id))) {
       let value;
       if (el.type === 'checkbox') value = el.checked ? 'on' : '';
       else if (el.type === 'file') value = el.files.length ? el.files[0].name : '';
       else value = el.value.trim();
       const msg = validateField(el.id, value);
       showError(el.id, msg);
+      if (!msg && value) el.classList.add('success');
     }
   });
-  el.addEventListener('input', () => { if (el.classList.contains('error')) clearError(el.id); });
+  el.addEventListener('input', () => {
+    if (el.classList.contains('error')) clearError(el.id);
+    el.classList.remove('success');
+  });
 });
 
 // ---- Navigation ----
@@ -927,7 +1863,9 @@ function goToStep(step) {
   document.getElementById('progressFill').style.width = pct + '%';
 
   currentStep = step;
-  if (step === 5) renderReview();
+  if (step === 7) renderReview();
+  // Trigger sync when reaching payroll or account step
+  if (step === 4 || step === 6) syncFields();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -954,20 +1892,24 @@ document.querySelectorAll('.stepper .step').forEach(s => {
   });
 });
 
+
 function saveStep(step) {
-  for (const name of stepFields[step].concat(step === 1 ? ['gender'] : []).concat(step === 3 ? ['manager'] : [])) {
+  const optionals = { 1: ['gender', 'state', 'zipCode'], 3: ['manager', 'equipment', 'accessibility'], 5: ['emergencyEmail', 'bloodGroup', 'medicalConditions'] };
+  const extras = optionals[step] || [];
+  const all = (stepFields[step] || []).concat(extras);
+  for (const name of all) {
     const el = document.getElementById(name);
     if (!el) continue;
     if (el.type === 'checkbox') formData[name] = el.checked;
     else if (el.type === 'file') formData[name] = el.files[0] ? { name: el.files[0].name, size: el.files[0].size, type: el.files[0].type } : null;
     else formData[name] = el.value.trim();
   }
+  if (step === 3) formData.skills = [...skillsList];
 }
 
 // ---- Review ----
 function renderReview() {
-  // collect everything
-  for (let s = 1; s <= 4; s++) saveStep(s);
+  for (let s = 1; s <= 6; s++) saveStep(s);
   const container = document.getElementById('reviewContent');
   container.innerHTML = '';
   for (const [section, fields] of Object.entries(sectionMap)) {
@@ -977,6 +1919,7 @@ function renderReview() {
     div.innerHTML = `<h3>${section} <button type="button" class="edit-link" data-go="${targetStep}">Edit</button></h3>`;
     for (const f of fields) {
       let v = formData[f];
+      if (f === 'skills' && Array.isArray(v)) v = v.join(', ') || '—';
       if (v == null || v === '') v = '—';
       if (f === 'taxId' && typeof v === 'string' && v.length > 4) v = '••••' + v.slice(-4);
       if (f === 'accountNumber' && typeof v === 'string' && v.length > 4) v = '••••' + v.slice(-4);
@@ -995,10 +1938,11 @@ function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+
 // ---- Submit ----
 document.getElementById('regForm').addEventListener('submit', (e) => {
   e.preventDefault();
-  if (!validateStep(5)) {
+  if (!validateStep(7)) {
     toast('Please confirm to submit.', 'error');
     return;
   }
@@ -1006,29 +1950,49 @@ document.getElementById('regForm').addEventListener('submit', (e) => {
   btn.disabled = true;
   btn.textContent = 'Submitting...';
 
-  // Mock async submission
+  showSyncIndicator();
   setTimeout(() => {
+    hideSyncIndicator();
     const empId = 'EMP-' + Math.floor(100000 + Math.random() * 900000);
     document.getElementById('employeeId').textContent = empId;
-    const payload = { employeeId: empId, ...formData, finalConsent: document.getElementById('finalConsent').checked, submittedAt: new Date().toISOString() };
+    const payload = {
+      employeeId: empId,
+      ...formData,
+      skills: skillsList,
+      signature: signatureData ? '[SIGNED]' : null,
+      termsConsent: document.getElementById('termsConsent').checked,
+      finalConsent: document.getElementById('finalConsent').checked,
+      submittedAt: new Date().toISOString()
+    };
     document.getElementById('jsonPreview').textContent = JSON.stringify(payload, null, 2);
     localStorage.removeItem('empRegDraft');
-    goToStep(6);
+    goToStep(8);
     toast('Registration submitted successfully!', 'success');
     btn.disabled = false;
     btn.textContent = 'Submit Registration ✓';
-  }, 1200);
+  }, 1500);
 });
 
 // ---- Reset ----
 function resetForm() {
   document.getElementById('regForm').reset();
   for (const k in formData) delete formData[k];
+  skillsList = [];
+  document.getElementById('skillsContainer').innerHTML = '';
   document.getElementById('idDocName').textContent = '';
   document.getElementById('emailStatus').className = 'async-status';
   document.getElementById('emailStatus').innerHTML = '';
+  document.getElementById('usernameStatus').className = 'async-status';
+  document.getElementById('usernameStatus').innerHTML = '';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('photoPlaceholder').style.display = '';
+  document.getElementById('passwordBar').style.width = '0%';
+  document.getElementById('strengthText').textContent = '';
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  signatureData = null;
   document.querySelectorAll('.error-msg').forEach(e => e.textContent = '');
   document.querySelectorAll('.error').forEach(e => e.classList.remove('error'));
+  document.querySelectorAll('.success').forEach(e => e.classList.remove('success'));
   goToStep(1);
 }
 
@@ -1042,9 +2006,10 @@ function toast(msg, type = '') {
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
+
 // ---- Draft autosave ----
 function saveDraft() {
-  try { localStorage.setItem('empRegDraft', JSON.stringify({ formData, currentStep })); } catch (_) {}
+  try { localStorage.setItem('empRegDraft', JSON.stringify({ formData, currentStep, skillsList })); } catch (_) {}
 }
 
 function loadDraft() {
@@ -1060,15 +2025,50 @@ function loadDraft() {
       else if (el.type !== 'file' && typeof v === 'string') el.value = v;
       formData[k] = v;
     }
+    if (draft.skillsList) {
+      skillsList = draft.skillsList;
+      renderSkills();
+    }
     toast('Draft restored from your last session.', 'success');
   } catch (_) {}
 }
 
-// Periodic autosave on input
-document.querySelectorAll('input, select').forEach(el => {
+document.querySelectorAll('input, select, textarea').forEach(el => {
   el.addEventListener('change', () => { saveStep(currentStep); saveDraft(); });
 });
 
+// ---- Terms Modal ----
+document.getElementById('openTerms').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('termsModal').classList.add('show');
+});
+
+document.getElementById('closeTerms').addEventListener('click', () => {
+  document.getElementById('termsModal').classList.remove('show');
+});
+
+document.getElementById('termsModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+});
+
+// ---- Download / Print ----
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const json = document.getElementById('jsonPreview').textContent;
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `employee-registration-${document.getElementById('employeeId').textContent}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Download started!', 'success');
+});
+
+document.getElementById('printBtn').addEventListener('click', () => {
+  window.print();
+});
+
+// ---- Init ----
 window.addEventListener('DOMContentLoaded', loadDraft);
 </script>
 </body>
