@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Code Origin.Ai — the AI-native development platform. Generate, refactor, review and ship production code 10x faster." />
+<title>Code Origin.Ai — Where great code begins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ============== AURORA BACKGROUND ============== -->
+<div class="aurora" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="grid-overlay"></div>
+</div>
+
+<!-- ============== NAV ============== -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo" aria-label="Code Origin.Ai home">
+      <span class="logo-mark">
+        <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#a78bfa"/>
+              <stop offset="100%" stop-color="#22d3ee"/>
+            </linearGradient>
+          </defs>
+          <path d="M16 2 L29 9 V23 L16 30 L3 23 V9 Z" fill="none" stroke="url(#lg)" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M11 13 L7 16 L11 19 M21 13 L25 16 L21 19 M18 11 L14 21" stroke="url(#lg)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="logo-text">Code Origin<span class="logo-dot">.Ai</span></span>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#product">Product</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <div class="nav-cta">
+      <a href="#" class="btn btn-ghost">Sign in</a>
+      <a href="#cta" class="btn btn-primary">Start free</a>
+    </div>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">
+        <span class="dot"></span> New · Origin Agents v2.0 is live
+      </span>
+      <h1 class="display">
+        Where <span class="gradient-text">great code</span><br/>begins.
+      </h1>
+      <p class="lede">
+        Code Origin.Ai is the AI-native development platform that designs, writes,
+        reviews and ships production software with you — from a blank repo to a
+        scaled deployment.
+      </p>
+      <div class="hero-actions">
+        <a href="#cta" class="btn btn-primary btn-lg">
+          Start building free
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="#product" class="btn btn-ghost btn-lg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+          Watch the 2-min demo
+        </a>
+      </div>
+      <ul class="hero-meta">
+        <li><strong>10×</strong> faster shipping</li>
+        <li><strong>40+</strong> languages</li>
+        <li><strong>SOC 2</strong> Type II</li>
+      </ul>
+    </div>
+
+    <!-- Floating code card -->
+    <div class="hero-visual">
+      <div class="code-card glass">
+        <div class="code-card-head">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <div class="tab">origin.ts</div>
+          <div class="badge">live</div>
+        </div>
+        <pre class="code"><code id="heroCode"></code><span class="caret">▍</span></pre>
+        <div class="code-card-foot">
+          <div class="status">
+            <span class="pulse"></span> Origin agent · thinking
+          </div>
+          <div class="kbd">⌘ K</div>
+        </div>
+      </div>
+
+      <!-- floating chips -->
+      <div class="chip chip-1">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22d3ee" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Tests passing
+      </div>
+      <div class="chip chip-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#a78bfa" stroke-width="2"/><path d="M12 8v4l3 2" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/></svg>
+        12s build
+      </div>
+      <div class="chip chip-3">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 22h20L12 2z" stroke="#f0abfc" stroke-width="2" stroke-linejoin="round"/></svg>
+        0 vulnerabilities
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== LOGO STRIP ============== -->
+<section class="logos">
+  <div class="container">
+    <p class="logos-label">Trusted by engineers building at</p>
+    <div class="logos-row">
+      <span>NORTHWIND</span>
+      <span>Lumen</span>
+      <span>◈ Helix</span>
+      <span>OCTOPATH</span>
+      <span>Stratos</span>
+      <span>quanta/</span>
+      <span>VERTEX</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FEATURES ============== -->
+<section class="features section" id="features">
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">Platform</span>
+      <h2 class="h2">An AI engineering team in a single platform.</h2>
+      <p class="sub">Six tightly-integrated capabilities that replace a dozen developer tools.</p>
+    </header>
+
+    <div class="feature-grid">
+      <article class="feature glass" data-reveal>
+        <div class="feat-icon icon-violet">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Origin Agents</h3>
+        <p>Long-running, tool-using agents that plan, write, test and open pull requests on their own.</p>
+      </article>
+
+      <article class="feature glass" data-reveal>
+        <div class="feat-icon icon-cyan">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M8 6L2 12l6 6M16 6l6 6-6 6M14 4l-4 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Whole-repo context</h3>
+        <p>Indexes your entire codebase, docs and tickets so suggestions match your conventions, not the internet's.</p>
+      </article>
+
+      <article class="feature glass" data-reveal>
+        <div class="feat-icon icon-pink">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Secure by design</h3>
+        <p>SOC 2 Type II, single-tenant deploys, zero data retention, and bring-your-own-model support.</p>
+      </article>
+
+      <article class="feature glass" data-reveal>
+        <div class="feat-icon icon-amber">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>40+ languages</h3>
+        <p>From TypeScript and Rust to Solidity and COBOL — Origin understands them all, plus your custom DSLs.</p>
+      </article>
+
+      <article class="feature glass" data-reveal>
+        <div class="feat-icon icon-emerald">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Real-time review</h3>
+        <p>Inline reviews on every PR — security, performance, accessibility and your team's own playbooks.</p>
+      </article>
+
+      <article class="feature glass" data-reveal>
+        <div class="feat-icon icon-violet">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>One-click deploys</h3>
+        <p>Ship to AWS, Vercel, Fly or your own Kubernetes — Origin writes the IaC and watches the rollout.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PRODUCT SHOWCASE ============== -->
+<section class="product section" id="product">
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">The product</span>
+      <h2 class="h2">From idea to production, in one loop.</h2>
+      <p class="sub">Every step of the developer flow, supercharged.</p>
+    </header>
+
+    <div class="tabs glass">
+      <div class="tab-list" role="tablist">
+        <button class="tab-btn active" role="tab" data-tab="generate">⚡ Generate</button>
+        <button class="tab-btn" role="tab" data-tab="refactor">↻ Refactor</button>
+        <button class="tab-btn" role="tab" data-tab="review">✓ Review</button>
+        <button class="tab-btn" role="tab" data-tab="deploy">☁ Deploy</button>
+      </div>
+
+      <div class="tab-panels">
+        <div class="tab-panel active" data-panel="generate">
+          <div class="panel-grid">
+            <div>
+              <h3>Generate full features from a sentence.</h3>
+              <p>Describe what you want — Origin scaffolds the components, API, migrations and tests, then opens a PR ready for review.</p>
+              <ul class="check-list">
+                <li>Multi-file generation with consistent style</li>
+                <li>Auto-writes tests + docs</li>
+                <li>Respects your linting and folder layout</li>
+              </ul>
+            </div>
+            <div class="panel-mock">
+              <div class="prompt-pill">"Add Stripe checkout to the pricing page"</div>
+              <div class="file-tree">
+                <div>📁 app/</div>
+                <div class="indent added">+ pricing/checkout.tsx</div>
+                <div class="indent added">+ api/stripe/route.ts</div>
+                <div class="indent changed">~ pricing/page.tsx</div>
+                <div>📁 prisma/</div>
+                <div class="indent added">+ migrations/2026_orders.sql</div>
+                <div>📁 tests/</div>
+                <div class="indent added">+ checkout.spec.ts</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="refactor">
+          <div class="panel-grid">
+            <div>
+              <h3>Refactor across millions of lines, safely.</h3>
+              <p>Migrate frameworks, rename concepts, modernize APIs — Origin plans the change, runs it on a sandbox and proves nothing broke.</p>
+              <ul class="check-list">
+                <li>Plan-first execution with diff preview</li>
+                <li>Auto-rollback on failing tests</li>
+                <li>Codemod library for 200+ migrations</li>
+              </ul>
+            </div>
+            <div class="panel-mock">
+              <div class="diff">
+                <div class="diff-line removed">- import { Component } from 'react'</div>
+                <div class="diff-line removed">- class Card extends Component {</div>
+                <div class="diff-line removed">-   render() { return &lt;div&gt;...&lt;/div&gt; }</div>
+                <div class="diff-line removed">- }</div>
+                <div class="diff-line added">+ export const Card = (props) =&gt; {</div>
+                <div class="diff-line added">+   return &lt;div className={cn(props)}&gt;...&lt;/div&gt;</div>
+                <div class="diff-line added">+ }</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="review">
+          <div class="panel-grid">
+            <div>
+              <h3>A senior reviewer on every pull request.</h3>
+              <p>Origin reviews diffs the way your best engineer would — with reasoning, not just rules.</p>
+              <ul class="check-list">
+                <li>Security, perf, a11y and design review</li>
+                <li>Cites your own docs and prior PRs</li>
+                <li>Suggests fixes, not just complaints</li>
+              </ul>
+            </div>
+            <div class="panel-mock">
+              <div class="review-line">
+                <span class="severity warn">⚠</span>
+                <div><strong>auth.ts:42</strong> — token compared with <code>==</code> can leak timing. Use <code>crypto.timingSafeEqual</code>.</div>
+              </div>
+              <div class="review-line">
+                <span class="severity err">✗</span>
+                <div><strong>UserCard.tsx:18</strong> — missing <code>alt</code> attribute. Fails team a11y rule A-002.</div>
+              </div>
+              <div class="review-line">
+                <span class="severity ok">✓</span>
+                <div><strong>queries.sql</strong> — index <code>idx_users_email</code> reused; query plan looks good.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="deploy">
+          <div class="panel-grid">
+            <div>
+              <h3>Deploy with confidence.</h3>
+              <p>Origin writes the Terraform, configures the pipeline, runs the migrations and watches the rollout — pausing if anything looks off.</p>
+              <ul class="check-list">
+                <li>AWS, GCP, Azure, Vercel, Fly, K8s</li>
+                <li>Canary + auto-rollback by default</li>
+                <li>SLO-aware deployment gates</li>
+              </ul>
+            </div>
+            <div class="panel-mock">
+              <div class="terminal">
+                <div><span class="term-prompt">origin&gt;</span> deploy --env prod</div>
+                <div class="term-out">↳ planning infra changes…   <span class="ok">ok</span></div>
+                <div class="term-out">↳ migrating database…       <span class="ok">ok</span></div>
+                <div class="term-out">↳ canary 10% → 50% → 100%   <span class="ok">ok</span></div>
+                <div class="term-out">↳ p95 latency 84ms (-12%)   <span class="ok">ok</span></div>
+                <div class="term-out">✓ released v2.4.1 in 1m 47s</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== HOW IT WORKS ============== -->
+<section class="how section" id="how">
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">How it works</span>
+      <h2 class="h2">Three steps to your first shipped feature.</h2>
+    </header>
+
+    <ol class="steps">
+      <li class="step glass" data-reveal>
+        <div class="step-num">01</div>
+        <h3>Connect your repo</h3>
+        <p>One click on GitHub, GitLab or Bitbucket. Origin indexes your code, docs and history privately.</p>
+      </li>
+      <li class="step glass" data-reveal>
+        <div class="step-num">02</div>
+        <h3>Describe the change</h3>
+        <p>Chat, voice or a Linear ticket — Origin plans the work and shows you the steps before touching anything.</p>
+      </li>
+      <li class="step glass" data-reveal>
+        <div class="step-num">03</div>
+        <h3>Review &amp; ship</h3>
+        <p>Approve the PR. Origin runs tests, deploys safely and monitors the rollout for you.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============== LIVE DEMO ============== -->
+<section class="demo section">
+  <div class="container demo-grid">
+    <div>
+      <span class="kicker">See it</span>
+      <h2 class="h2">A real prompt. A real diff.</h2>
+      <p class="sub">Watch Origin turn a one-line request into shippable code.</p>
+      <div class="prompt-pill big">"Add a dark-mode toggle that persists per user"</div>
+    </div>
+    <div class="code-card glass">
+      <div class="code-card-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="tab">ThemeToggle.tsx</div>
+        <div class="badge">generated</div>
+      </div>
+      <pre class="code"><code id="demoCode"></code><span class="caret">▍</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PRICING ============== -->
+<section class="pricing section" id="pricing">
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">Pricing</span>
+      <h2 class="h2">Simple plans. Real outcomes.</h2>
+      <p class="sub">Start free. Upgrade when your team is shipping with Origin every day.</p>
+    </header>
+
+    <div class="price-grid">
+      <article class="price glass">
+        <h3>Hobby</h3>
+        <div class="price-amount"><span class="num">$0</span><span class="per">/forever</span></div>
+        <p class="price-tag">For individual builders &amp; OSS</p>
+        <ul class="check-list">
+          <li>200 agent runs / month</li>
+          <li>Single repo</li>
+          <li>Community support</li>
+          <li>Public model only</li>
+        </ul>
+        <a href="#" class="btn btn-ghost btn-block">Start free</a>
+      </article>
+
+      <article class="price glass featured">
+        <div class="price-ribbon">Most popular</div>
+        <h3>Team</h3>
+        <div class="price-amount"><span class="num">$29</span><span class="per">/dev/month</span></div>
+        <p class="price-tag">For startups shipping every day</p>
+        <ul class="check-list">
+          <li>Unlimited agent runs</li>
+          <li>Unlimited repos</li>
+          <li>PR review + auto-fix</li>
+          <li>Slack &amp; Linear integrations</li>
+          <li>SOC 2 Type II</li>
+        </ul>
+        <a href="#" class="btn btn-primary btn-block">Start 14-day trial</a>
+      </article>
+
+      <article class="price glass">
+        <h3>Enterprise</h3>
+        <div class="price-amount"><span class="num">Custom</span></div>
+        <p class="price-tag">For organizations at scale</p>
+        <ul class="check-list">
+          <li>Single-tenant or self-hosted</li>
+          <li>Bring your own model</li>
+          <li>SSO / SCIM / audit log</li>
+          <li>Dedicated solutions engineer</li>
+          <li>99.99% SLA</li>
+        </ul>
+        <a href="#" class="btn btn-ghost btn-block">Talk to sales</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TESTIMONIALS ============== -->
+<section class="testimonials section">
+  <div class="container">
+    <header class="section-head">
+      <span class="kicker">Loved by builders</span>
+      <h2 class="h2">"It feels like the team doubled overnight."</h2>
+    </header>
+    <div class="quote-grid">
+      <figure class="quote glass" data-reveal>
+        <blockquote>"Origin reviewed a 4,000-line PR in 90 seconds and caught a race condition our senior engineer missed. We're not going back."</blockquote>
+        <figcaption>
+          <div class="avatar" style="background:linear-gradient(135deg,#a78bfa,#22d3ee)">P</div>
+          <div><strong>Priya Shah</strong><span>Staff Engineer · Lumen</span></div>
+        </figcaption>
+      </figure>
+      <figure class="quote glass" data-reveal>
+        <blockquote>"We migrated 1.2M lines from Angular to React with Origin in three weeks. It would've been a year for us."</blockquote>
+        <figcaption>
+          <div class="avatar" style="background:linear-gradient(135deg,#f0abfc,#a78bfa)">D</div>
+          <div><strong>Diego Alvarez</strong><span>VP Engineering · Stratos</span></div>
+        </figcaption>
+      </figure>
+      <figure class="quote glass" data-reveal>
+        <blockquote>"The agents understand our codebase better than most new hires after a month. Onboarding is no longer a bottleneck."</blockquote>
+        <figcaption>
+          <div class="avatar" style="background:linear-gradient(135deg,#22d3ee,#10b981)">A</div>
+          <div><strong>Aiko Tanaka</strong><span>CTO · Helix</span></div>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FAQ ============== -->
+<section class="faq section" id="faq">
+  <div class="container faq-wrap">
+    <header class="section-head">
+      <span class="kicker">FAQ</span>
+      <h2 class="h2">Questions, answered.</h2>
+    </header>
+
+    <div class="faq-list">
+      <details class="faq-item glass">
+        <summary>Does Code Origin.Ai train on my code?</summary>
+        <p>No. Your code, prompts and outputs are never used to train models. Enterprise plans add zero-retention mode and customer-managed keys.</p>
+      </details>
+      <details class="faq-item glass">
+        <summary>Which IDEs and tools does it integrate with?</summary>
+        <p>Native plugins for VS Code, JetBrains, Neovim and Xcode, plus a CLI, GitHub/GitLab apps, Linear, Slack and Jira.</p>
+      </details>
+      <details class="faq-item glass">
+        <summary>Can I bring my own LLM?</summary>
+        <p>Yes — Enterprise customers can route Origin to OpenAI, Anthropic, Google, AWS Bedrock, or self-hosted models behind their own gateway.</p>
+      </details>
+      <details class="faq-item glass">
+        <summary>How is it different from a code-completion tool?</summary>
+        <p>Completion tools predict the next token. Origin Agents plan multi-step work, run tests, browse your repo and open reviewed PRs — like a teammate, not autocomplete.</p>
+      </details>
+      <details class="faq-item glass">
+        <summary>What if the agent gets it wrong?</summary>
+        <p>Every change goes through your normal PR flow. Origin shows its plan, its diff and its tests — you stay in control, always.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CTA ============== -->
+<section class="cta-banner" id="cta">
+  <div class="container cta-inner glass">
+    <h2 class="h2">Ship the next thing, faster.</h2>
+    <p>Start free in 60 seconds. No credit card. Bring a repo and feel the difference.</p>
+    <form class="cta-form" onsubmit="event.preventDefault(); window.codeOrigin.subscribe(this);">
+      <input type="email" required placeholder="you@company.com" aria-label="Work email" />
+      <button type="submit" class="btn btn-primary btn-lg">Start free →</button>
+    </form>
+    <small>Trusted by 12,000+ engineers · SOC 2 Type II · GDPR ready</small>
+  </div>
+</section>
+
+</main>
+
+<!-- ============== FOOTER ============== -->
+<footer class="footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo">
+        <span class="logo-mark">
+          <svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true">
+            <path d="M16 2 L29 9 V23 L16 30 L3 23 V9 Z" fill="none" stroke="url(#lg)" stroke-width="2"/>
+          </svg>
+        </span>
+        <span class="logo-text">Code Origin<span class="logo-dot">.Ai</span></span>
+      </a>
+      <p>Where great code begins.</p>
+      <div class="socials">
+        <a href="#" aria-label="X / Twitter"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2H21l-6.52 7.45L22 22h-6.84l-4.78-6.26L4.8 22H2l7-7.99L1.5 2h7l4.32 5.71zM16.86 20h1.66L7.27 4H5.5z"/></svg></a>
+        <a href="#" aria-label="GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2c-3.2.7-3.88-1.36-3.88-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.69 1.24 3.35.95.1-.74.4-1.24.73-1.53-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.15 1.18a10.94 10.94 0 015.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.57.23 2.73.11 3.02.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.07.78 2.16v3.2c0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg></a>
+        <a href="#" aria-label="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8h4.56v14H.22V8zm7.4 0h4.36v1.92h.06c.61-1.15 2.1-2.36 4.32-2.36 4.62 0 5.48 3.04 5.48 7v7.44h-4.56v-6.6c0-1.57-.03-3.6-2.2-3.6-2.2 0-2.54 1.72-2.54 3.49V22H7.62V8z"/></svg></a>
+        <a href="#" aria-label="Discord"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.32 4.37A19.7 19.7 0 0015.86 3l-.22.45a17.4 17.4 0 015.05 2.55 14.6 14.6 0 00-12.4 0A17.4 17.4 0 0113.34 3.45L13.12 3a19.7 19.7 0 00-4.46 1.37C5.5 9.18 4.6 13.85 5.05 18.45a19.9 19.9 0 005.95 3 14 14 0 001.27-2 13 13 0 01-2-.96l.5-.36a14 14 0 0011.46 0l.5.36a13 13 0 01-2 .96c.36.7.78 1.36 1.27 2a19.9 19.9 0 005.95-3c.55-5.36-.93-10-3.63-14.08zM9.7 15.6c-1.18 0-2.16-1.08-2.16-2.4 0-1.32.95-2.4 2.16-2.4 1.2 0 2.18 1.08 2.16 2.4 0 1.32-.95 2.4-2.16 2.4zm5.6 0c-1.18 0-2.16-1.08-2.16-2.4 0-1.32.95-2.4 2.16-2.4 1.2 0 2.18 1.08 2.16 2.4 0 1.32-.95 2.4-2.16 2.4z"/></svg></a>
+      </div>
+    </div>
+
+    <div>
+      <h4>Product</h4>
+      <ul><li><a href="#features">Features</a></li><li><a href="#product">Origin Agents</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#">Changelog</a></li><li><a href="#">Roadmap</a></li></ul>
+    </div>
+    <div>
+      <h4>Resources</h4>
+      <ul><li><a href="#">Docs</a></li><li><a href="#">API Reference</a></li><li><a href="#">Blog</a></li><li><a href="#">Cookbook</a></li><li><a href="#">Status</a></li></ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Customers</a></li><li><a href="#">Security</a></li><li><a href="#">Contact</a></li></ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <small>© 2026 Code Origin.Ai · All rights reserved.</small>
+    <small><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">DPA</a></small>
+  </div>
+</footer>
+
+<!-- ============== TOAST ============== -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
