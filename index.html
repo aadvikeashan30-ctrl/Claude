@@ -1,1075 +1,432 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Employee Registration System</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Super Mario - Classic Edition</title>
 <style>
-  :root {
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-    --primary-light: #eef2ff;
-    --success: #10b981;
-    --error: #ef4444;
-    --warning: #f59e0b;
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-    --radius: 8px;
-    --radius-lg: 12px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    padding: 24px 16px;
-    color: var(--gray-800);
-    line-height: 1.5;
-  }
-
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-  }
-
-  .header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: #fff;
-    padding: 32px 32px 24px;
-  }
-
-  .header h1 {
-    font-size: 1.75rem;
-    margin-bottom: 4px;
-  }
-
-  .header p {
-    opacity: 0.9;
-    font-size: 0.95rem;
-  }
-
-  .stepper {
-    display: flex;
-    background: var(--gray-50);
-    border-bottom: 1px solid var(--gray-200);
-    overflow-x: auto;
-  }
-
-  .step {
-    flex: 1;
-    min-width: 140px;
-    padding: 16px 12px;
-    text-align: center;
-    border-right: 1px solid var(--gray-200);
-    cursor: pointer;
-    transition: background 0.2s;
-    position: relative;
-  }
-
-  .step:last-child { border-right: none; }
-  .step:hover { background: var(--gray-100); }
-
-  .step.active {
-    background: #fff;
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  .step.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--primary);
-  }
-
-  .step.completed { color: var(--success); }
-
-  .step-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: var(--gray-200);
-    color: var(--gray-600);
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-
-  .step.active .step-number { background: var(--primary); color: #fff; }
-  .step.completed .step-number { background: var(--success); color: #fff; }
-
-  .step-label {
-    display: block;
-    font-size: 0.85rem;
-  }
-
-  .progress-bar {
-    height: 4px;
-    background: var(--gray-200);
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-    transition: width 0.3s ease;
-  }
-
-  form { padding: 32px; }
-
-  .form-step { display: none; }
-  .form-step.active { display: block; animation: fadeIn 0.3s; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .step-title {
-    font-size: 1.35rem;
-    color: var(--gray-900);
-    margin-bottom: 4px;
-  }
-
-  .step-subtitle {
-    color: var(--gray-500);
-    margin-bottom: 24px;
-    font-size: 0.95rem;
-  }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px 20px;
-  }
-
-  .form-group { display: flex; flex-direction: column; }
-  .form-group.full { grid-column: 1 / -1; }
-
-  label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--gray-700);
-    margin-bottom: 6px;
-  }
-
-  label .required { color: var(--error); margin-left: 2px; }
-
-  input, select, textarea {
-    padding: 10px 12px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius);
-    font-size: 0.95rem;
-    font-family: inherit;
-    background: #fff;
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
-
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-  }
-
-  input.error, select.error, textarea.error {
-    border-color: var(--error);
-  }
-
-  input.success { border-color: var(--success); }
-
-  .error-msg {
-    color: var(--error);
-    font-size: 0.8rem;
-    margin-top: 4px;
-    min-height: 16px;
-  }
-
-  .hint {
-    color: var(--gray-500);
-    font-size: 0.8rem;
-    margin-top: 4px;
-  }
-
-  .file-upload {
-    border: 2px dashed var(--gray-300);
-    border-radius: var(--radius);
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-  }
-
-  .file-upload:hover {
-    border-color: var(--primary);
-    background: var(--primary-light);
-  }
-
-  .file-upload input[type="file"] { display: none; }
-
-  .file-upload-icon { font-size: 2rem; margin-bottom: 8px; }
-
-  .file-name {
-    margin-top: 8px;
-    color: var(--success);
-    font-size: 0.85rem;
-    font-weight: 500;
-  }
-
-  .checkbox-group {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .checkbox-group input[type="checkbox"] {
-    width: 18px; height: 18px;
-    margin-top: 2px;
-    cursor: pointer;
-    accent-color: var(--primary);
-  }
-
-  .checkbox-group label {
-    margin: 0;
-    cursor: pointer;
-    font-weight: 400;
-  }
-
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid var(--gray-200);
-  }
-
-  button {
-    padding: 10px 24px;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.05s;
-    font-family: inherit;
-  }
-
-  button:active { transform: translateY(1px); }
-
-  .btn-primary {
-    background: var(--primary);
-    color: #fff;
-  }
-
-  .btn-primary:hover { background: var(--primary-dark); }
-  .btn-primary:disabled {
-    background: var(--gray-300);
-    cursor: not-allowed;
-  }
-
-  .btn-secondary {
-    background: var(--gray-100);
-    color: var(--gray-700);
-  }
-
-  .btn-secondary:hover { background: var(--gray-200); }
-
-  .review-section {
-    background: var(--gray-50);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 16px;
-  }
-
-  .review-section h3 {
-    font-size: 1rem;
-    color: var(--gray-700);
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .review-section .edit-link {
-    font-size: 0.85rem;
-    color: var(--primary);
-    cursor: pointer;
-    font-weight: 500;
-    background: none;
-    border: none;
-    padding: 0;
-  }
-
-  .review-row {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    padding: 6px 0;
-    font-size: 0.9rem;
-    border-bottom: 1px solid var(--gray-200);
-  }
-
-  .review-row:last-child { border-bottom: none; }
-  .review-row .label { color: var(--gray-500); }
-  .review-row .value { color: var(--gray-900); font-weight: 500; }
-
-  .success-screen {
-    text-align: center;
-    padding: 48px 24px;
-  }
-
-  .success-icon {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: var(--success);
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    margin-bottom: 16px;
-  }
-
-  .success-screen h2 {
-    color: var(--gray-900);
-    margin-bottom: 8px;
-  }
-
-  .success-screen p {
-    color: var(--gray-600);
-    margin-bottom: 24px;
-  }
-
-  .employee-id {
-    background: var(--primary-light);
-    color: var(--primary-dark);
-    padding: 12px 20px;
-    border-radius: var(--radius);
-    font-family: 'SF Mono', Consolas, Monaco, monospace;
-    font-size: 1.1rem;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 20px;
-  }
-
-  .json-preview {
-    background: var(--gray-900);
-    color: #a5f3fc;
-    padding: 16px;
-    border-radius: var(--radius);
-    font-family: 'SF Mono', Consolas, Monaco, monospace;
-    font-size: 0.8rem;
-    text-align: left;
-    overflow-x: auto;
-    margin-top: 16px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: var(--gray-800);
-    color: #fff;
-    padding: 12px 18px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lg);
-    z-index: 1000;
-    transform: translateX(120%);
-    transition: transform 0.3s;
-    font-size: 0.9rem;
-  }
-
-  .toast.show { transform: translateX(0); }
-  .toast.success { background: var(--success); }
-  .toast.error { background: var(--error); }
-
-  .async-status {
-    font-size: 0.8rem;
-    margin-top: 4px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .async-status.checking { color: var(--gray-500); }
-  .async-status.valid { color: var(--success); }
-  .async-status.invalid { color: var(--error); }
-
-  .spinner {
-    width: 12px; height: 12px;
-    border: 2px solid var(--gray-300);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-    display: inline-block;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  @media (max-width: 640px) {
-    body { padding: 12px 8px; }
-    .header { padding: 20px; }
-    form { padding: 20px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .step-label { display: none; }
-    .step { min-width: 60px; padding: 12px 4px; }
-    .review-row { grid-template-columns: 1fr; gap: 2px; }
-    .actions { flex-direction: column-reverse; gap: 8px; }
-    .actions button { width: 100%; }
-  }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+#ui-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; padding: 10px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: 'Courier New', monospace; font-size: 18px; color: #fff;
+  text-shadow: 2px 2px 0 #000; z-index: 10; pointer-events: none;
+}
+#ui-overlay div { background: rgba(0,0,0,0.4); padding: 5px 12px; border-radius: 4px; }
+#game-over-screen, #start-screen {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  background: rgba(0,0,0,0.85); z-index: 100; font-family: 'Courier New', monospace; color: #fff;
+}
+#game-over-screen h1 { font-size: 48px; color: #e74c3c; margin-bottom: 20px; text-shadow: 3px 3px 0 #000; }
+#start-screen h1 { font-size: 42px; color: #f39c12; margin-bottom: 10px; text-shadow: 3px 3px 0 #000; }
+#start-screen h2 { font-size: 20px; color: #ecf0f1; margin-bottom: 30px; }
+.btn {
+  padding: 15px 40px; font-size: 22px; font-family: 'Courier New', monospace;
+  background: #27ae60; color: #fff; border: none; border-radius: 8px; cursor: pointer;
+  text-shadow: 1px 1px 0 #000; pointer-events: all; margin-top: 15px;
+}
+.btn:hover { background: #2ecc71; }
+#score-display { font-size: 24px; margin-bottom: 10px; }
+#mobile-controls { position:fixed;bottom:20px;left:0;width:100%;display:none;z-index:50;pointer-events:none; }
 </style>
 </head>
 <body>
-<div class="container" role="main">
-  <header class="header">
-    <h1>Employee Registration</h1>
-    <p>Welcome aboard! Please complete the steps below to set up your profile.</p>
-  </header>
-
-  <nav class="stepper" aria-label="Registration progress">
-    <div class="step active" data-step="1">
-      <span class="step-number">1</span>
-      <span class="step-label">Personal</span>
-    </div>
-    <div class="step" data-step="2">
-      <span class="step-number">2</span>
-      <span class="step-label">Identity</span>
-    </div>
-    <div class="step" data-step="3">
-      <span class="step-number">3</span>
-      <span class="step-label">Role</span>
-    </div>
-    <div class="step" data-step="4">
-      <span class="step-number">4</span>
-      <span class="step-label">Payroll</span>
-    </div>
-    <div class="step" data-step="5">
-      <span class="step-number">5</span>
-      <span class="step-label">Review</span>
-    </div>
-  </nav>
-
-  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 20%"></div></div>
-
-  <form id="regForm" novalidate>
-
-    <!-- STEP 1: Personal Details -->
-    <section class="form-step active" data-step="1" aria-labelledby="step1-title">
-      <h2 class="step-title" id="step1-title">Personal Details</h2>
-      <p class="step-subtitle">Tell us a little about yourself.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="firstName">First Name<span class="required">*</span></label>
-          <input type="text" id="firstName" name="firstName" required autocomplete="given-name" />
-          <div class="error-msg" data-error-for="firstName"></div>
-        </div>
-        <div class="form-group">
-          <label for="lastName">Last Name<span class="required">*</span></label>
-          <input type="text" id="lastName" name="lastName" required autocomplete="family-name" />
-          <div class="error-msg" data-error-for="lastName"></div>
-        </div>
-        <div class="form-group">
-          <label for="email">Email<span class="required">*</span></label>
-          <input type="email" id="email" name="email" required autocomplete="email" />
-          <div class="async-status" id="emailStatus"></div>
-          <div class="error-msg" data-error-for="email"></div>
-        </div>
-        <div class="form-group">
-          <label for="phone">Phone<span class="required">*</span></label>
-          <input type="tel" id="phone" name="phone" required placeholder="+1 555 123 4567" autocomplete="tel" />
-          <div class="error-msg" data-error-for="phone"></div>
-        </div>
-        <div class="form-group">
-          <label for="dob">Date of Birth<span class="required">*</span></label>
-          <input type="date" id="dob" name="dob" required autocomplete="bday" />
-          <div class="error-msg" data-error-for="dob"></div>
-        </div>
-        <div class="form-group">
-          <label for="gender">Gender</label>
-          <select id="gender" name="gender">
-            <option value="">Prefer not to say</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="non_binary">Non-binary</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="form-group full">
-          <label for="address">Address<span class="required">*</span></label>
-          <input type="text" id="address" name="address" required placeholder="Street address" autocomplete="street-address" />
-          <div class="error-msg" data-error-for="address"></div>
-        </div>
-        <div class="form-group">
-          <label for="city">City<span class="required">*</span></label>
-          <input type="text" id="city" name="city" required autocomplete="address-level2" />
-          <div class="error-msg" data-error-for="city"></div>
-        </div>
-        <div class="form-group">
-          <label for="country">Country<span class="required">*</span></label>
-          <select id="country" name="country" required autocomplete="country">
-            <option value="">Select country</option>
-            <option value="US">United States</option>
-            <option value="IN">India</option>
-            <option value="UK">United Kingdom</option>
-            <option value="CA">Canada</option>
-            <option value="AU">Australia</option>
-            <option value="DE">Germany</option>
-            <option value="SG">Singapore</option>
-          </select>
-          <div class="error-msg" data-error-for="country"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <span></span>
-        <button type="button" class="btn-primary" data-action="next">Next: Identity →</button>
-      </div>
-    </section>
-
-    <!-- STEP 2: Identity Verification -->
-    <section class="form-step" data-step="2" aria-labelledby="step2-title">
-      <h2 class="step-title" id="step2-title">Identity Verification</h2>
-      <p class="step-subtitle">Upload a government-issued ID for verification.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="idType">ID Type<span class="required">*</span></label>
-          <select id="idType" name="idType" required>
-            <option value="">Select ID type</option>
-            <option value="passport">Passport</option>
-            <option value="drivers_license">Driver's License</option>
-            <option value="national_id">National ID</option>
-            <option value="aadhaar">Aadhaar</option>
-          </select>
-          <div class="error-msg" data-error-for="idType"></div>
-        </div>
-        <div class="form-group">
-          <label for="idNumber">ID Number<span class="required">*</span></label>
-          <input type="text" id="idNumber" name="idNumber" required />
-          <div class="error-msg" data-error-for="idNumber"></div>
-        </div>
-        <div class="form-group full">
-          <label for="idDoc">Upload ID Document<span class="required">*</span></label>
-          <label class="file-upload" for="idDoc">
-            <div class="file-upload-icon">📄</div>
-            <div>Click to upload (PDF, JPG, PNG — max 5 MB)</div>
-            <input type="file" id="idDoc" name="idDoc" accept=".pdf,.jpg,.jpeg,.png" required />
-            <div class="file-name" id="idDocName"></div>
-          </label>
-          <div class="error-msg" data-error-for="idDoc"></div>
-        </div>
-        <div class="form-group full">
-          <label for="taxId">Tax ID / SSN<span class="required">*</span></label>
-          <input type="text" id="taxId" name="taxId" required placeholder="XXX-XX-XXXX" />
-          <div class="hint">Encrypted and tokenized — never stored in plain text.</div>
-          <div class="error-msg" data-error-for="taxId"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Role →</button>
-      </div>
-    </section>
-
-    <!-- STEP 3: Work / Role -->
-    <section class="form-step" data-step="3" aria-labelledby="step3-title">
-      <h2 class="step-title" id="step3-title">Work & Role Assignment</h2>
-      <p class="step-subtitle">Confirm your role and start details.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="jobTitle">Job Title<span class="required">*</span></label>
-          <input type="text" id="jobTitle" name="jobTitle" required />
-          <div class="error-msg" data-error-for="jobTitle"></div>
-        </div>
-        <div class="form-group">
-          <label for="department">Department<span class="required">*</span></label>
-          <select id="department" name="department" required>
-            <option value="">Select department</option>
-            <option value="engineering">Engineering</option>
-            <option value="product">Product</option>
-            <option value="design">Design</option>
-            <option value="marketing">Marketing</option>
-            <option value="sales">Sales</option>
-            <option value="hr">Human Resources</option>
-            <option value="finance">Finance</option>
-            <option value="operations">Operations</option>
-          </select>
-          <div class="error-msg" data-error-for="department"></div>
-        </div>
-        <div class="form-group">
-          <label for="employmentType">Employment Type<span class="required">*</span></label>
-          <select id="employmentType" name="employmentType" required>
-            <option value="">Select type</option>
-            <option value="full_time">Full-Time</option>
-            <option value="part_time">Part-Time</option>
-            <option value="contract">Contract</option>
-            <option value="intern">Intern</option>
-          </select>
-          <div class="error-msg" data-error-for="employmentType"></div>
-        </div>
-        <div class="form-group">
-          <label for="manager">Reporting Manager</label>
-          <input type="text" id="manager" name="manager" placeholder="Manager's full name" />
-        </div>
-        <div class="form-group">
-          <label for="startDate">Start Date<span class="required">*</span></label>
-          <input type="date" id="startDate" name="startDate" required />
-          <div class="error-msg" data-error-for="startDate"></div>
-        </div>
-        <div class="form-group">
-          <label for="workLocation">Work Location<span class="required">*</span></label>
-          <select id="workLocation" name="workLocation" required>
-            <option value="">Select location</option>
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="onsite">On-site</option>
-          </select>
-          <div class="error-msg" data-error-for="workLocation"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Payroll →</button>
-      </div>
-    </section>
-
-    <!-- STEP 4: Payroll & Banking -->
-    <section class="form-step" data-step="4" aria-labelledby="step4-title">
-      <h2 class="step-title" id="step4-title">Payroll & Banking</h2>
-      <p class="step-subtitle">Where should we send your salary?</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="bankName">Bank Name<span class="required">*</span></label>
-          <input type="text" id="bankName" name="bankName" required />
-          <div class="error-msg" data-error-for="bankName"></div>
-        </div>
-        <div class="form-group">
-          <label for="accountHolder">Account Holder Name<span class="required">*</span></label>
-          <input type="text" id="accountHolder" name="accountHolder" required />
-          <div class="error-msg" data-error-for="accountHolder"></div>
-        </div>
-        <div class="form-group">
-          <label for="accountNumber">Account Number<span class="required">*</span></label>
-          <input type="text" id="accountNumber" name="accountNumber" required inputmode="numeric" />
-          <div class="error-msg" data-error-for="accountNumber"></div>
-        </div>
-        <div class="form-group">
-          <label for="routingCode">Routing / IFSC / Swift Code<span class="required">*</span></label>
-          <input type="text" id="routingCode" name="routingCode" required />
-          <div class="error-msg" data-error-for="routingCode"></div>
-        </div>
-        <div class="form-group">
-          <label for="currency">Salary Currency<span class="required">*</span></label>
-          <select id="currency" name="currency" required>
-            <option value="">Select currency</option>
-            <option value="USD">USD — US Dollar</option>
-            <option value="INR">INR — Indian Rupee</option>
-            <option value="GBP">GBP — British Pound</option>
-            <option value="EUR">EUR — Euro</option>
-            <option value="CAD">CAD — Canadian Dollar</option>
-            <option value="AUD">AUD — Australian Dollar</option>
-            <option value="SGD">SGD — Singapore Dollar</option>
-          </select>
-          <div class="error-msg" data-error-for="currency"></div>
-        </div>
-        <div class="form-group full checkbox-group">
-          <input type="checkbox" id="taxConsent" name="taxConsent" required />
-          <label for="taxConsent">I confirm that all banking and tax information provided is accurate, and authorize the deposit of salary to this account.<span class="required">*</span></label>
-        </div>
-        <div class="error-msg full" data-error-for="taxConsent"></div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Review →</button>
-      </div>
-    </section>
-
-    <!-- STEP 5: Review & Submit -->
-    <section class="form-step" data-step="5" aria-labelledby="step5-title">
-      <h2 class="step-title" id="step5-title">Review & Submit</h2>
-      <p class="step-subtitle">Please review your information before submitting.</p>
-      <div id="reviewContent"></div>
-      <div class="checkbox-group" style="margin-top: 20px;">
-        <input type="checkbox" id="finalConsent" name="finalConsent" required />
-        <label for="finalConsent">I confirm all the information above is accurate and agree to the company's privacy policy, code of conduct and terms of employment.<span class="required">*</span></label>
-      </div>
-      <div class="error-msg" data-error-for="finalConsent"></div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="submit" class="btn-primary" id="submitBtn">Submit Registration ✓</button>
-      </div>
-    </section>
-
-    <!-- SUCCESS SCREEN -->
-    <section class="form-step" data-step="6">
-      <div class="success-screen">
-        <div class="success-icon">✓</div>
-        <h2>Registration Complete!</h2>
-        <p>Welcome to the team. Your registration has been submitted successfully.</p>
-        <div class="employee-id" id="employeeId">EMP-XXXXXX</div>
-        <p style="font-size: 0.9rem; color: var(--gray-500);">A confirmation email has been sent. Our HR team will be in touch shortly.</p>
-        <details style="margin-top: 24px; text-align: left;">
-          <summary style="cursor: pointer; color: var(--primary); font-weight: 500;">View submission JSON</summary>
-          <pre class="json-preview" id="jsonPreview"></pre>
-        </details>
-        <button type="button" class="btn-secondary" style="margin-top: 24px;" onclick="resetForm()">Register Another Employee</button>
-      </div>
-    </section>
-
-  </form>
+<div id="start-screen">
+  <h1>SUPER MARIO</h1>
+  <h2>Classic Edition</h2>
+  <p style="color:#bdc3c7;margin-bottom:20px;">Desktop: Arrow Keys / WASD + Space</p>
+  <p style="color:#bdc3c7;margin-bottom:20px;">Mobile: Touch Controls</p>
+  <button class="btn" id="start-btn">START GAME</button>
 </div>
+<div id="game-over-screen" style="display:none;">
+  <h1>GAME OVER</h1>
+  <div id="score-display">Score: 0</div>
+  <button class="btn" id="restart-btn">PLAY AGAIN</button>
+</div>
+<div id="ui-overlay" style="display:none;">
+  <div id="hud-score">SCORE: 0</div>
+  <div id="hud-coins">COINS: 0</div>
+  <div id="hud-lives">LIVES: 3</div>
+</div>
+<canvas id="gameCanvas"></canvas>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
+<div id="mobile-controls">
+  <div style="display:flex;justify-content:space-between;padding:0 20px;pointer-events:none;">
+    <div style="display:flex;gap:10px;pointer-events:all;">
+      <button id="btn-left" style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.3);border:2px solid rgba(255,255,255,0.5);font-size:24px;color:#fff;">&#9664;</button>
+      <button id="btn-right" style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,0.3);border:2px solid rgba(255,255,255,0.5);font-size:24px;color:#fff;">&#9654;</button>
+    </div>
+    <div style="pointer-events:all;">
+      <button id="btn-jump" style="width:80px;height:80px;border-radius:50%;background:rgba(255,200,0,0.4);border:2px solid rgba(255,200,0,0.6);font-size:18px;color:#fff;font-weight:bold;">JUMP</button>
+    </div>
+  </div>
+</div>
 <script>
-'use strict';
-
-const TOTAL_STEPS = 5;
-let currentStep = 1;
-const formData = {};
-
-const stepFields = {
-  1: ['firstName', 'lastName', 'email', 'phone', 'dob', 'address', 'city', 'country'],
-  2: ['idType', 'idNumber', 'idDoc', 'taxId'],
-  3: ['jobTitle', 'department', 'employmentType', 'startDate', 'workLocation'],
-  4: ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency', 'taxConsent'],
-  5: ['finalConsent']
-};
-
-const labels = {
-  firstName: 'First Name', lastName: 'Last Name', email: 'Email', phone: 'Phone',
-  dob: 'Date of Birth', gender: 'Gender', address: 'Address', city: 'City', country: 'Country',
-  idType: 'ID Type', idNumber: 'ID Number', idDoc: 'ID Document', taxId: 'Tax ID',
-  jobTitle: 'Job Title', department: 'Department', employmentType: 'Employment Type',
-  manager: 'Manager', startDate: 'Start Date', workLocation: 'Work Location',
-  bankName: 'Bank Name', accountHolder: 'Account Holder', accountNumber: 'Account Number',
-  routingCode: 'Routing/IFSC', currency: 'Currency'
-};
-
-const sectionMap = {
-  'Personal Details': ['firstName', 'lastName', 'email', 'phone', 'dob', 'gender', 'address', 'city', 'country'],
-  'Identity Verification': ['idType', 'idNumber', 'idDoc', 'taxId'],
-  'Work & Role': ['jobTitle', 'department', 'employmentType', 'manager', 'startDate', 'workLocation'],
-  'Payroll & Banking': ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency']
-};
-
-const sectionStepMap = {
-  'Personal Details': 1,
-  'Identity Verification': 2,
-  'Work & Role': 3,
-  'Payroll & Banking': 4
-};
-
-// ---- Validation ----
-function validateField(name, value) {
-  if (!value && !['gender', 'manager'].includes(name)) {
-    if (name === 'idDoc' && !document.getElementById('idDoc').files.length) return 'Please upload a document.';
-    if (name === 'taxConsent' || name === 'finalConsent') {
-      const cb = document.getElementById(name);
-      if (cb && !cb.checked) return 'You must agree to continue.';
-      return '';
-    }
-    return 'This field is required.';
+// ===== AUDIO ENGINE =====
+class AudioEngine {
+  constructor() { this.ctx = null; this.initialized = false; }
+  init() {
+    if (this.initialized) return;
+    try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.initialized = true; } catch(e) {}
   }
-  switch (name) {
-    case 'email':
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email address.';
-      break;
-    case 'phone':
-      if (!/^[+\d][\d\s\-()]{6,}$/.test(value)) return 'Enter a valid phone number.';
-      break;
-    case 'dob': {
-      const d = new Date(value);
-      const age = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
-      if (age < 16) return 'You must be at least 16 years old.';
-      if (age > 100) return 'Please enter a valid date of birth.';
-      break;
-    }
-    case 'startDate': {
-      const d = new Date(value);
-      const today = new Date(); today.setHours(0,0,0,0);
-      const oneYear = new Date(); oneYear.setFullYear(oneYear.getFullYear() + 1);
-      if (d < today) return 'Start date cannot be in the past.';
-      if (d > oneYear) return 'Start date cannot be more than a year from today.';
-      break;
-    }
-    case 'taxId':
-      if (value.replace(/\D/g, '').length < 4) return 'Enter a valid Tax ID / SSN.';
-      break;
-    case 'accountNumber':
-      if (!/^\d{6,20}$/.test(value.replace(/\s/g, ''))) return 'Account number should be 6–20 digits.';
-      break;
+  playTone(freq, duration, type='square', volume=0.15) {
+    if (!this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+    gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+    osc.connect(gain); gain.connect(this.ctx.destination);
+    osc.start(); osc.stop(this.ctx.currentTime + duration);
   }
-  return '';
+  jump() { this.playTone(400, 0.1); setTimeout(() => this.playTone(600, 0.1), 50); }
+  coin() { this.playTone(988, 0.08); setTimeout(() => this.playTone(1319, 0.15), 80); }
+  stomp() { this.playTone(200, 0.15, 'sawtooth', 0.2); }
+  die() { this.playTone(400,0.2,'square',0.2); setTimeout(()=>this.playTone(300,0.2,'square',0.2),200); setTimeout(()=>this.playTone(200,0.3,'square',0.2),400); }
+  brick() { this.playTone(150, 0.08, 'triangle', 0.2); }
+  powerup() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.playTone(f,0.1,'square',0.12),i*80)); }
+  gameover() { [392,349,330,294,262].forEach((f,i)=>setTimeout(()=>this.playTone(f,0.25,'square',0.2),i*200)); }
+}
+const audio = new AudioEngine();
+
+// ===== CONSTANTS =====
+const TILE = 32;
+const GRAVITY = 0.6;
+const FRICTION = 0.85;
+const MAX_SPEED = 5;
+const JUMP_FORCE = -12;
+const ENEMY_SPEED = 1.2;
+const CANVAS = document.getElementById('gameCanvas');
+const CTX = CANVAS.getContext('2d');
+
+// ===== LEVEL GENERATION =====
+function generateLevel() {
+  const width = 200, height = 14;
+  const map = [];
+  for (let y = 0; y < height; y++) { map[y] = []; for (let x = 0; x < width; x++) map[y][x] = y >= 12 ? 1 : 0; }
+  // Gaps
+  [[15,17],[38,40],[62,64],[95,97],[130,132],[160,162]].forEach(([s,e]) => { for(let x=s;x<=e;x++){map[12][x]=0;map[13][x]=0;} });
+  // Brick rows
+  [[8,12,7],[22,26,7],[45,50,7],[70,75,7],[100,106,7],[135,140,7],[165,170,7]].forEach(([s,e,y]) => { for(let x=s;x<=e;x++) map[y][x]=2; });
+  // Question blocks
+  [[10,7],[24,7],[48,7],[73,7],[103,7],[138,7],[168,7],[12,4],[50,4],[105,4]].forEach(([x,y]) => map[y][x]=3);
+  // Floating platforms
+  [[30,9,4],[55,9,3],[85,8,5],[115,9,4],[145,8,3],[175,9,4]].forEach(([x,y,len]) => { for(let i=0;i<len;i++) map[y][x+i]=2; });
+  // Pipes
+  [[20,10],[42,10],[68,10],[90,9],[120,10],[150,10],[180,10]].forEach(([x,y]) => { for(let py=y;py<12;py++){map[py][x]=4;map[py][x+1]=4;} });
+  // Flag
+  map[5][195]=5; for(let y=6;y<12;y++) map[y][195]=5;
+  return { map, width, height };
 }
 
-function showError(name, msg) {
-  const el = document.querySelector(`[data-error-for="${name}"]`);
-  const input = document.getElementById(name);
-  if (el) el.textContent = msg;
-  if (input) input.classList.toggle('error', !!msg);
+// ===== GAME STATE =====
+let game = { running:false, score:0, coins:0, lives:3, camera:{x:0,y:0}, level:null, entities:[], particles:[], time:0, won:false };
+let player = { x:80, y:320, vx:0, vy:0, width:24, height:30, onGround:false, facing:1, frame:0, frameTimer:0, invincible:0, dead:false };
+let keys = { left:false, right:false, jump:false };
+
+// ===== ENTITIES =====
+class Goomba { constructor(x,y){this.x=x;this.y=y;this.vx=-ENEMY_SPEED;this.vy=0;this.width=28;this.height=28;this.alive=true;this.squished=0;this.type='goomba';} }
+class Coin { constructor(x,y){this.x=x;this.y=y;this.width=20;this.height=24;this.collected=false;this.type='coin';this.frame=0;this.timer=0;} }
+class Particle { constructor(x,y,vx,vy,color,life){this.x=x;this.y=y;this.vx=vx;this.vy=vy;this.color=color;this.life=life;this.maxLife=life;} }
+
+function spawnEntities() {
+  game.entities = [];
+  [12,25,35,47,58,66,75,82,93,102,110,118,128,137,148,155,165,173,183,190].forEach(x => game.entities.push(new Goomba(x*TILE, 11*TILE-28)));
+  [[9,6],[11,6],[24,6],[25,6],[47,6],[49,6],[72,6],[74,6],[102,6],[104,6],[137,6],[139,6],[167,6],[169,6],
+   [31,8],[32,8],[56,8],[86,8],[87,8],[116,8],[117,8],[146,8],[176,8],[177,8]].forEach(([x,y]) => game.entities.push(new Coin(x*TILE+6,y*TILE+4)));
 }
 
-function clearError(name) { showError(name, ''); }
+// ===== COLLISION =====
+function getTile(x, y) {
+  const tx = Math.floor(x/TILE), ty = Math.floor(y/TILE);
+  if (tx<0||tx>=game.level.width||ty<0||ty>=game.level.height) return 0;
+  return game.level.map[ty][tx];
+}
+function isSolid(t) { return t===1||t===2||t===3||t===4; }
+function rectCollide(a,b) { return a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y; }
 
-function validateStep(step) {
-  let valid = true;
-  for (const name of stepFields[step]) {
-    const el = document.getElementById(name);
-    if (!el) continue;
-    let value;
-    if (el.type === 'checkbox') value = el.checked ? 'on' : '';
-    else if (el.type === 'file') value = el.files.length ? el.files[0].name : '';
-    else value = el.value.trim();
-    const msg = validateField(name, value);
-    showError(name, msg);
-    if (msg) valid = false;
+// ===== PLAYER PHYSICS =====
+function updatePlayer() {
+  if (player.dead) { player.vy+=GRAVITY; player.y+=player.vy; return; }
+  if (keys.left) { player.vx-=0.5; player.facing=-1; }
+  if (keys.right) { player.vx+=0.5; player.facing=1; }
+  if (!keys.left&&!keys.right) player.vx*=FRICTION;
+  player.vx = Math.max(-MAX_SPEED, Math.min(MAX_SPEED, player.vx));
+  if (keys.jump && player.onGround) { player.vy=JUMP_FORCE; player.onGround=false; audio.jump(); }
+  player.vy += GRAVITY;
+  if (player.vy>15) player.vy=15;
+  // Animation
+  if (Math.abs(player.vx)>0.5 && player.onGround) { player.frameTimer++; if(player.frameTimer>6){player.frame=(player.frame+1)%3;player.frameTimer=0;} }
+  else if (player.onGround) player.frame=0;
+  // Move & collide
+  player.x += player.vx; resolveHorizontal();
+  player.y += player.vy; resolveVertical();
+  if (player.invincible>0) player.invincible--;
+  if (player.y > game.level.height*TILE+100) playerDie();
+  // Win
+  if (getTile(player.x+player.width/2, player.y+player.height/2)===5) {
+    game.won=true; game.score+=1000; audio.powerup();
+    setTimeout(()=>showGameOver(true),1500); game.running=false;
   }
-  // Email duplicate state must be valid
-  if (step === 1) {
-    const emailStatus = document.getElementById('emailStatus');
-    if (emailStatus.classList.contains('invalid')) {
-      showError('email', 'This email is already registered.');
-      valid = false;
-    }
-  }
-  return valid;
 }
 
-// ---- Async email validation (mocked) ----
-const TAKEN_EMAILS = ['admin@company.com', 'test@test.com', 'employee@corp.com'];
-let emailDebounce;
-document.getElementById('email').addEventListener('input', (e) => {
-  clearTimeout(emailDebounce);
-  const status = document.getElementById('emailStatus');
-  const value = e.target.value.trim();
-  if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-    status.className = 'async-status';
-    status.innerHTML = '';
-    return;
-  }
-  status.className = 'async-status checking';
-  status.innerHTML = '<span class="spinner"></span> Checking availability...';
-  emailDebounce = setTimeout(() => {
-    if (TAKEN_EMAILS.includes(value.toLowerCase())) {
-      status.className = 'async-status invalid';
-      status.innerHTML = '✗ Email already registered';
-    } else {
-      status.className = 'async-status valid';
-      status.innerHTML = '✓ Email is available';
+function resolveHorizontal() {
+  const left=Math.floor(player.x/TILE), right=Math.floor((player.x+player.width)/TILE);
+  const top=Math.floor(player.y/TILE), bottom=Math.floor((player.y+player.height-1)/TILE);
+  for(let ty=top;ty<=bottom;ty++) for(let tx=left;tx<=right;tx++) {
+    if(isSolid(getTile(tx*TILE,ty*TILE))) {
+      if(player.vx>0){player.x=tx*TILE-player.width;player.vx=0;}
+      else if(player.vx<0){player.x=(tx+1)*TILE;player.vx=0;}
     }
-  }, 700);
-});
-
-// ---- File handling ----
-document.getElementById('idDoc').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  const out = document.getElementById('idDocName');
-  if (file) {
-    if (file.size > 5 * 1024 * 1024) {
-      showError('idDoc', 'File too large (max 5 MB).');
-      e.target.value = '';
-      out.textContent = '';
-      return;
-    }
-    out.textContent = `✓ ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-    clearError('idDoc');
-  } else {
-    out.textContent = '';
   }
-});
+  if(player.x<0){player.x=0;player.vx=0;}
+}
 
-// ---- Real-time validation ----
-document.querySelectorAll('input, select').forEach(el => {
-  el.addEventListener('blur', () => {
-    if (el.id && labels[el.id] !== undefined || ['taxConsent', 'finalConsent'].includes(el.id)) {
-      let value;
-      if (el.type === 'checkbox') value = el.checked ? 'on' : '';
-      else if (el.type === 'file') value = el.files.length ? el.files[0].name : '';
-      else value = el.value.trim();
-      const msg = validateField(el.id, value);
-      showError(el.id, msg);
+function resolveVertical() {
+  player.onGround=false;
+  const left=Math.floor(player.x/TILE), right=Math.floor((player.x+player.width-1)/TILE);
+  const top=Math.floor(player.y/TILE), bottom=Math.floor((player.y+player.height)/TILE);
+  for(let ty=top;ty<=bottom;ty++) for(let tx=left;tx<=right;tx++) {
+    const tile=getTile(tx*TILE,ty*TILE);
+    if(isSolid(tile)) {
+      if(player.vy>0){player.y=ty*TILE-player.height;player.vy=0;player.onGround=true;}
+      else if(player.vy<0){player.y=(ty+1)*TILE;player.vy=0;hitBlock(tx,ty,tile);}
+    }
+  }
+}
+
+function hitBlock(tx,ty,tile) {
+  audio.brick();
+  if(tile===3){game.level.map[ty][tx]=2;game.score+=100;game.coins++;audio.coin();spawnParticles(tx*TILE+16,ty*TILE,'#FFD700',5);updateHUD();}
+  else if(tile===2){spawnParticles(tx*TILE+16,ty*TILE+16,'#8B4513',4);}
+}
+
+// ===== ENEMY & COIN LOGIC =====
+function updateEntities() {
+  game.entities.forEach(e => {
+    if (e.type==='goomba'&&e.alive) {
+      e.vy+=GRAVITY*0.5; e.x+=e.vx; e.y+=e.vy;
+      const gB=Math.floor((e.y+e.height)/TILE),gL=Math.floor(e.x/TILE),gR=Math.floor((e.x+e.width)/TILE);
+      for(let tx=gL;tx<=gR;tx++) if(isSolid(getTile(tx*TILE,gB*TILE))){e.y=gB*TILE-e.height;e.vy=0;}
+      if(isSolid(getTile(e.x-2,e.y+e.height/2))) e.vx=ENEMY_SPEED;
+      if(isSolid(getTile(e.x+e.width+2,e.y+e.height/2))) e.vx=-ENEMY_SPEED;
+      if(e.y>game.level.height*TILE+50) e.alive=false;
+      if(!player.dead&&player.invincible<=0&&rectCollide(player,e)) {
+        if(player.vy>0&&player.y+player.height-e.y<20) {
+          e.squished=30;e.alive=false;player.vy=-8;game.score+=200;audio.stomp();
+          spawnParticles(e.x+e.width/2,e.y,'#8B4513',3);updateHUD();
+        } else { playerDie(); }
+      }
+    } else if(e.type==='goomba'&&e.squished>0) { e.squished--; }
+    if(e.type==='coin'&&!e.collected) {
+      e.timer++;if(e.timer>8){e.frame=(e.frame+1)%4;e.timer=0;}
+      if(!player.dead&&rectCollide(player,e)){e.collected=true;game.score+=50;game.coins++;audio.coin();spawnParticles(e.x+10,e.y+12,'#FFD700',4);updateHUD();}
     }
   });
-  el.addEventListener('input', () => { if (el.classList.contains('error')) clearError(el.id); });
-});
-
-// ---- Navigation ----
-function goToStep(step) {
-  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
-  const target = document.querySelector(`.form-step[data-step="${step}"]`);
-  if (target) target.classList.add('active');
-
-  document.querySelectorAll('.stepper .step').forEach(s => {
-    const n = parseInt(s.dataset.step);
-    s.classList.toggle('active', n === step);
-    s.classList.toggle('completed', n < step);
-  });
-
-  const pct = step <= TOTAL_STEPS ? (step / TOTAL_STEPS) * 100 : 100;
-  document.getElementById('progressFill').style.width = pct + '%';
-
-  currentStep = step;
-  if (step === 5) renderReview();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-document.querySelectorAll('[data-action="next"]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (validateStep(currentStep)) {
-      saveStep(currentStep);
-      saveDraft();
-      goToStep(currentStep + 1);
-    } else {
-      toast('Please fix the highlighted errors.', 'error');
+// ===== PARTICLES =====
+function spawnParticles(x,y,color,count) {
+  for(let i=0;i<count;i++) game.particles.push(new Particle(x,y,(Math.random()-0.5)*6,-Math.random()*5-2,color,30+Math.random()*20));
+}
+function updateParticles() {
+  game.particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.3;p.life--;});
+  game.particles=game.particles.filter(p=>p.life>0);
+}
+
+// ===== DEATH & RESPAWN =====
+function playerDie() {
+  if(player.invincible>0||player.dead) return;
+  player.dead=true;player.vy=-10;audio.die();game.lives--;
+  setTimeout(()=>{if(game.lives<=0){audio.gameover();setTimeout(()=>showGameOver(false),500);}else{respawnPlayer();}},1500);
+}
+function respawnPlayer() {
+  player.x=80;player.y=320;player.vx=0;player.vy=0;player.dead=false;player.onGround=false;player.invincible=120;
+  game.camera.x=0;updateHUD();
+}
+
+// ===== CAMERA =====
+function updateCamera() {
+  const targetX=player.x-CANVAS.width/3;
+  game.camera.x+=(targetX-game.camera.x)*0.08;
+  if(game.camera.x<0)game.camera.x=0;
+  const maxCam=game.level.width*TILE-CANVAS.width;
+  if(game.camera.x>maxCam)game.camera.x=maxCam;
+}
+
+// ===== RENDERING =====
+function render() {
+  const W=CANVAS.width,H=CANVAS.height;
+  const grad=CTX.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'#5c94fc');grad.addColorStop(0.7,'#87CEEB');grad.addColorStop(1,'#c8e6ff');
+  CTX.fillStyle=grad;CTX.fillRect(0,0,W,H);
+  // Clouds
+  CTX.fillStyle='rgba(255,255,255,0.8)';
+  for(let i=0;i<15;i++){const cx=(i*450+100)-game.camera.x*0.3,cy=40+(i%3)*35;if(cx>-100&&cx<W+100){CTX.beginPath();CTX.ellipse(cx,cy,40,20,0,0,Math.PI*2);CTX.ellipse(cx+30,cy-5,30,18,0,0,Math.PI*2);CTX.ellipse(cx-25,cy+3,28,16,0,0,Math.PI*2);CTX.fill();}}
+  // Hills
+  CTX.fillStyle='#4a8c3f';
+  for(let i=0;i<10;i++){const hx=(i*600)-game.camera.x*0.4;if(hx>-200&&hx<W+200){CTX.beginPath();CTX.ellipse(hx,H-60,120+i*10,50+i*5,0,0,Math.PI,true);CTX.fill();}}
+  // Bushes
+  CTX.fillStyle='#2d6b2d';
+  for(let i=0;i<20;i++){const bx=(i*320+50)-game.camera.x*0.6;if(bx>-80&&bx<W+80){CTX.beginPath();CTX.ellipse(bx,H-68,35,18,0,0,Math.PI,true);CTX.ellipse(bx+25,H-68,25,14,0,0,Math.PI,true);CTX.fill();}}
+  CTX.save();CTX.translate(-game.camera.x,0);
+  renderTiles();renderEntities();renderPlayer();renderParticles();
+  CTX.restore();
+}
+
+function renderTiles() {
+  const startX=Math.floor(game.camera.x/TILE),endX=startX+Math.ceil(CANVAS.width/TILE)+2;
+  for(let y=0;y<game.level.height;y++) for(let x=startX;x<endX&&x<game.level.width;x++) {
+    const tile=game.level.map[y][x],px=x*TILE,py=y*TILE;
+    if(tile===1){
+      CTX.fillStyle='#c84c0c';CTX.fillRect(px,py,TILE,TILE);
+      CTX.fillStyle='#e09050';CTX.fillRect(px+2,py+2,TILE-4,8);
+      CTX.strokeStyle='#6b3008';CTX.lineWidth=1;CTX.strokeRect(px+0.5,py+0.5,TILE-1,TILE-1);
+    } else if(tile===2){
+      CTX.fillStyle='#c84c0c';CTX.fillRect(px,py,TILE,TILE);
+      CTX.fillStyle='#e09050';CTX.fillRect(px+2,py+2,12,12);CTX.fillRect(px+18,py+2,12,12);CTX.fillRect(px+2,py+18,12,12);CTX.fillRect(px+18,py+18,12,12);
+      CTX.strokeStyle='#6b3008';CTX.lineWidth=1;CTX.strokeRect(px+0.5,py+0.5,TILE-1,TILE-1);
+    } else if(tile===3){
+      CTX.fillStyle='#f5a623';CTX.fillRect(px,py,TILE,TILE);
+      CTX.fillStyle='#ffd700';CTX.fillRect(px+3,py+3,TILE-6,TILE-6);
+      CTX.fillStyle='#c84c0c';CTX.font='bold 18px Courier';CTX.textAlign='center';CTX.fillText('?',px+TILE/2,py+TILE/2+6);
+      CTX.strokeStyle='#8B4513';CTX.lineWidth=2;CTX.strokeRect(px+1,py+1,TILE-2,TILE-2);
+    } else if(tile===4){
+      CTX.fillStyle='#2d8b2d';CTX.fillRect(px,py,TILE,TILE);
+      CTX.fillStyle='#4ade4a';CTX.fillRect(px+4,py,8,TILE);
+      CTX.strokeStyle='#1a5c1a';CTX.lineWidth=1;CTX.strokeRect(px+0.5,py+0.5,TILE-1,TILE-1);
+    } else if(tile===5){
+      CTX.fillStyle='#666';CTX.fillRect(px+14,py,4,TILE);
+      if(y===5){CTX.fillStyle='#e74c3c';CTX.fillRect(px+18,py+4,20,14);}
     }
-  });
-});
-
-document.querySelectorAll('[data-action="prev"]').forEach(btn => {
-  btn.addEventListener('click', () => goToStep(currentStep - 1));
-});
-
-document.querySelectorAll('.stepper .step').forEach(s => {
-  s.addEventListener('click', () => {
-    const target = parseInt(s.dataset.step);
-    if (target < currentStep) goToStep(target);
-  });
-});
-
-function saveStep(step) {
-  for (const name of stepFields[step].concat(step === 1 ? ['gender'] : []).concat(step === 3 ? ['manager'] : [])) {
-    const el = document.getElementById(name);
-    if (!el) continue;
-    if (el.type === 'checkbox') formData[name] = el.checked;
-    else if (el.type === 'file') formData[name] = el.files[0] ? { name: el.files[0].name, size: el.files[0].size, type: el.files[0].type } : null;
-    else formData[name] = el.value.trim();
   }
 }
 
-// ---- Review ----
-function renderReview() {
-  // collect everything
-  for (let s = 1; s <= 4; s++) saveStep(s);
-  const container = document.getElementById('reviewContent');
-  container.innerHTML = '';
-  for (const [section, fields] of Object.entries(sectionMap)) {
-    const div = document.createElement('div');
-    div.className = 'review-section';
-    const targetStep = sectionStepMap[section];
-    div.innerHTML = `<h3>${section} <button type="button" class="edit-link" data-go="${targetStep}">Edit</button></h3>`;
-    for (const f of fields) {
-      let v = formData[f];
-      if (v == null || v === '') v = '—';
-      if (f === 'taxId' && typeof v === 'string' && v.length > 4) v = '••••' + v.slice(-4);
-      if (f === 'accountNumber' && typeof v === 'string' && v.length > 4) v = '••••' + v.slice(-4);
-      if (typeof v === 'object' && v && v.name) v = `📎 ${v.name}`;
-      const row = document.createElement('div');
-      row.className = 'review-row';
-      row.innerHTML = `<div class="label">${labels[f] || f}</div><div class="value">${escapeHtml(String(v))}</div>`;
-      div.appendChild(row);
+function renderPlayer() {
+  if(player.invincible>0&&Math.floor(player.invincible/4)%2===0) return;
+  const px=player.x,py=player.y,f=player.facing;
+  CTX.save();
+  if(f===-1){CTX.translate(px+player.width/2,0);CTX.scale(-1,1);CTX.translate(-(px+player.width/2),0);}
+  // Hat
+  CTX.fillStyle='#e74c3c';CTX.fillRect(px+4,py,18,8);CTX.fillRect(px+2,py+3,22,5);
+  // Face
+  CTX.fillStyle='#fdbcb4';CTX.fillRect(px+4,py+8,16,10);
+  // Eyes
+  CTX.fillStyle='#000';CTX.fillRect(px+12,py+10,3,3);
+  // Mustache
+  CTX.fillStyle='#4a2800';CTX.fillRect(px+8,py+15,10,3);
+  // Body
+  CTX.fillStyle='#0066cc';CTX.fillRect(px+4,py+18,16,8);
+  CTX.fillStyle='#e74c3c';CTX.fillRect(px+6,py+18,12,4);
+  // Legs
+  if(!player.onGround){CTX.fillStyle='#0066cc';CTX.fillRect(px+4,py+26,6,4);CTX.fillRect(px+14,py+24,6,4);}
+  else if(Math.abs(player.vx)>0.5){const lo=player.frame===1?2:0;CTX.fillStyle='#0066cc';CTX.fillRect(px+4,py+26,6,4+lo);CTX.fillRect(px+14,py+26,6,6-lo);}
+  else{CTX.fillStyle='#0066cc';CTX.fillRect(px+4,py+26,6,4);CTX.fillRect(px+14,py+26,6,4);}
+  // Shoes
+  CTX.fillStyle='#5c3317';CTX.fillRect(px+2,py+28,8,3);CTX.fillRect(px+14,py+28,8,3);
+  CTX.restore();
+}
+
+function renderEntities() {
+  game.entities.forEach(e => {
+    if(e.type==='goomba') {
+      if(e.squished>0){CTX.fillStyle='#8B4513';CTX.fillRect(e.x,e.y+e.height-8,e.width,8);return;}
+      if(!e.alive) return;
+      CTX.fillStyle='#8B4513';CTX.beginPath();CTX.ellipse(e.x+14,e.y+10,14,10,0,0,Math.PI*2);CTX.fill();
+      const wobble=Math.sin(game.time*0.15)*2;
+      CTX.fillStyle='#4a2800';CTX.fillRect(e.x+2,e.y+20,10,8+wobble);CTX.fillRect(e.x+16,e.y+20,10,8-wobble);
+      CTX.fillStyle='#fff';CTX.fillRect(e.x+6,e.y+6,6,7);CTX.fillRect(e.x+16,e.y+6,6,7);
+      CTX.fillStyle='#000';CTX.fillRect(e.x+8,e.y+8,3,4);CTX.fillRect(e.x+18,e.y+8,3,4);
+      CTX.fillStyle='#4a2800';CTX.fillRect(e.x+5,e.y+4,8,2);CTX.fillRect(e.x+15,e.y+4,8,2);
     }
-    container.appendChild(div);
-  }
-  container.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => goToStep(parseInt(b.dataset.go))));
+    if(e.type==='coin'&&!e.collected) {
+      const bounce=Math.sin(game.time*0.1+e.x)*3;
+      CTX.fillStyle='#FFD700';CTX.beginPath();
+      const sx=[1,0.6,0.2,0.6][e.frame];
+      CTX.ellipse(e.x+10,e.y+12+bounce,8*sx,10,0,0,Math.PI*2);CTX.fill();
+      CTX.fillStyle='#FFA500';CTX.beginPath();CTX.ellipse(e.x+10,e.y+12+bounce,4*sx,6,0,0,Math.PI*2);CTX.fill();
+    }
+  });
 }
 
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function renderParticles() {
+  game.particles.forEach(p=>{const alpha=p.life/p.maxLife;CTX.fillStyle=p.color;CTX.globalAlpha=alpha;CTX.fillRect(p.x-3,p.y-3,6,6);});
+  CTX.globalAlpha=1;
 }
 
-// ---- Submit ----
-document.getElementById('regForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  if (!validateStep(5)) {
-    toast('Please confirm to submit.', 'error');
-    return;
-  }
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting...';
+// ===== HUD =====
+function updateHUD() {
+  document.getElementById('hud-score').textContent='SCORE: '+game.score;
+  document.getElementById('hud-coins').textContent='COINS: '+game.coins;
+  document.getElementById('hud-lives').textContent='LIVES: '+game.lives;
+}
 
-  // Mock async submission
-  setTimeout(() => {
-    const empId = 'EMP-' + Math.floor(100000 + Math.random() * 900000);
-    document.getElementById('employeeId').textContent = empId;
-    const payload = { employeeId: empId, ...formData, finalConsent: document.getElementById('finalConsent').checked, submittedAt: new Date().toISOString() };
-    document.getElementById('jsonPreview').textContent = JSON.stringify(payload, null, 2);
-    localStorage.removeItem('empRegDraft');
-    goToStep(6);
-    toast('Registration submitted successfully!', 'success');
-    btn.disabled = false;
-    btn.textContent = 'Submit Registration ✓';
-  }, 1200);
+// ===== GAME LOOP =====
+function gameLoop() {
+  if(!game.running) return;
+  game.time++;
+  updatePlayer();updateEntities();updateParticles();updateCamera();render();
+  requestAnimationFrame(gameLoop);
+}
+
+// ===== RESIZE =====
+function resize(){CANVAS.width=window.innerWidth;CANVAS.height=window.innerHeight;}
+window.addEventListener('resize',resize);
+
+// ===== INPUT =====
+document.addEventListener('keydown',e=>{
+  audio.init();
+  if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;
+  if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;
+  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space'){keys.jump=true;e.preventDefault();}
+});
+document.addEventListener('keyup',e=>{
+  if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;
+  if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false;
+  if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space')keys.jump=false;
 });
 
-// ---- Reset ----
-function resetForm() {
-  document.getElementById('regForm').reset();
-  for (const k in formData) delete formData[k];
-  document.getElementById('idDocName').textContent = '';
-  document.getElementById('emailStatus').className = 'async-status';
-  document.getElementById('emailStatus').innerHTML = '';
-  document.querySelectorAll('.error-msg').forEach(e => e.textContent = '');
-  document.querySelectorAll('.error').forEach(e => e.classList.remove('error'));
-  goToStep(1);
+// Mobile
+function setupMobile(){
+  if('ontouchstart' in window) document.getElementById('mobile-controls').style.display='block';
+  const bl=document.getElementById('btn-left'),br=document.getElementById('btn-right'),bj=document.getElementById('btn-jump');
+  bl.addEventListener('touchstart',e=>{e.preventDefault();keys.left=true;audio.init();});
+  bl.addEventListener('touchend',e=>{e.preventDefault();keys.left=false;});
+  br.addEventListener('touchstart',e=>{e.preventDefault();keys.right=true;audio.init();});
+  br.addEventListener('touchend',e=>{e.preventDefault();keys.right=false;});
+  bj.addEventListener('touchstart',e=>{e.preventDefault();keys.jump=true;audio.init();});
+  bj.addEventListener('touchend',e=>{e.preventDefault();keys.jump=false;});
 }
 
-// ---- Toast ----
-let toastTimer;
-function toast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+// ===== GAME MANAGEMENT =====
+function startGame(){
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('game-over-screen').style.display='none';
+  document.getElementById('ui-overlay').style.display='flex';
+  game.level=generateLevel();game.score=0;game.coins=0;game.lives=3;
+  game.camera.x=0;game.particles=[];game.running=true;game.won=false;game.time=0;
+  player.x=80;player.y=320;player.vx=0;player.vy=0;player.dead=false;player.onGround=false;player.invincible=0;
+  spawnEntities();updateHUD();resize();gameLoop();
 }
 
-// ---- Draft autosave ----
-function saveDraft() {
-  try { localStorage.setItem('empRegDraft', JSON.stringify({ formData, currentStep })); } catch (_) {}
+function showGameOver(won){
+  game.running=false;
+  const s=document.getElementById('game-over-screen');s.style.display='flex';
+  s.querySelector('h1').textContent=won?'YOU WIN!':'GAME OVER';
+  s.querySelector('h1').style.color=won?'#27ae60':'#e74c3c';
+  document.getElementById('score-display').textContent='Score: '+game.score;
 }
 
-function loadDraft() {
-  try {
-    const raw = localStorage.getItem('empRegDraft');
-    if (!raw) return;
-    const draft = JSON.parse(raw);
-    if (!draft.formData) return;
-    for (const [k, v] of Object.entries(draft.formData)) {
-      const el = document.getElementById(k);
-      if (!el) continue;
-      if (el.type === 'checkbox') el.checked = !!v;
-      else if (el.type !== 'file' && typeof v === 'string') el.value = v;
-      formData[k] = v;
-    }
-    toast('Draft restored from your last session.', 'success');
-  } catch (_) {}
-}
+document.getElementById('start-btn').addEventListener('click',()=>{audio.init();startGame();});
+document.getElementById('restart-btn').addEventListener('click',()=>{audio.init();startGame();});
+document.getElementById('start-btn').addEventListener('touchstart',e=>{e.preventDefault();audio.init();startGame();});
+document.getElementById('restart-btn').addEventListener('touchstart',e=>{e.preventDefault();audio.init();startGame();});
 
-// Periodic autosave on input
-document.querySelectorAll('input, select').forEach(el => {
-  el.addEventListener('change', () => { saveStep(currentStep); saveDraft(); });
-});
-
-window.addEventListener('DOMContentLoaded', loadDraft);
+resize();setupMobile();
 </script>
 </body>
 </html>
