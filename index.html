@@ -1,1075 +1,1395 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Employee Registration System</title>
-<style>
-  :root {
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-    --primary-light: #eef2ff;
-    --success: #10b981;
-    --error: #ef4444;
-    --warning: #f59e0b;
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-    --radius: 8px;
-    --radius-lg: 12px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    padding: 24px 16px;
-    color: var(--gray-800);
-    line-height: 1.5;
-  }
-
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-  }
-
-  .header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: #fff;
-    padding: 32px 32px 24px;
-  }
-
-  .header h1 {
-    font-size: 1.75rem;
-    margin-bottom: 4px;
-  }
-
-  .header p {
-    opacity: 0.9;
-    font-size: 0.95rem;
-  }
-
-  .stepper {
-    display: flex;
-    background: var(--gray-50);
-    border-bottom: 1px solid var(--gray-200);
-    overflow-x: auto;
-  }
-
-  .step {
-    flex: 1;
-    min-width: 140px;
-    padding: 16px 12px;
-    text-align: center;
-    border-right: 1px solid var(--gray-200);
-    cursor: pointer;
-    transition: background 0.2s;
-    position: relative;
-  }
-
-  .step:last-child { border-right: none; }
-  .step:hover { background: var(--gray-100); }
-
-  .step.active {
-    background: #fff;
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  .step.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--primary);
-  }
-
-  .step.completed { color: var(--success); }
-
-  .step-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: var(--gray-200);
-    color: var(--gray-600);
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-
-  .step.active .step-number { background: var(--primary); color: #fff; }
-  .step.completed .step-number { background: var(--success); color: #fff; }
-
-  .step-label {
-    display: block;
-    font-size: 0.85rem;
-  }
-
-  .progress-bar {
-    height: 4px;
-    background: var(--gray-200);
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-    transition: width 0.3s ease;
-  }
-
-  form { padding: 32px; }
-
-  .form-step { display: none; }
-  .form-step.active { display: block; animation: fadeIn 0.3s; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .step-title {
-    font-size: 1.35rem;
-    color: var(--gray-900);
-    margin-bottom: 4px;
-  }
-
-  .step-subtitle {
-    color: var(--gray-500);
-    margin-bottom: 24px;
-    font-size: 0.95rem;
-  }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px 20px;
-  }
-
-  .form-group { display: flex; flex-direction: column; }
-  .form-group.full { grid-column: 1 / -1; }
-
-  label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--gray-700);
-    margin-bottom: 6px;
-  }
-
-  label .required { color: var(--error); margin-left: 2px; }
-
-  input, select, textarea {
-    padding: 10px 12px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius);
-    font-size: 0.95rem;
-    font-family: inherit;
-    background: #fff;
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
-
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-  }
-
-  input.error, select.error, textarea.error {
-    border-color: var(--error);
-  }
-
-  input.success { border-color: var(--success); }
-
-  .error-msg {
-    color: var(--error);
-    font-size: 0.8rem;
-    margin-top: 4px;
-    min-height: 16px;
-  }
-
-  .hint {
-    color: var(--gray-500);
-    font-size: 0.8rem;
-    margin-top: 4px;
-  }
-
-  .file-upload {
-    border: 2px dashed var(--gray-300);
-    border-radius: var(--radius);
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-  }
-
-  .file-upload:hover {
-    border-color: var(--primary);
-    background: var(--primary-light);
-  }
-
-  .file-upload input[type="file"] { display: none; }
-
-  .file-upload-icon { font-size: 2rem; margin-bottom: 8px; }
-
-  .file-name {
-    margin-top: 8px;
-    color: var(--success);
-    font-size: 0.85rem;
-    font-weight: 500;
-  }
-
-  .checkbox-group {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .checkbox-group input[type="checkbox"] {
-    width: 18px; height: 18px;
-    margin-top: 2px;
-    cursor: pointer;
-    accent-color: var(--primary);
-  }
-
-  .checkbox-group label {
-    margin: 0;
-    cursor: pointer;
-    font-weight: 400;
-  }
-
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid var(--gray-200);
-  }
-
-  button {
-    padding: 10px 24px;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.05s;
-    font-family: inherit;
-  }
-
-  button:active { transform: translateY(1px); }
-
-  .btn-primary {
-    background: var(--primary);
-    color: #fff;
-  }
-
-  .btn-primary:hover { background: var(--primary-dark); }
-  .btn-primary:disabled {
-    background: var(--gray-300);
-    cursor: not-allowed;
-  }
-
-  .btn-secondary {
-    background: var(--gray-100);
-    color: var(--gray-700);
-  }
-
-  .btn-secondary:hover { background: var(--gray-200); }
-
-  .review-section {
-    background: var(--gray-50);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 16px;
-  }
-
-  .review-section h3 {
-    font-size: 1rem;
-    color: var(--gray-700);
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .review-section .edit-link {
-    font-size: 0.85rem;
-    color: var(--primary);
-    cursor: pointer;
-    font-weight: 500;
-    background: none;
-    border: none;
-    padding: 0;
-  }
-
-  .review-row {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    padding: 6px 0;
-    font-size: 0.9rem;
-    border-bottom: 1px solid var(--gray-200);
-  }
-
-  .review-row:last-child { border-bottom: none; }
-  .review-row .label { color: var(--gray-500); }
-  .review-row .value { color: var(--gray-900); font-weight: 500; }
-
-  .success-screen {
-    text-align: center;
-    padding: 48px 24px;
-  }
-
-  .success-icon {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: var(--success);
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    margin-bottom: 16px;
-  }
-
-  .success-screen h2 {
-    color: var(--gray-900);
-    margin-bottom: 8px;
-  }
-
-  .success-screen p {
-    color: var(--gray-600);
-    margin-bottom: 24px;
-  }
-
-  .employee-id {
-    background: var(--primary-light);
-    color: var(--primary-dark);
-    padding: 12px 20px;
-    border-radius: var(--radius);
-    font-family: 'SF Mono', Consolas, Monaco, monospace;
-    font-size: 1.1rem;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 20px;
-  }
-
-  .json-preview {
-    background: var(--gray-900);
-    color: #a5f3fc;
-    padding: 16px;
-    border-radius: var(--radius);
-    font-family: 'SF Mono', Consolas, Monaco, monospace;
-    font-size: 0.8rem;
-    text-align: left;
-    overflow-x: auto;
-    margin-top: 16px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: var(--gray-800);
-    color: #fff;
-    padding: 12px 18px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lg);
-    z-index: 1000;
-    transform: translateX(120%);
-    transition: transform 0.3s;
-    font-size: 0.9rem;
-  }
-
-  .toast.show { transform: translateX(0); }
-  .toast.success { background: var(--success); }
-  .toast.error { background: var(--error); }
-
-  .async-status {
-    font-size: 0.8rem;
-    margin-top: 4px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .async-status.checking { color: var(--gray-500); }
-  .async-status.valid { color: var(--success); }
-  .async-status.invalid { color: var(--error); }
-
-  .spinner {
-    width: 12px; height: 12px;
-    border: 2px solid var(--gray-300);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-    display: inline-block;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  @media (max-width: 640px) {
-    body { padding: 12px 8px; }
-    .header { padding: 20px; }
-    form { padding: 20px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .step-label { display: none; }
-    .step { min-width: 60px; padding: 12px 4px; }
-    .review-row { grid-template-columns: 1fr; gap: 2px; }
-    .actions { flex-direction: column-reverse; gap: 8px; }
-    .actions button { width: 100%; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Code Origin.Ai | Boy Robot Avatar + Auto Person Detection + Voice Response</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- TensorFlow.js and COCO-SSD -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow: hidden; font-family: 'Rajdhani', sans-serif; background: #020510; }
+        .triple-layout { display: flex; width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 2; }
+        .info-panel { width: 380px; height: 100vh; background: rgba(5, 12, 30, 0.88); backdrop-filter: blur(16px); border-right: 1px solid rgba(0, 200, 255, 0.3); display: flex; flex-direction: column; overflow-y: auto; scrollbar-width: thin; z-index: 20; }
+        .info-panel::-webkit-scrollbar { width: 6px; }
+        .info-panel::-webkit-scrollbar-track { background: #0a1a2f; }
+        .info-panel::-webkit-scrollbar-thumb { background: #00c8ff; border-radius: 10px; }
+
+        .camera-panel { width: 400px; height: 100vh; background: rgba(0, 0, 0, 0.6); border-right: 1px solid rgba(0, 200, 255, 0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; backdrop-filter: blur(8px); z-index: 15; }
+        .camera-container { width: 90%; aspect-ratio: 4 / 3; background: #000; border-radius: 8px; border: 2px solid #00c8ff; overflow: hidden; position: relative; }
+        #cameraFeed { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .detection-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transform: scaleX(-1); }
+        .camera-overlay { position: absolute; bottom: 15px; left: 0; right: 0; text-align: center; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: #00c8ff; background: rgba(0,0,0,0.6); padding: 5px; width: fit-content; margin: 0 auto; border-radius: 4px; pointer-events: none; z-index: 2; }
+        .camera-status { margin-top: 12px; font-size: 0.7rem; font-family: 'Orbitron', sans-serif; color: #00c8ff88; letter-spacing: 2px; }
+        .person-indicator { margin-top: 8px; font-size: 0.65rem; font-family: 'Orbitron', sans-serif; padding: 6px 14px; border-radius: 20px; background: rgba(0,0,0,0.7); transition: all 0.3s ease; text-align: center; }
+        .person-indicator.detected { color: #00ffaa; border: 1px solid #00ffaa; box-shadow: 0 0 10px #00ffaa33; background: rgba(0,255,170,0.1); }
+        .person-indicator.not-detected { color: #ff6680; border: 1px solid #ff6680; }
+        .person-indicator.active { color: #ffcc00; border-color: #ffcc00; box-shadow: 0 0 12px #ffcc0044; background: rgba(255,204,0,0.1); }
+        .avatar-panel { flex: 1; position: relative; background: #020510; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+
+        .status-badge { background: rgba(0,200,255,0.07); border: 1px solid rgba(0,200,255,0.25); border-radius: 2px; padding: 4px 14px; font-size: 0.65rem; font-weight: 600; letter-spacing: 2px; width: fit-content; margin-bottom: 16px; color: #00c8ff; font-family: 'Orbitron', sans-serif; display: flex; align-items: center; gap: 8px; }
+        .led-dot { width: 6px; height: 6px; background: #00ffaa; border-radius: 50%; box-shadow: 0 0 6px #00ffaa; animation: pulseGreen 1.5s infinite; }
+        .led-dot.active { background: #ff3366; box-shadow: 0 0 10px #ff3366; animation: pulseRed 0.8s infinite; }
+        @keyframes pulseGreen { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+        @keyframes pulseRed { 0%,100%{opacity:0.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.4)} }
+        .section-label { font-size: 0.6rem; text-transform: uppercase; font-weight: 700; letter-spacing: 3px; color: #0066ff; margin-bottom: 7px; font-family: 'Orbitron', sans-serif; }
+        .user-message { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 2px; padding: 10px 16px; color: #a0c4ff; font-size: 0.85rem; margin-bottom: 16px; word-break: break-word; min-height: 60px; }
+        .ai-message { background: rgba(0, 100, 255, 0.07); border-radius: 2px; padding: 14px 18px; color: #e0f4ff; line-height: 1.6; font-size: 0.85rem; border: 1px solid rgba(0, 200, 255, 0.2); min-height: 80px; max-height: 150px; overflow-y: auto; }
+        .cursor-blink { display: inline-block; width: 2px; height: 1em; background: #00c8ff; margin-left: 3px; vertical-align: middle; animation: blinkAnim 0.9s step-end infinite; }
+        @keyframes blinkAnim { 0%,100%{opacity:1} 50%{opacity:0} }
+        .volume-meter { display: flex; align-items: center; gap: 10px; margin-top: 16px; margin-bottom: 20px; }
+        .volume-bar { width: 130px; height: 3px; background: rgba(0,200,255,0.1); border-radius: 10px; overflow: hidden; }
+        .volume-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00ffaa, #00c8ff); border-radius: 10px; transition: width 0.02s linear; }
+        .chat-log-container { max-height: 260px; overflow-y: auto; margin-bottom: 16px; padding-right: 8px; scrollbar-width: thin; }
+        .chat-entry { margin-bottom: 12px; padding: 8px 0; border-bottom: 1px solid rgba(0,200,255,0.15); font-size: 0.75rem; }
+        .chat-user-label { color: #88aaff; font-weight: 600; letter-spacing: 0.5px; }
+        .chat-text { color: #e0f4ff; margin-top: 4px; line-height: 1.4; word-break: break-word; }
+        .chat-time { font-size: 0.55rem; color: #00c8ff66; margin-left: 8px; }
+        .panel-content { padding: 24px 20px; flex: 1; }
+
+        .avatar-label { position: fixed; bottom: 20px; right: 28px; z-index: 25; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1rem; color: #00c8ff66; background: rgba(0,0,0,0.4); padding: 6px 16px; border-radius: 2px; backdrop-filter: blur(8px); pointer-events: none; }
+        .stats-footer { position: fixed; top: 22px; right: 28px; z-index: 25; background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); padding: 5px 16px; border-radius: 2px; font-size: 0.65rem; font-family: 'Orbitron', sans-serif; color: #00c8ff66; border: 1px solid rgba(0,200,255,0.15); pointer-events: none; }
+        .corner-bracket { position: fixed; width: 32px; height: 32px; border-color: #00c8ff44; border-style: solid; pointer-events: none; z-index: 15; }
+        .corner-tl { top: 18px; left: 18px; border-width: 2px 0 0 2px; }
+        .corner-tr { top: 18px; right: 18px; border-width: 2px 2px 0 0; }
+        .corner-bl { bottom: 18px; left: 18px; border-width: 0 0 2px 2px; }
+        .corner-br { bottom: 18px; right: 18px; border-width: 0 2px 2px 0; }
+        @media (max-width: 1100px) { .info-panel { width: 320px; } .camera-panel { width: 340px; } }
+        @media (max-width: 900px) { .triple-layout { flex-direction: column; } .info-panel, .camera-panel, .avatar-panel { width: 100%; height: 33.33vh; } }
+        #loading-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(ellipse at 40% 30%, #050c20, #010108); z-index: 1000; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.8s ease; }
+        .loader-spinner { width:64px; height:64px; border:3px solid rgba(0,200,255,0.15); border-top:3px solid #00c8ff; border-radius:50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .model-load-status { font-size: 0.7rem; color: #00c8ffaa; margin-top: 12px; }
+        .auto-badge { background: #00ffaa22; border: 1px solid #00ffaa; color: #00ffaa; padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; font-family: 'Orbitron', sans-serif; margin-left: 8px; }
+        .voice-indicator { background: #ff00aa22; border: 1px solid #ff00aa; color: #ff88cc; padding: 3px 8px; border-radius: 12px; font-size: 0.55rem; margin-left: 8px; animation: pulseVoice 1s infinite; cursor: pointer; }
+        @keyframes pulseVoice { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        .mic-button { background: #00c8ff22; border: 1px solid #00c8ff; color: #00c8ff; padding: 4px 12px; border-radius: 20px; font-size: 0.55rem; margin-left: 8px; cursor: pointer; transition: all 0.2s; }
+        .mic-button:hover { background: #00c8ff44; }
+        .command-highlight { background: #ff336622; border: 1px solid #ff3366; border-radius: 4px; padding: 2px 6px; margin: 0 2px; font-weight: bold; }
+
+
+        /* ── Realistic 3D Human Avatar styles ── */
+        #avatarCanvas2d {
+            border-radius: 16px;
+            border: 1.5px solid rgba(0,200,255,0.35);
+            box-shadow: 0 0 48px rgba(0,200,255,0.15), 0 0 120px rgba(0,100,255,0.08);
+            display: block;
+            max-height: 90vh;
+            width: auto;
+        }
+        .avatar2d-status {
+            position: absolute;
+            bottom: 48px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            font-family: 'Orbitron', sans-serif;
+            color: #00c8ff88;
+            background: rgba(0,0,0,0.55);
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(0,200,255,0.2);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .emotion-display {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            font-family: 'Orbitron', sans-serif;
+            color: #ffcc00aa;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,204,0,0.2);
+            pointer-events: none;
+            z-index: 5;
+            transition: all 0.3s ease;
+        }
+    </style>
 </head>
 <body>
-<div class="container" role="main">
-  <header class="header">
-    <h1>Employee Registration</h1>
-    <p>Welcome aboard! Please complete the steps below to set up your profile.</p>
-  </header>
 
-  <nav class="stepper" aria-label="Registration progress">
-    <div class="step active" data-step="1">
-      <span class="step-number">1</span>
-      <span class="step-label">Personal</span>
+
+<div class="triple-layout">
+    <div class="info-panel">
+        <div class="panel-content">
+            <div class="status-badge"><span class="led-dot" id="statusLed"></span> <span id="statusMsg">INITIALIZING</span><span class="auto-badge">FULL AUTO</span><span class="voice-indicator" id="voiceIndicator">MIC VOICE READY</span><button class="mic-button" id="micRestartBtn">REINIT MIC</button></div>
+            <div class="section-label">CONVERSATION LOG</div>
+            <div class="chat-log-container" id="chatLog">
+                <div class="chat-entry"><span class="chat-user-label">BOTX:</span><span class="chat-time">now</span><div class="chat-text">System online. Voice commands: <span class="command-highlight">STOP</span> (halt), <span class="command-highlight">END</span> (terminate), <span class="command-highlight">RESTART</span> (reboot). Click microphone button if no response.</div></div>
+            </div>
+            <div class="section-label">USER INPUT (VOICE DETECTED)</div>
+            <div class="user-message" id="userMsg">--</div>
+            <div class="section-label">BOTX RESPONSE (VOICE + TEXT)</div>
+            <div class="ai-message" id="aiMsg">Waiting for person detection...<span class="cursor-blink"></span></div>
+            <div class="volume-meter"><svg width="14" height="14" viewBox="0 0 24 24" fill="#00c8ff"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                <div class="volume-bar"><div class="volume-fill" id="volFill"></div></div>
+                <span style="font-size:0.65rem; color:#00c8ff66;">VOICE OUTPUT</span>
+            </div>
+        </div>
     </div>
-    <div class="step" data-step="2">
-      <span class="step-number">2</span>
-      <span class="step-label">Identity</span>
+    <div class="camera-panel">
+        <div class="camera-container">
+            <video id="cameraFeed" autoplay playsinline muted></video>
+            <canvas id="detectionCanvas" class="detection-canvas"></canvas>
+            <div class="camera-overlay">AUTO PERSON DETECTION</div>
+        </div>
+        <div class="camera-status" id="cameraStatus">REQUESTING PERMISSION...</div>
+        <div class="person-indicator not-detected" id="personIndicator">NO PERSON DETECTED</div>
     </div>
-    <div class="step" data-step="3">
-      <span class="step-number">3</span>
-      <span class="step-label">Role</span>
+    <div class="avatar-panel">
+        <div id="canvas-container">
+            <canvas id="avatarCanvas2d" width="420" height="580"></canvas>
+        </div>
+        <div class="emotion-display" id="emotionDisplay">EMOTION: NEUTRAL</div>
+        <div class="avatar2d-status" id="avatar2dStatus">AVATAR READY</div>
     </div>
-    <div class="step" data-step="4">
-      <span class="step-number">4</span>
-      <span class="step-label">Payroll</span>
-    </div>
-    <div class="step" data-step="5">
-      <span class="step-number">5</span>
-      <span class="step-label">Review</span>
-    </div>
-  </nav>
-
-  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 20%"></div></div>
-
-  <form id="regForm" novalidate>
-
-    <!-- STEP 1: Personal Details -->
-    <section class="form-step active" data-step="1" aria-labelledby="step1-title">
-      <h2 class="step-title" id="step1-title">Personal Details</h2>
-      <p class="step-subtitle">Tell us a little about yourself.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="firstName">First Name<span class="required">*</span></label>
-          <input type="text" id="firstName" name="firstName" required autocomplete="given-name" />
-          <div class="error-msg" data-error-for="firstName"></div>
-        </div>
-        <div class="form-group">
-          <label for="lastName">Last Name<span class="required">*</span></label>
-          <input type="text" id="lastName" name="lastName" required autocomplete="family-name" />
-          <div class="error-msg" data-error-for="lastName"></div>
-        </div>
-        <div class="form-group">
-          <label for="email">Email<span class="required">*</span></label>
-          <input type="email" id="email" name="email" required autocomplete="email" />
-          <div class="async-status" id="emailStatus"></div>
-          <div class="error-msg" data-error-for="email"></div>
-        </div>
-        <div class="form-group">
-          <label for="phone">Phone<span class="required">*</span></label>
-          <input type="tel" id="phone" name="phone" required placeholder="+1 555 123 4567" autocomplete="tel" />
-          <div class="error-msg" data-error-for="phone"></div>
-        </div>
-        <div class="form-group">
-          <label for="dob">Date of Birth<span class="required">*</span></label>
-          <input type="date" id="dob" name="dob" required autocomplete="bday" />
-          <div class="error-msg" data-error-for="dob"></div>
-        </div>
-        <div class="form-group">
-          <label for="gender">Gender</label>
-          <select id="gender" name="gender">
-            <option value="">Prefer not to say</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="non_binary">Non-binary</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="form-group full">
-          <label for="address">Address<span class="required">*</span></label>
-          <input type="text" id="address" name="address" required placeholder="Street address" autocomplete="street-address" />
-          <div class="error-msg" data-error-for="address"></div>
-        </div>
-        <div class="form-group">
-          <label for="city">City<span class="required">*</span></label>
-          <input type="text" id="city" name="city" required autocomplete="address-level2" />
-          <div class="error-msg" data-error-for="city"></div>
-        </div>
-        <div class="form-group">
-          <label for="country">Country<span class="required">*</span></label>
-          <select id="country" name="country" required autocomplete="country">
-            <option value="">Select country</option>
-            <option value="US">United States</option>
-            <option value="IN">India</option>
-            <option value="UK">United Kingdom</option>
-            <option value="CA">Canada</option>
-            <option value="AU">Australia</option>
-            <option value="DE">Germany</option>
-            <option value="SG">Singapore</option>
-          </select>
-          <div class="error-msg" data-error-for="country"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <span></span>
-        <button type="button" class="btn-primary" data-action="next">Next: Identity →</button>
-      </div>
-    </section>
-
-    <!-- STEP 2: Identity Verification -->
-    <section class="form-step" data-step="2" aria-labelledby="step2-title">
-      <h2 class="step-title" id="step2-title">Identity Verification</h2>
-      <p class="step-subtitle">Upload a government-issued ID for verification.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="idType">ID Type<span class="required">*</span></label>
-          <select id="idType" name="idType" required>
-            <option value="">Select ID type</option>
-            <option value="passport">Passport</option>
-            <option value="drivers_license">Driver's License</option>
-            <option value="national_id">National ID</option>
-            <option value="aadhaar">Aadhaar</option>
-          </select>
-          <div class="error-msg" data-error-for="idType"></div>
-        </div>
-        <div class="form-group">
-          <label for="idNumber">ID Number<span class="required">*</span></label>
-          <input type="text" id="idNumber" name="idNumber" required />
-          <div class="error-msg" data-error-for="idNumber"></div>
-        </div>
-        <div class="form-group full">
-          <label for="idDoc">Upload ID Document<span class="required">*</span></label>
-          <label class="file-upload" for="idDoc">
-            <div class="file-upload-icon">📄</div>
-            <div>Click to upload (PDF, JPG, PNG — max 5 MB)</div>
-            <input type="file" id="idDoc" name="idDoc" accept=".pdf,.jpg,.jpeg,.png" required />
-            <div class="file-name" id="idDocName"></div>
-          </label>
-          <div class="error-msg" data-error-for="idDoc"></div>
-        </div>
-        <div class="form-group full">
-          <label for="taxId">Tax ID / SSN<span class="required">*</span></label>
-          <input type="text" id="taxId" name="taxId" required placeholder="XXX-XX-XXXX" />
-          <div class="hint">Encrypted and tokenized — never stored in plain text.</div>
-          <div class="error-msg" data-error-for="taxId"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Role →</button>
-      </div>
-    </section>
-
-    <!-- STEP 3: Work / Role -->
-    <section class="form-step" data-step="3" aria-labelledby="step3-title">
-      <h2 class="step-title" id="step3-title">Work & Role Assignment</h2>
-      <p class="step-subtitle">Confirm your role and start details.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="jobTitle">Job Title<span class="required">*</span></label>
-          <input type="text" id="jobTitle" name="jobTitle" required />
-          <div class="error-msg" data-error-for="jobTitle"></div>
-        </div>
-        <div class="form-group">
-          <label for="department">Department<span class="required">*</span></label>
-          <select id="department" name="department" required>
-            <option value="">Select department</option>
-            <option value="engineering">Engineering</option>
-            <option value="product">Product</option>
-            <option value="design">Design</option>
-            <option value="marketing">Marketing</option>
-            <option value="sales">Sales</option>
-            <option value="hr">Human Resources</option>
-            <option value="finance">Finance</option>
-            <option value="operations">Operations</option>
-          </select>
-          <div class="error-msg" data-error-for="department"></div>
-        </div>
-        <div class="form-group">
-          <label for="employmentType">Employment Type<span class="required">*</span></label>
-          <select id="employmentType" name="employmentType" required>
-            <option value="">Select type</option>
-            <option value="full_time">Full-Time</option>
-            <option value="part_time">Part-Time</option>
-            <option value="contract">Contract</option>
-            <option value="intern">Intern</option>
-          </select>
-          <div class="error-msg" data-error-for="employmentType"></div>
-        </div>
-        <div class="form-group">
-          <label for="manager">Reporting Manager</label>
-          <input type="text" id="manager" name="manager" placeholder="Manager's full name" />
-        </div>
-        <div class="form-group">
-          <label for="startDate">Start Date<span class="required">*</span></label>
-          <input type="date" id="startDate" name="startDate" required />
-          <div class="error-msg" data-error-for="startDate"></div>
-        </div>
-        <div class="form-group">
-          <label for="workLocation">Work Location<span class="required">*</span></label>
-          <select id="workLocation" name="workLocation" required>
-            <option value="">Select location</option>
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="onsite">On-site</option>
-          </select>
-          <div class="error-msg" data-error-for="workLocation"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Payroll →</button>
-      </div>
-    </section>
-
-    <!-- STEP 4: Payroll & Banking -->
-    <section class="form-step" data-step="4" aria-labelledby="step4-title">
-      <h2 class="step-title" id="step4-title">Payroll & Banking</h2>
-      <p class="step-subtitle">Where should we send your salary?</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="bankName">Bank Name<span class="required">*</span></label>
-          <input type="text" id="bankName" name="bankName" required />
-          <div class="error-msg" data-error-for="bankName"></div>
-        </div>
-        <div class="form-group">
-          <label for="accountHolder">Account Holder Name<span class="required">*</span></label>
-          <input type="text" id="accountHolder" name="accountHolder" required />
-          <div class="error-msg" data-error-for="accountHolder"></div>
-        </div>
-        <div class="form-group">
-          <label for="accountNumber">Account Number<span class="required">*</span></label>
-          <input type="text" id="accountNumber" name="accountNumber" required inputmode="numeric" />
-          <div class="error-msg" data-error-for="accountNumber"></div>
-        </div>
-        <div class="form-group">
-          <label for="routingCode">Routing / IFSC / Swift Code<span class="required">*</span></label>
-          <input type="text" id="routingCode" name="routingCode" required />
-          <div class="error-msg" data-error-for="routingCode"></div>
-        </div>
-        <div class="form-group">
-          <label for="currency">Salary Currency<span class="required">*</span></label>
-          <select id="currency" name="currency" required>
-            <option value="">Select currency</option>
-            <option value="USD">USD — US Dollar</option>
-            <option value="INR">INR — Indian Rupee</option>
-            <option value="GBP">GBP — British Pound</option>
-            <option value="EUR">EUR — Euro</option>
-            <option value="CAD">CAD — Canadian Dollar</option>
-            <option value="AUD">AUD — Australian Dollar</option>
-            <option value="SGD">SGD — Singapore Dollar</option>
-          </select>
-          <div class="error-msg" data-error-for="currency"></div>
-        </div>
-        <div class="form-group full checkbox-group">
-          <input type="checkbox" id="taxConsent" name="taxConsent" required />
-          <label for="taxConsent">I confirm that all banking and tax information provided is accurate, and authorize the deposit of salary to this account.<span class="required">*</span></label>
-        </div>
-        <div class="error-msg full" data-error-for="taxConsent"></div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Review →</button>
-      </div>
-    </section>
-
-    <!-- STEP 5: Review & Submit -->
-    <section class="form-step" data-step="5" aria-labelledby="step5-title">
-      <h2 class="step-title" id="step5-title">Review & Submit</h2>
-      <p class="step-subtitle">Please review your information before submitting.</p>
-      <div id="reviewContent"></div>
-      <div class="checkbox-group" style="margin-top: 20px;">
-        <input type="checkbox" id="finalConsent" name="finalConsent" required />
-        <label for="finalConsent">I confirm all the information above is accurate and agree to the company's privacy policy, code of conduct and terms of employment.<span class="required">*</span></label>
-      </div>
-      <div class="error-msg" data-error-for="finalConsent"></div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="submit" class="btn-primary" id="submitBtn">Submit Registration ✓</button>
-      </div>
-    </section>
-
-    <!-- SUCCESS SCREEN -->
-    <section class="form-step" data-step="6">
-      <div class="success-screen">
-        <div class="success-icon">✓</div>
-        <h2>Registration Complete!</h2>
-        <p>Welcome to the team. Your registration has been submitted successfully.</p>
-        <div class="employee-id" id="employeeId">EMP-XXXXXX</div>
-        <p style="font-size: 0.9rem; color: var(--gray-500);">A confirmation email has been sent. Our HR team will be in touch shortly.</p>
-        <details style="margin-top: 24px; text-align: left;">
-          <summary style="cursor: pointer; color: var(--primary); font-weight: 500;">View submission JSON</summary>
-          <pre class="json-preview" id="jsonPreview"></pre>
-        </details>
-        <button type="button" class="btn-secondary" style="margin-top: 24px;" onclick="resetForm()">Register Another Employee</button>
-      </div>
-    </section>
-
-  </form>
 </div>
+<div class="corner-bracket corner-tl"></div><div class="corner-bracket corner-tr"></div>
+<div class="corner-bracket corner-bl"></div><div class="corner-bracket corner-br"></div>
+<div class="avatar-label">REALISTIC HUMAN AVATAR - BOTX - VOICE MODE</div>
+<div class="stats-footer" id="stats">VOICE ACTIVE - SAY: STOP - END - RESTART</div>
+<div id="loading-screen"><div class="loader-spinner"></div><div style="font-family:'Orbitron',sans-serif; font-size:1.3rem; color:#00c8ff; margin-top:20px;">REALISTIC HUMAN AVATAR</div><div style="color:#4a7a9b; font-size:0.75rem;">FULLY AUTOMATED AI COMPANION WITH EMOTIONS</div><div style="width:280px; height:2px; background:rgba(0,200,255,0.15); margin-top:28px;"><div id="loadFill" style="width:0%; height:100%; background:linear-gradient(90deg,#00c8ff,#0066ff);"></div></div><div id="loadPercent" style="color:#00c8ff88; margin-top:10px;">0%</div><div id="modelLoadStatus" class="model-load-status">Building Realistic Human Avatar with Emotions...</div></div>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<!-- ==================== REALISTIC 3D HUMAN AVATAR WITH EMOTIONS ==================== -->
 <script>
-'use strict';
+(function(){
+    const cv = document.getElementById('avatarCanvas2d');
+    const cx = cv.getContext('2d');
+    const W = 420, H = 580;
 
-const TOTAL_STEPS = 5;
-let currentStep = 1;
-const formData = {};
+    // Emotion system with blending
+    const emotions = {
+        neutral:    { eyeOpen:1, browL:0, browR:0, smile:0.2, mouthOpen:0, cheekGlow:0, pupilSize:1, headTilt:0, shoulderTense:0 },
+        happy:      { eyeOpen:0.9, browL:-4, browR:-4, smile:0.9, mouthOpen:0.15, cheekGlow:0.6, pupilSize:1.1, headTilt:0.02, shoulderTense:-0.05 },
+        sad:        { eyeOpen:0.7, browL:8, browR:8, smile:-0.4, mouthOpen:0.05, cheekGlow:0, pupilSize:0.9, headTilt:-0.04, shoulderTense:0.1 },
+        surprised:  { eyeOpen:1.3, browL:-14, browR:-14, smile:0, mouthOpen:0.8, cheekGlow:0.2, pupilSize:1.3, headTilt:0, shoulderTense:0.15 },
+        thinking:   { eyeOpen:0.85, browL:-6, browR:4, smile:0.05, mouthOpen:0.02, cheekGlow:0, pupilSize:0.95, headTilt:0.06, shoulderTense:0.05 },
+        angry:      { eyeOpen:0.8, browL:10, browR:10, smile:-0.3, mouthOpen:0.1, cheekGlow:0.3, pupilSize:0.85, headTilt:-0.02, shoulderTense:0.2 },
+        love:       { eyeOpen:0.85, browL:-3, browR:-3, smile:0.7, mouthOpen:0.08, cheekGlow:0.8, pupilSize:1.2, headTilt:0.04, shoulderTense:-0.08 },
+        fearful:    { eyeOpen:1.2, browL:-10, browR:-10, smile:-0.2, mouthOpen:0.4, cheekGlow:0, pupilSize:1.25, headTilt:-0.01, shoulderTense:0.25 },
+        disgusted:  { eyeOpen:0.7, browL:6, browR:2, smile:-0.5, mouthOpen:0.15, cheekGlow:0, pupilSize:0.8, headTilt:0.03, shoulderTense:0.1 },
+        confident:  { eyeOpen:0.95, browL:-2, browR:-2, smile:0.5, mouthOpen:0, cheekGlow:0.3, pupilSize:1.05, headTilt:0.03, shoulderTense:-0.1 },
+    };
 
-const stepFields = {
-  1: ['firstName', 'lastName', 'email', 'phone', 'dob', 'address', 'city', 'country'],
-  2: ['idType', 'idNumber', 'idDoc', 'taxId'],
-  3: ['jobTitle', 'department', 'employmentType', 'startDate', 'workLocation'],
-  4: ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency', 'taxConsent'],
-  5: ['finalConsent']
-};
+    let s = {
+        // Eye system
+        eyeOpen: 1, eyeOpenTarget: 1,
+        pupilLx: 0, pupilLy: 0, pupilRx: 0, pupilRy: 0,
+        pupilTargetX: 0, pupilTargetY: 0,
+        pupilSize: 1, pupilSizeTarget: 1,
+        blinkTimer: 0, isBlinking: false, blinkPhase: 0, nextBlink: 120,
+        // Micro-saccades
+        saccTimer: 0, nextSacc: 50,
+        // Brow
+        browL: 0, browR: 0, browLTarget: 0, browRTarget: 0,
+        // Mouth
+        mouthOpen: 0, mouthOpenTarget: 0,
+        smile: 0.2, smileTarget: 0.2,
+        // Cheeks & skin
+        cheekGlow: 0, cheekGlowTarget: 0,
+        skinFlush: 0, skinFlushTarget: 0,
+        // Head movement
+        headTilt: 0, headTiltTarget: 0,
+        headBob: 0, headBobSpeed: 0.012,
+        headNod: 0, headNodTarget: 0,
+        // Body
+        shoulderTense: 0, shoulderTenseTarget: 0,
+        breathPhase: 0,
+        chestExpand: 0,
+        // Arms & gestures
+        rArmAngle: 0, rArmTarget: 0,
+        lArmAngle: 0, lArmTarget: 0,
+        waving: false, waveTimer: 0,
+        // Speaking
+        speaking: false, phones: [], phoneIdx: 0, phoneTimer: 0,
+        // Emotion
+        currentEmo: 'neutral', emoBlend: 0, emoTransitionSpeed: 0.04,
+        // Ambient life
+        microExprTimer: 0, nextMicroExpr: 200,
+        swallowTimer: 0,
+        // Tear / sweat particles
+        particles: [],
+    };
 
-const labels = {
-  firstName: 'First Name', lastName: 'Last Name', email: 'Email', phone: 'Phone',
-  dob: 'Date of Birth', gender: 'Gender', address: 'Address', city: 'City', country: 'Country',
-  idType: 'ID Type', idNumber: 'ID Number', idDoc: 'ID Document', taxId: 'Tax ID',
-  jobTitle: 'Job Title', department: 'Department', employmentType: 'Employment Type',
-  manager: 'Manager', startDate: 'Start Date', workLocation: 'Work Location',
-  bankName: 'Bank Name', accountHolder: 'Account Holder', accountNumber: 'Account Number',
-  routingCode: 'Routing/IFSC', currency: 'Currency'
-};
 
-const sectionMap = {
-  'Personal Details': ['firstName', 'lastName', 'email', 'phone', 'dob', 'gender', 'address', 'city', 'country'],
-  'Identity Verification': ['idType', 'idNumber', 'idDoc', 'taxId'],
-  'Work & Role': ['jobTitle', 'department', 'employmentType', 'manager', 'startDate', 'workLocation'],
-  'Payroll & Banking': ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency']
-};
+    // Phoneme map for realistic lip sync
+    const phonemes = [
+        {shape:'aa', open:0.7, wide:0.3, round:0},
+        {shape:'ee', open:0.2, wide:0.6, round:0},
+        {shape:'oo', open:0.5, wide:-0.2, round:0.8},
+        {shape:'mm', open:0, wide:0, round:0.3},
+        {shape:'th', open:0.15, wide:0.2, round:0},
+        {shape:'ff', open:0.1, wide:0.1, round:0},
+        {shape:'ss', open:0.1, wide:0.4, round:0},
+        {shape:'ch', open:0.3, wide:0.1, round:0.4},
+        {shape:'l',  open:0.25, wide:0.15, round:0},
+        {shape:'w',  open:0.35, wide:-0.1, round:0.7},
+        {shape:'r',  open:0.2, wide:0, round:0.3},
+        {shape:'p',  open:0, wide:0, round:0.2},
+    ];
 
-const sectionStepMap = {
-  'Personal Details': 1,
-  'Identity Verification': 2,
-  'Work & Role': 3,
-  'Payroll & Banking': 4
-};
-
-// ---- Validation ----
-function validateField(name, value) {
-  if (!value && !['gender', 'manager'].includes(name)) {
-    if (name === 'idDoc' && !document.getElementById('idDoc').files.length) return 'Please upload a document.';
-    if (name === 'taxConsent' || name === 'finalConsent') {
-      const cb = document.getElementById(name);
-      if (cb && !cb.checked) return 'You must agree to continue.';
-      return '';
+    function textToPhones(txt) {
+        const ph = [];
+        for (const w of txt.split(/\s+/)) {
+            const n = Math.max(1, Math.round(w.length * 0.7));
+            for (let i = 0; i < n; i++) {
+                const p = phonemes[Math.floor(Math.random() * phonemes.length)];
+                ph.push({ open: p.open, wide: p.wide, round: p.round, dur: 5 + Math.floor(Math.random() * 6) });
+            }
+            ph.push({ open: 0.02, wide: 0, round: 0, dur: 8 + Math.floor(Math.random() * 5) });
+        }
+        return ph;
     }
-    return 'This field is required.';
-  }
-  switch (name) {
-    case 'email':
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email address.';
-      break;
-    case 'phone':
-      if (!/^[+\d][\d\s\-()]{6,}$/.test(value)) return 'Enter a valid phone number.';
-      break;
-    case 'dob': {
-      const d = new Date(value);
-      const age = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
-      if (age < 16) return 'You must be at least 16 years old.';
-      if (age > 100) return 'Please enter a valid date of birth.';
-      break;
+
+    /* Public API for main bot script */
+    window.avatar2d = {
+        startSpeak: function(txt) {
+            s.speaking = true;
+            s.phones = textToPhones(txt);
+            s.phoneIdx = 0;
+            s.phoneTimer = 0;
+            s.rArmTarget = 0.15;
+            s.headBobSpeed = 0.055;
+            document.getElementById('avatar2dStatus').textContent = 'SPEAKING...';
+        },
+        stopSpeak: function() {
+            s.speaking = false;
+            s.rArmTarget = 0;
+            s.headBobSpeed = 0.012;
+            document.getElementById('avatar2dStatus').textContent = 'AVATAR READY';
+        },
+        setEmo: function(e) {
+            if (!emotions[e]) e = 'neutral';
+            s.currentEmo = e;
+            const emo = emotions[e];
+            s.eyeOpenTarget = emo.eyeOpen;
+            s.browLTarget = emo.browL;
+            s.browRTarget = emo.browR;
+            s.smileTarget = emo.smile;
+            s.cheekGlowTarget = emo.cheekGlow;
+            s.pupilSizeTarget = emo.pupilSize;
+            s.headTiltTarget = emo.headTilt;
+            s.shoulderTenseTarget = emo.shoulderTense;
+            if (!s.speaking) s.mouthOpenTarget = emo.mouthOpen;
+            // Update display
+            const disp = document.getElementById('emotionDisplay');
+            if (disp) disp.textContent = 'EMOTION: ' + e.toUpperCase();
+            // Particles for certain emotions
+            if (e === 'sad') addTearParticle();
+            if (e === 'love') addHeartParticle();
+        },
+        doWave: function() {
+            s.waving = true;
+            s.waveTimer = 0;
+        }
+    };
+
+
+    function addTearParticle() {
+        s.particles.push({ type:'tear', x: 168, y: 195, vy: 0.5, life: 80, alpha: 0.8 });
     }
-    case 'startDate': {
-      const d = new Date(value);
-      const today = new Date(); today.setHours(0,0,0,0);
-      const oneYear = new Date(); oneYear.setFullYear(oneYear.getFullYear() + 1);
-      if (d < today) return 'Start date cannot be in the past.';
-      if (d > oneYear) return 'Start date cannot be more than a year from today.';
-      break;
+    function addHeartParticle() {
+        for (let i = 0; i < 3; i++) {
+            s.particles.push({ type:'heart', x: 210 + (Math.random()-0.5)*60, y: 150 + Math.random()*40, vy: -0.8 - Math.random(), vx: (Math.random()-0.5)*0.5, life: 60 + Math.random()*40, alpha: 1, size: 8 + Math.random()*6 });
+        }
     }
-    case 'taxId':
-      if (value.replace(/\D/g, '').length < 4) return 'Enter a valid Tax ID / SSN.';
-      break;
-    case 'accountNumber':
-      if (!/^\d{6,20}$/.test(value.replace(/\s/g, ''))) return 'Account number should be 6–20 digits.';
-      break;
-  }
-  return '';
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+    function update() {
+        // Breathing
+        s.breathPhase += 0.022;
+        s.chestExpand = Math.sin(s.breathPhase) * 2.5;
+
+        // Blink system with realistic timing
+        s.blinkTimer++;
+        if (!s.isBlinking && s.blinkTimer > s.nextBlink) {
+            s.isBlinking = true;
+            s.blinkPhase = 0;
+            s.nextBlink = 80 + Math.floor(Math.random() * 250);
+            s.blinkTimer = 0;
+        }
+        if (s.isBlinking) {
+            s.blinkPhase++;
+            const t = s.blinkPhase / 12;
+            if (t < 0.4) s.eyeOpen = lerp(s.eyeOpenTarget, 0, t / 0.4);
+            else if (t < 1) s.eyeOpen = lerp(0, s.eyeOpenTarget, (t - 0.4) / 0.6);
+            if (s.blinkPhase >= 12) { s.isBlinking = false; s.eyeOpen = s.eyeOpenTarget; }
+        } else {
+            s.eyeOpen = lerp(s.eyeOpen, s.eyeOpenTarget, 0.1);
+        }
+
+        // Micro saccades (realistic eye jitter)
+        s.saccTimer++;
+        if (s.saccTimer > s.nextSacc) {
+            s.saccTimer = 0;
+            s.nextSacc = 30 + Math.floor(Math.random() * 80);
+            s.pupilTargetX = (Math.random() - 0.5) * 2.2;
+            s.pupilTargetY = (Math.random() - 0.5) * 1.5;
+        }
+        s.pupilLx = lerp(s.pupilLx, s.pupilTargetX, 0.12);
+        s.pupilLy = lerp(s.pupilLy, s.pupilTargetY, 0.12);
+        s.pupilRx = lerp(s.pupilRx, s.pupilTargetX, 0.11);
+        s.pupilRy = lerp(s.pupilRy, s.pupilTargetY, 0.11);
+        s.pupilSize = lerp(s.pupilSize, s.pupilSizeTarget, 0.06);
+
+        // Brow smooth
+        s.browL = lerp(s.browL, s.browLTarget, 0.08);
+        s.browR = lerp(s.browR, s.browRTarget, 0.08);
+
+        // Mouth & speaking
+        if (s.speaking && s.phones.length > 0) {
+            s.phoneTimer++;
+            const ph = s.phones[s.phoneIdx];
+            if (ph && s.phoneTimer >= ph.dur) {
+                s.phoneTimer = 0;
+                s.phoneIdx++;
+                if (s.phoneIdx >= s.phones.length) s.phoneIdx = s.phones.length - 1;
+            }
+            const cur = s.phones[s.phoneIdx];
+            if (cur) {
+                s.mouthOpenTarget = cur.open;
+                if (s.currentEmo === 'neutral' || s.currentEmo === 'happy') {
+                    s.smileTarget = 0.15 + cur.wide * 0.3;
+                }
+            }
+        } else if (!s.speaking) {
+            s.mouthOpenTarget = emotions[s.currentEmo].mouthOpen;
+        }
+        s.mouthOpen = lerp(s.mouthOpen, s.mouthOpenTarget, 0.25);
+        s.smile = lerp(s.smile, s.smileTarget, 0.12);
+        s.cheekGlow = lerp(s.cheekGlow, s.cheekGlowTarget, 0.05);
+        s.headTilt = lerp(s.headTilt, s.headTiltTarget, 0.04);
+        s.shoulderTense = lerp(s.shoulderTense, s.shoulderTenseTarget, 0.05);
+
+        // Head bob
+        s.headBob += s.headBobSpeed;
+
+        // Micro expressions (subtle life)
+        s.microExprTimer++;
+        if (s.microExprTimer > s.nextMicroExpr) {
+            s.microExprTimer = 0;
+            s.nextMicroExpr = 150 + Math.floor(Math.random() * 300);
+            // Subtle random twitch
+            s.browLTarget += (Math.random() - 0.5) * 2;
+            s.smileTarget += (Math.random() - 0.5) * 0.05;
+            setTimeout(() => {
+                const emo = emotions[s.currentEmo];
+                s.browLTarget = emo.browL;
+                s.smileTarget = s.speaking ? s.smileTarget : emo.smile;
+            }, 400);
+        }
+
+        // Swallow reflex
+        s.swallowTimer++;
+        if (s.swallowTimer > 300 + Math.random() * 400) {
+            s.swallowTimer = 0;
+        }
+
+        // Arm animation
+        if (s.waving) {
+            s.waveTimer += 0.16;
+            s.lArmTarget = 1.0 + Math.sin(s.waveTimer) * 0.5;
+            if (s.waveTimer > Math.PI * 4) { s.waving = false; s.lArmTarget = 0; }
+        }
+        s.rArmAngle = lerp(s.rArmAngle, s.rArmTarget, 0.08);
+        s.lArmAngle = lerp(s.lArmAngle, s.lArmTarget, 0.08);
+
+        // Particles
+        s.particles = s.particles.filter(p => {
+            p.life--;
+            p.y += (p.vy || 0);
+            p.x += (p.vx || 0);
+            if (p.type === 'tear') { p.vy += 0.08; p.alpha -= 0.01; }
+            if (p.type === 'heart') { p.alpha -= 0.015; }
+            return p.life > 0 && p.alpha > 0;
+        });
+    }
+
+
+    function drawHand(x, y, angle, spread) {
+        cx.save();
+        cx.translate(x, y);
+        cx.rotate(angle);
+        // Palm with subsurface scattering effect
+        const palmG = cx.createRadialGradient(0, 0, 2, 0, 0, 18);
+        palmG.addColorStop(0, '#fce4d6');
+        palmG.addColorStop(0.7, '#f0c9a8');
+        palmG.addColorStop(1, '#d4a47a');
+        cx.fillStyle = palmG;
+        cx.beginPath(); cx.ellipse(0, 0, 15, 20, 0, 0, Math.PI * 2); cx.fill();
+        // Fingers with joints
+        const sp = spread || 0;
+        const fingers = [[-8,-14,0.9], [-4,-18,1], [0,-19,1.05], [4,-17,0.95], [9,-13,0.8]];
+        for (let [fx, fy, scale] of fingers) {
+            cx.beginPath();
+            cx.ellipse(fx + sp * fx * 0.1, fy, 4.5 * scale, 9 * scale, 0, 0, Math.PI * 2);
+            cx.fillStyle = '#f5d5b8';
+            cx.fill();
+            // Nail
+            cx.beginPath();
+            cx.ellipse(fx + sp * fx * 0.1, fy - 5 * scale, 3 * scale, 4 * scale, 0, -0.5, Math.PI + 0.5);
+            cx.fillStyle = '#ffeedd';
+            cx.fill();
+        }
+        // Palm lines
+        cx.strokeStyle = 'rgba(180,130,100,0.25)';
+        cx.lineWidth = 0.5;
+        cx.beginPath(); cx.moveTo(-8, 2); cx.quadraticCurveTo(0, -2, 8, 3); cx.stroke();
+        cx.beginPath(); cx.moveTo(-6, 6); cx.quadraticCurveTo(2, 3, 10, 7); cx.stroke();
+        cx.restore();
+    }
+
+    function drawEye(cx, ex, ey, pupX, pupY, openAmount, isLeft) {
+        const eyeW = 22, eyeH = 15 * openAmount;
+        if (eyeH < 1) return;
+
+        cx.save();
+        // Eye white with subtle veins
+        cx.beginPath();
+        cx.ellipse(ex, ey, eyeW, eyeH, 0, 0, Math.PI * 2);
+        const whiteG = cx.createRadialGradient(ex, ey, 1, ex, ey, eyeW);
+        whiteG.addColorStop(0, '#ffffff');
+        whiteG.addColorStop(0.7, '#fafafa');
+        whiteG.addColorStop(1, '#f0e8e0');
+        cx.fillStyle = whiteG;
+        cx.fill();
+        cx.strokeStyle = 'rgba(120,80,60,0.3)';
+        cx.lineWidth = 0.8;
+        cx.stroke();
+        cx.clip();
+
+        // Subtle veins
+        cx.strokeStyle = 'rgba(200,100,80,0.08)';
+        cx.lineWidth = 0.4;
+        for (let i = 0; i < 3; i++) {
+            cx.beginPath();
+            cx.moveTo(ex + (isLeft ? -eyeW : eyeW), ey + (i - 1) * 4);
+            cx.quadraticCurveTo(ex + (isLeft ? -5 : 5), ey + (i - 1) * 2, ex, ey);
+            cx.stroke();
+        }
+
+        // Iris with depth
+        const px = ex + pupX * 6, py = ey + pupY * 4;
+        const irisR = 11 * s.pupilSize;
+        const irisG = cx.createRadialGradient(px - 1, py - 1, 1, px, py, irisR);
+        irisG.addColorStop(0, '#6ba3d6');
+        irisG.addColorStop(0.3, '#3d7ec4');
+        irisG.addColorStop(0.6, '#2a5fa0');
+        irisG.addColorStop(0.85, '#1a3d6b');
+        irisG.addColorStop(1, '#0d2444');
+        cx.beginPath(); cx.arc(px, py, irisR, 0, Math.PI * 2);
+        cx.fillStyle = irisG; cx.fill();
+
+        // Iris texture (radial fibers)
+        cx.globalAlpha = 0.15;
+        for (let a = 0; a < Math.PI * 2; a += 0.3) {
+            cx.beginPath();
+            cx.moveTo(px + Math.cos(a) * 3, py + Math.sin(a) * 3);
+            cx.lineTo(px + Math.cos(a) * irisR * 0.9, py + Math.sin(a) * irisR * 0.9);
+            cx.strokeStyle = '#1a4070';
+            cx.lineWidth = 0.5;
+            cx.stroke();
+        }
+        cx.globalAlpha = 1;
+
+        // Pupil
+        const pupR = 5 * s.pupilSize;
+        cx.beginPath(); cx.arc(px, py, pupR, 0, Math.PI * 2);
+        cx.fillStyle = '#050508'; cx.fill();
+
+        // Realistic light reflections
+        cx.beginPath(); cx.ellipse(px - 3.5, py - 3.5, 3, 2.5, -0.3, 0, Math.PI * 2);
+        cx.fillStyle = 'rgba(255,255,255,0.92)'; cx.fill();
+        cx.beginPath(); cx.arc(px + 2.5, py + 2, 1.2, 0, Math.PI * 2);
+        cx.fillStyle = 'rgba(255,255,255,0.5)'; cx.fill();
+
+        // Lower eyelid shadow
+        cx.restore();
+
+        // Eyelashes (top)
+        cx.save();
+        cx.strokeStyle = '#2a1a10';
+        cx.lineWidth = 1.2;
+        cx.lineCap = 'round';
+        for (let i = -3; i <= 3; i++) {
+            const lx = ex + i * (eyeW / 4);
+            const baseY = ey - eyeH + 1;
+            cx.beginPath();
+            cx.moveTo(lx, baseY);
+            cx.quadraticCurveTo(lx + i * 0.5, baseY - 5 - Math.abs(i) * 0.5, lx + i * 1.2, baseY - 7);
+            cx.stroke();
+        }
+        // Bottom lashes (subtle)
+        cx.lineWidth = 0.6;
+        for (let i = -2; i <= 2; i++) {
+            const lx = ex + i * (eyeW / 3.5);
+            cx.beginPath();
+            cx.moveTo(lx, ey + eyeH - 1);
+            cx.lineTo(lx + i * 0.3, ey + eyeH + 2.5);
+            cx.stroke();
+        }
+        cx.restore();
+
+        // Eye crease
+        cx.strokeStyle = 'rgba(140,90,60,0.2)';
+        cx.lineWidth = 0.8;
+        cx.beginPath();
+        cx.ellipse(ex, ey - eyeH - 4, eyeW + 2, 6, 0, 0.3, Math.PI - 0.3);
+        cx.stroke();
+    }
+
+
+    function draw() {
+        cx.clearRect(0, 0, W, H);
+        const CX = W / 2; // Center X
+        const hb = Math.sin(s.headBob) * 1.8;
+        const breath = s.chestExpand;
+        const tilt = s.headTilt;
+
+        // Background gradient with subtle atmosphere
+        const bgG = cx.createRadialGradient(CX, H * 0.3, 50, CX, H * 0.5, H);
+        bgG.addColorStop(0, '#1e2d4a');
+        bgG.addColorStop(0.5, '#121c30');
+        bgG.addColorStop(1, '#080e1a');
+        cx.fillStyle = bgG;
+        cx.fillRect(0, 0, W, H);
+
+        // Subtle ambient glow behind avatar
+        cx.fillStyle = 'rgba(40,100,180,0.04)';
+        cx.beginPath(); cx.ellipse(CX, 280, 180, 250, 0, 0, Math.PI * 2); cx.fill();
+
+        // Floor reflection
+        cx.fillStyle = 'rgba(40,120,200,0.03)';
+        cx.beginPath(); cx.ellipse(CX, H - 30, 160, 35, 0, 0, Math.PI * 2); cx.fill();
+
+        cx.save();
+        cx.translate(CX, 0);
+        cx.rotate(tilt);
+        cx.translate(-CX, 0);
+
+        const torsoY = 295 + breath * 0.5;
+        const shoulderW = 95 + s.shoulderTense * 15;
+
+        // === NECK ===
+        const neckY = torsoY - 30 + breath * 0.3;
+        const neckG = cx.createLinearGradient(CX - 15, neckY - 10, CX + 15, neckY + 20);
+        neckG.addColorStop(0, '#f5dcc8');
+        neckG.addColorStop(1, '#e8c4a8');
+        cx.fillStyle = neckG;
+        cx.beginPath();
+        cx.moveTo(CX - 18, neckY - 10);
+        cx.quadraticCurveTo(CX - 20, neckY + 15, CX - 16, neckY + 30);
+        cx.lineTo(CX + 16, neckY + 30);
+        cx.quadraticCurveTo(CX + 20, neckY + 15, CX + 18, neckY - 10);
+        cx.closePath();
+        cx.fill();
+        // Neck shadow
+        cx.fillStyle = 'rgba(160,100,70,0.12)';
+        cx.beginPath(); cx.ellipse(CX, neckY + 25, 16, 5, 0, 0, Math.PI * 2); cx.fill();
+        // Adam's apple subtle
+        cx.strokeStyle = 'rgba(180,130,100,0.15)';
+        cx.lineWidth = 0.8;
+        cx.beginPath(); cx.arc(CX, neckY + 8 - (s.swallowTimer < 10 ? (10 - s.swallowTimer) * 0.3 : 0), 4, 0.8, 2.3); cx.stroke();
+
+        // === TORSO (shirt/jacket) ===
+        // Right arm (behind torso)
+        cx.save();
+        cx.translate(CX + shoulderW, torsoY + 10);
+        cx.rotate(0.1 + s.rArmAngle * 0.5);
+        // Upper arm
+        cx.fillStyle = '#2b3a55';
+        cx.beginPath(); cx.roundRect(-14, 0, 28, 85, 8); cx.fill();
+        // Forearm
+        cx.save(); cx.translate(0, 85); cx.rotate(0.05 + s.rArmAngle * 0.3);
+        cx.fillStyle = '#f2d4b8';
+        cx.beginPath(); cx.roundRect(-10, 0, 20, 60, 6); cx.fill();
+        drawHand(0, 65, 0.05, s.speaking ? Math.sin(s.headBob * 3) * 0.2 : 0);
+        cx.restore();
+        cx.restore();
+
+        // Left arm
+        cx.save();
+        cx.translate(CX - shoulderW, torsoY + 10);
+        cx.rotate(-0.1 + s.lArmAngle * 1.2);
+        cx.fillStyle = '#2b3a55';
+        cx.beginPath(); cx.roundRect(-14, 0, 28, 85, 8); cx.fill();
+        cx.save(); cx.translate(0, 85); cx.rotate(-0.05 + s.lArmAngle * 0.4);
+        cx.fillStyle = '#f2d4b8';
+        cx.beginPath(); cx.roundRect(-10, 0, 20, 60, 6); cx.fill();
+        drawHand(0, 65, -0.05, s.waving ? 0.5 : 0);
+        cx.restore();
+        cx.restore();
+
+        // Torso body
+        const shirtG = cx.createLinearGradient(CX - shoulderW, torsoY, CX + shoulderW, torsoY + 200);
+        shirtG.addColorStop(0, '#3a4d6e');
+        shirtG.addColorStop(0.5, '#2e3f5a');
+        shirtG.addColorStop(1, '#232f44');
+        cx.fillStyle = shirtG;
+        cx.beginPath();
+        cx.moveTo(CX - shoulderW, torsoY);
+        cx.bezierCurveTo(CX - shoulderW - 5, torsoY + 100, CX - shoulderW + 20, torsoY + 200, CX - 40, torsoY + 220);
+        cx.lineTo(CX + 40, torsoY + 220);
+        cx.bezierCurveTo(CX + shoulderW - 20, torsoY + 200, CX + shoulderW + 5, torsoY + 100, CX + shoulderW, torsoY);
+        cx.closePath();
+        cx.fill();
+
+        // Collar / V-neck detail
+        cx.fillStyle = '#f0f4fa';
+        cx.beginPath();
+        cx.moveTo(CX - 22, torsoY);
+        cx.lineTo(CX, torsoY + 50);
+        cx.lineTo(CX + 22, torsoY);
+        cx.closePath();
+        cx.fill();
+        // Inner shirt
+        cx.fillStyle = '#e0e8f2';
+        cx.beginPath();
+        cx.moveTo(CX - 16, torsoY + 5);
+        cx.lineTo(CX, torsoY + 42);
+        cx.lineTo(CX + 16, torsoY + 5);
+        cx.closePath();
+        cx.fill();
+
+        // Collar shadow
+        cx.strokeStyle = 'rgba(0,0,0,0.1)';
+        cx.lineWidth = 1;
+        cx.beginPath(); cx.moveTo(CX - 22, torsoY); cx.lineTo(CX, torsoY + 50); cx.lineTo(CX + 22, torsoY); cx.stroke();
+
+
+        // === HEAD ===
+        const headCY = neckY - 75 + hb + breath * 0.3;
+
+        // Hair (back layer)
+        cx.fillStyle = '#2a1a0e';
+        cx.beginPath();
+        cx.ellipse(CX, headCY - 10, 96, 80, 0, 0, Math.PI * 2);
+        cx.fill();
+
+        // Face shape with realistic skin
+        const skinG = cx.createRadialGradient(CX - 5, headCY - 10, 15, CX, headCY, 95);
+        skinG.addColorStop(0, '#fce8d8');
+        skinG.addColorStop(0.4, '#f5d5be');
+        skinG.addColorStop(0.7, '#ecc5a8');
+        skinG.addColorStop(1, '#d4a070');
+        cx.fillStyle = skinG;
+        cx.beginPath();
+        // Jawline shape (more angular, masculine)
+        cx.moveTo(CX - 78, headCY - 25);
+        cx.bezierCurveTo(CX - 85, headCY - 60, CX - 70, headCY - 100, CX, headCY - 105);
+        cx.bezierCurveTo(CX + 70, headCY - 100, CX + 85, headCY - 60, CX + 78, headCY - 25);
+        cx.bezierCurveTo(CX + 75, headCY + 20, CX + 55, headCY + 60, CX + 30, headCY + 75);
+        cx.quadraticCurveTo(CX, headCY + 85, CX - 30, headCY + 75);
+        cx.bezierCurveTo(CX - 55, headCY + 60, CX - 75, headCY + 20, CX - 78, headCY - 25);
+        cx.fill();
+
+        // Forehead highlight
+        cx.fillStyle = 'rgba(255,250,240,0.12)';
+        cx.beginPath(); cx.ellipse(CX, headCY - 60, 40, 25, 0, 0, Math.PI * 2); cx.fill();
+
+        // Jaw shadow
+        cx.fillStyle = 'rgba(140,90,60,0.08)';
+        cx.beginPath();
+        cx.moveTo(CX - 70, headCY + 20);
+        cx.quadraticCurveTo(CX, headCY + 90, CX + 70, headCY + 20);
+        cx.quadraticCurveTo(CX, headCY + 70, CX - 70, headCY + 20);
+        cx.fill();
+
+        // Ears
+        for (let side of [-1, 1]) {
+            const earX = CX + side * 80;
+            const earY = headCY - 10;
+            cx.fillStyle = '#f0c8a8';
+            cx.beginPath();
+            cx.ellipse(earX, earY, 12, 20, side * 0.15, 0, Math.PI * 2);
+            cx.fill();
+            cx.strokeStyle = 'rgba(180,120,80,0.3)';
+            cx.lineWidth = 0.8;
+            cx.beginPath();
+            cx.ellipse(earX + side * 2, earY, 7, 13, side * 0.1, 0, Math.PI * 2);
+            cx.stroke();
+        }
+
+        // Hair (front layer with texture)
+        const hairG = cx.createLinearGradient(CX - 80, headCY - 100, CX + 80, headCY - 40);
+        hairG.addColorStop(0, '#3d2812');
+        hairG.addColorStop(0.3, '#2a1a0e');
+        hairG.addColorStop(0.7, '#4a2e18');
+        hairG.addColorStop(1, '#2a1a0e');
+        cx.fillStyle = hairG;
+        cx.beginPath();
+        cx.moveTo(CX - 82, headCY - 30);
+        cx.bezierCurveTo(CX - 88, headCY - 70, CX - 70, headCY - 108, CX - 20, headCY - 112);
+        cx.bezierCurveTo(CX + 10, headCY - 115, CX + 60, headCY - 110, CX + 82, headCY - 70);
+        cx.bezierCurveTo(CX + 86, headCY - 45, CX + 84, headCY - 30, CX + 78, headCY - 25);
+        cx.bezierCurveTo(CX + 70, headCY - 55, CX + 50, headCY - 85, CX, headCY - 90);
+        cx.bezierCurveTo(CX - 50, headCY - 85, CX - 70, headCY - 55, CX - 82, headCY - 30);
+        cx.fill();
+
+        // Hair strands (texture)
+        cx.strokeStyle = 'rgba(80,50,20,0.15)';
+        cx.lineWidth = 0.6;
+        for (let i = 0; i < 15; i++) {
+            const sx = CX - 50 + i * 7 + Math.sin(i) * 3;
+            cx.beginPath();
+            cx.moveTo(sx, headCY - 90 + Math.abs(i - 7) * 2);
+            cx.quadraticCurveTo(sx + (i - 7) * 1.5, headCY - 70, sx + (i - 7) * 2.5, headCY - 50);
+            cx.stroke();
+        }
+        // Side hair flowing
+        cx.fillStyle = '#2a1a0e';
+        cx.beginPath();
+        cx.moveTo(CX - 82, headCY - 30);
+        cx.bezierCurveTo(CX - 90, headCY, CX - 88, headCY + 30, CX - 75, headCY + 50);
+        cx.bezierCurveTo(CX - 70, headCY + 20, CX - 72, headCY - 10, CX - 78, headCY - 30);
+        cx.fill();
+        cx.beginPath();
+        cx.moveTo(CX + 82, headCY - 30);
+        cx.bezierCurveTo(CX + 90, headCY, CX + 88, headCY + 30, CX + 75, headCY + 50);
+        cx.bezierCurveTo(CX + 70, headCY + 20, CX + 72, headCY - 10, CX + 78, headCY - 30);
+        cx.fill();
+
+
+        // === CHEEKS (blush/glow based on emotion) ===
+        if (s.cheekGlow > 0.01) {
+            cx.globalAlpha = s.cheekGlow * 0.35;
+            const blushColor = s.currentEmo === 'love' ? 'rgba(255,100,120,' : 'rgba(240,140,120,';
+            cx.fillStyle = blushColor + '1)';
+            cx.beginPath(); cx.ellipse(CX - 52, headCY + 15, 22, 14, -0.1, 0, Math.PI * 2); cx.fill();
+            cx.beginPath(); cx.ellipse(CX + 52, headCY + 15, 22, 14, 0.1, 0, Math.PI * 2); cx.fill();
+            cx.globalAlpha = 1;
+        }
+
+        // === EYEBROWS (expressive, realistic) ===
+        cx.lineWidth = 3.5;
+        cx.lineCap = 'round';
+        for (let side of [-1, 1]) {
+            const bx = CX + side * 38;
+            const by = headCY - 48;
+            const browOff = side === -1 ? s.browL : s.browR;
+            const browG = cx.createLinearGradient(bx - 25, by, bx + 25, by);
+            browG.addColorStop(0, '#3d2a18');
+            browG.addColorStop(1, '#2a1a0e');
+            cx.strokeStyle = browG;
+            cx.lineWidth = 3.2;
+            cx.beginPath();
+            cx.moveTo(bx - side * 28, by + browOff * 0.6 + 2);
+            cx.quadraticCurveTo(bx, by + browOff - 4, bx + side * 28, by + browOff * 0.8 + 3);
+            cx.stroke();
+            // Brow thickness variation
+            cx.lineWidth = 2;
+            cx.beginPath();
+            cx.moveTo(bx - side * 20, by + browOff * 0.6 + 4);
+            cx.quadraticCurveTo(bx, by + browOff - 2, bx + side * 20, by + browOff * 0.8 + 5);
+            cx.stroke();
+        }
+
+        // === EYES ===
+        drawEye(cx, CX - 38, headCY - 22, s.pupilLx, s.pupilLy, s.eyeOpen, true);
+        drawEye(cx, CX + 38, headCY - 22, s.pupilRx, s.pupilRy, s.eyeOpen, false);
+
+        // === NOSE (3D shading) ===
+        // Bridge
+        cx.strokeStyle = 'rgba(180,130,90,0.2)';
+        cx.lineWidth = 1.5;
+        cx.beginPath();
+        cx.moveTo(CX - 4, headCY - 15);
+        cx.bezierCurveTo(CX - 5, headCY + 5, CX - 6, headCY + 20, CX - 8, headCY + 30);
+        cx.stroke();
+        cx.beginPath();
+        cx.moveTo(CX + 4, headCY - 15);
+        cx.bezierCurveTo(CX + 5, headCY + 5, CX + 6, headCY + 20, CX + 8, headCY + 30);
+        cx.stroke();
+        // Nose tip highlight
+        cx.fillStyle = 'rgba(255,240,220,0.25)';
+        cx.beginPath(); cx.ellipse(CX, headCY + 28, 10, 7, 0, 0, Math.PI * 2); cx.fill();
+        // Nostrils
+        cx.fillStyle = 'rgba(140,80,50,0.35)';
+        cx.beginPath(); cx.ellipse(CX - 8, headCY + 33, 5, 3.5, -0.2, 0, Math.PI * 2); cx.fill();
+        cx.beginPath(); cx.ellipse(CX + 8, headCY + 33, 5, 3.5, 0.2, 0, Math.PI * 2); cx.fill();
+        // Nose shadow
+        cx.fillStyle = 'rgba(160,100,60,0.08)';
+        cx.beginPath(); cx.ellipse(CX, headCY + 36, 14, 5, 0, 0, Math.PI); cx.fill();
+
+
+        // === MOUTH (highly expressive, realistic) ===
+        const mx = CX, my = headCY + 55;
+        const mo = s.mouthOpen;
+        const ms = s.smile;
+        const mWidth = 28 + Math.abs(ms) * 14;
+        const cornerLift = ms * 8;
+
+        // Lips
+        if (mo > 0.05) {
+            // Open mouth interior
+            const mouthH = 8 + mo * 22;
+            cx.beginPath();
+            cx.moveTo(mx - mWidth, my - cornerLift);
+            cx.bezierCurveTo(mx - mWidth * 0.5, my - mouthH * 0.5, mx + mWidth * 0.5, my - mouthH * 0.5, mx + mWidth, my - cornerLift);
+            cx.bezierCurveTo(mx + mWidth * 0.5, my + mouthH * 0.6, mx - mWidth * 0.5, my + mouthH * 0.6, mx - mWidth, my - cornerLift);
+            cx.fillStyle = '#4a1520';
+            cx.fill();
+
+            // Teeth (top)
+            cx.save();
+            cx.beginPath();
+            cx.moveTo(mx - mWidth + 5, my - cornerLift - 1);
+            cx.bezierCurveTo(mx - mWidth * 0.3, my - mouthH * 0.35, mx + mWidth * 0.3, my - mouthH * 0.35, mx + mWidth - 5, my - cornerLift - 1);
+            cx.lineTo(mx + mWidth - 5, my - cornerLift + 6);
+            cx.lineTo(mx - mWidth + 5, my - cornerLift + 6);
+            cx.closePath();
+            cx.fillStyle = '#f8f4f0';
+            cx.fill();
+            // Tooth separations
+            cx.strokeStyle = 'rgba(200,190,180,0.3)';
+            cx.lineWidth = 0.4;
+            for (let i = -3; i <= 3; i++) {
+                cx.beginPath();
+                cx.moveTo(mx + i * 6, my - cornerLift - 1);
+                cx.lineTo(mx + i * 6, my - cornerLift + 6);
+                cx.stroke();
+            }
+            cx.restore();
+
+            // Tongue
+            if (mo > 0.3) {
+                cx.fillStyle = '#c0505a';
+                cx.beginPath();
+                cx.ellipse(mx, my + mo * 5, mWidth * 0.5, mo * 8, 0, 0, Math.PI);
+                cx.fill();
+            }
+        }
+
+        // Upper lip
+        cx.beginPath();
+        cx.moveTo(mx - mWidth, my - cornerLift);
+        cx.bezierCurveTo(mx - mWidth * 0.5, my - 5 - mo * 3 - cornerLift * 0.5, mx - 4, my - 7 - mo * 2, mx, my - 5 - mo * 2);
+        cx.bezierCurveTo(mx + 4, my - 7 - mo * 2, mx + mWidth * 0.5, my - 5 - mo * 3 - cornerLift * 0.5, mx + mWidth, my - cornerLift);
+        cx.fillStyle = '#c47060';
+        cx.fill();
+
+        // Lower lip
+        cx.beginPath();
+        cx.moveTo(mx - mWidth, my - cornerLift);
+        cx.bezierCurveTo(mx - mWidth * 0.5, my + 6 + mo * 8, mx + mWidth * 0.5, my + 6 + mo * 8, mx + mWidth, my - cornerLift);
+        cx.fillStyle = '#d07868';
+        cx.fill();
+
+        // Lip highlight
+        cx.fillStyle = 'rgba(255,220,200,0.2)';
+        cx.beginPath(); cx.ellipse(mx, my - 3 - mo * 2, 8, 2.5, 0, 0, Math.PI * 2); cx.fill();
+
+        // Nasolabial folds (smile lines)
+        if (Math.abs(ms) > 0.2) {
+            cx.strokeStyle = `rgba(160,100,70,${Math.abs(ms) * 0.15})`;
+            cx.lineWidth = 1;
+            cx.beginPath();
+            cx.moveTo(CX - 28, headCY + 15);
+            cx.quadraticCurveTo(CX - 32, headCY + 40, CX - mWidth - 2, my - cornerLift + 2);
+            cx.stroke();
+            cx.beginPath();
+            cx.moveTo(CX + 28, headCY + 15);
+            cx.quadraticCurveTo(CX + 32, headCY + 40, CX + mWidth + 2, my - cornerLift + 2);
+            cx.stroke();
+        }
+
+        // Chin
+        cx.fillStyle = 'rgba(255,240,220,0.08)';
+        cx.beginPath(); cx.ellipse(CX, headCY + 72, 15, 10, 0, 0, Math.PI * 2); cx.fill();
+        // Chin dimple
+        cx.strokeStyle = 'rgba(160,110,70,0.1)';
+        cx.lineWidth = 0.6;
+        cx.beginPath(); cx.arc(CX, headCY + 74, 3, 0.3, Math.PI - 0.3); cx.stroke();
+
+
+        // === PARTICLES (tears, hearts, etc.) ===
+        for (const p of s.particles) {
+            cx.globalAlpha = clamp(p.alpha, 0, 1);
+            if (p.type === 'tear') {
+                cx.fillStyle = 'rgba(150,200,255,0.8)';
+                cx.beginPath();
+                cx.moveTo(p.x, p.y - 4);
+                cx.quadraticCurveTo(p.x + 3, p.y, p.x, p.y + 4);
+                cx.quadraticCurveTo(p.x - 3, p.y, p.x, p.y - 4);
+                cx.fill();
+                // Tear highlight
+                cx.fillStyle = 'rgba(255,255,255,0.5)';
+                cx.beginPath(); cx.arc(p.x - 1, p.y - 1, 1.2, 0, Math.PI * 2); cx.fill();
+            }
+            if (p.type === 'heart') {
+                cx.fillStyle = '#ff4488';
+                const hs = p.size || 10;
+                cx.beginPath();
+                cx.moveTo(p.x, p.y + hs * 0.3);
+                cx.bezierCurveTo(p.x - hs * 0.5, p.y - hs * 0.3, p.x - hs, p.y + hs * 0.1, p.x, p.y + hs * 0.7);
+                cx.bezierCurveTo(p.x + hs, p.y + hs * 0.1, p.x + hs * 0.5, p.y - hs * 0.3, p.x, p.y + hs * 0.3);
+                cx.fill();
+            }
+            cx.globalAlpha = 1;
+        }
+
+        cx.restore(); // End head tilt transform
+
+        // === SUBTLE SKIN PORES (adds realism at close view) ===
+        cx.globalAlpha = 0.03;
+        for (let i = 0; i < 40; i++) {
+            const px = CX - 60 + Math.random() * 120;
+            const py = headCY - 60 + Math.random() * 120 + hb;
+            cx.fillStyle = '#8a6040';
+            cx.beginPath(); cx.arc(px, py, 0.5, 0, Math.PI * 2); cx.fill();
+        }
+        cx.globalAlpha = 1;
+    }
+
+    function loop() {
+        update();
+        draw();
+        requestAnimationFrame(loop);
+    }
+    loop();
+})();
+</script>
+
+
+<!-- ==================== ORIGINAL BOT-X SCRIPT (UNTOUCHED - Camera, Detection, Voice, WebSocket) ==================== -->
+<script type="importmap">{ "imports": { "three": "https://unpkg.com/three@0.128.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/" } }</script>
+<script type="module">
+import * as THREE from 'three';
+
+// ==================== PERSON DETECTION SYSTEM ====================
+let detectionModel = null;
+let detectionRunning = false;
+let detectionFrameId = null;
+let personPresent = false;
+let conversationActive = false;
+let personStartTime = 0;
+let personLostTime = 0;
+let autoTriggerCooldown = false;
+let lastAutoTriggerTime = 0;
+let isAwaitingResponse = false;
+let lastUserTranscript = '';
+
+const PERSON_PRESENCE_DELAY = 1500;
+const PERSON_ABSENCE_DELAY = 4000;
+const DETECTION_CONFIDENCE = 0.5;
+const DETECTION_FRAME_SKIP = 3;
+let frameCounter = 0;
+
+const videoElement = document.getElementById('cameraFeed');
+const detectionCanvas = document.getElementById('detectionCanvas');
+const ctx = detectionCanvas.getContext('2d');
+const personIndicator = document.getElementById('personIndicator');
+const statusLed = document.getElementById('statusLed');
+const statusMsgSpan = document.getElementById('statusMsg');
+
+async function loadDetectionModel() {
+    try {
+        statusMsgSpan.innerHTML = 'LOADING AI MODEL...';
+        detectionModel = await cocoSsd.load({ base: 'mobilenet_v2' });
+        console.log('COCO-SSD loaded');
+        return true;
+    } catch (error) {
+        console.error('Model load failed:', error);
+        statusMsgSpan.innerHTML = 'MODEL ERROR';
+        return false;
+    }
 }
 
-function showError(name, msg) {
-  const el = document.querySelector(`[data-error-for="${name}"]`);
-  const input = document.getElementById(name);
-  if (el) el.textContent = msg;
-  if (input) input.classList.toggle('error', !!msg);
+
+function drawDetections(predictions) {
+    if (!detectionCanvas || !ctx) return;
+    detectionCanvas.width = videoElement.videoWidth || 640;
+    detectionCanvas.height = videoElement.videoHeight || 480;
+    ctx.clearRect(0, 0, detectionCanvas.width, detectionCanvas.height);
+    for (let pred of predictions) {
+        if (pred.class === 'person' && pred.score >= DETECTION_CONFIDENCE) {
+            const [x, y, w, h] = pred.bbox;
+            ctx.strokeStyle = '#00ffaa';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, w, h);
+            ctx.fillStyle = '#00ffaa';
+            ctx.font = '12px "Orbitron", monospace';
+            ctx.fillText(`PERSON ${Math.round(pred.score * 100)}%`, x, y - 5);
+        }
+    }
 }
 
-function clearError(name) { showError(name, ''); }
-
-function validateStep(step) {
-  let valid = true;
-  for (const name of stepFields[step]) {
-    const el = document.getElementById(name);
-    if (!el) continue;
-    let value;
-    if (el.type === 'checkbox') value = el.checked ? 'on' : '';
-    else if (el.type === 'file') value = el.files.length ? el.files[0].name : '';
-    else value = el.value.trim();
-    const msg = validateField(name, value);
-    showError(name, msg);
-    if (msg) valid = false;
-  }
-  // Email duplicate state must be valid
-  if (step === 1) {
-    const emailStatus = document.getElementById('emailStatus');
-    if (emailStatus.classList.contains('invalid')) {
-      showError('email', 'This email is already registered.');
-      valid = false;
-    }
-  }
-  return valid;
+async function detectPerson() {
+    if (!detectionModel || !videoElement || videoElement.readyState < 2) return false;
+    try {
+        const predictions = await detectionModel.detect(videoElement);
+        const personDetected = predictions.some(p => p.class === 'person' && p.score >= DETECTION_CONFIDENCE);
+        drawDetections(predictions);
+        return personDetected;
+    } catch (error) { return false; }
 }
 
-// ---- Async email validation (mocked) ----
-const TAKEN_EMAILS = ['admin@company.com', 'test@test.com', 'employee@corp.com'];
-let emailDebounce;
-document.getElementById('email').addEventListener('input', (e) => {
-  clearTimeout(emailDebounce);
-  const status = document.getElementById('emailStatus');
-  const value = e.target.value.trim();
-  if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-    status.className = 'async-status';
-    status.innerHTML = '';
-    return;
-  }
-  status.className = 'async-status checking';
-  status.innerHTML = '<span class="spinner"></span> Checking availability...';
-  emailDebounce = setTimeout(() => {
-    if (TAKEN_EMAILS.includes(value.toLowerCase())) {
-      status.className = 'async-status invalid';
-      status.innerHTML = '✗ Email already registered';
-    } else {
-      status.className = 'async-status valid';
-      status.innerHTML = '✓ Email is available';
+function sendAutoTriggerMessage() {
+    if (!webSocket || webSocket.readyState !== WebSocket.OPEN) return false;
+    if (isAwaitingResponse) return false;
+    const greetingText = "Hello, I'm here. Let's start our conversation.";
+    webSocket.send(JSON.stringify({ type: "user_input", text: greetingText }));
+    document.getElementById('userMsg').innerHTML = `"${greetingText}" (auto-detected)`;
+    statusMsgSpan.innerHTML = 'PROCESSING...';
+    isAwaitingResponse = true;
+    return true;
+}
+
+function startConversation() {
+    if (conversationActive || autoTriggerCooldown) return;
+    const now = Date.now();
+    if (now - lastAutoTriggerTime < 5000) return;
+    conversationActive = true;
+    statusLed.classList.add('active');
+    personIndicator.className = 'person-indicator active';
+    personIndicator.innerHTML = 'CONVERSATION ACTIVE - VOICE READY';
+    statusMsgSpan.innerHTML = 'PERSON DETECTED - STARTING';
+    sendAutoTriggerMessage();
+    lastAutoTriggerTime = now;
+    addToConversationLog('System', 'Person detected - auto-starting conversation');
+    if (window.avatar2d) window.avatar2d.setEmo('happy');
+}
+
+function stopConversation() {
+    if (!conversationActive) return;
+    conversationActive = false;
+    isAwaitingResponse = false;
+    statusLed.classList.remove('active');
+    statusMsgSpan.innerHTML = 'AWAITING PERSON';
+    personIndicator.className = 'person-indicator not-detected';
+    personIndicator.innerHTML = 'NO PERSON DETECTED';
+    stopAllAudio();
+    addToConversationLog('System', 'Conversation idle');
+    if (window.avatar2d) window.avatar2d.setEmo('neutral');
+}
+
+
+function detectionLoop() {
+    if (!detectionRunning) return;
+    frameCounter++;
+    if (frameCounter % DETECTION_FRAME_SKIP === 0) {
+        detectPerson().then(personDetected => {
+            const now = Date.now();
+            if (personDetected) {
+                personLostTime = null;
+                if (!personPresent) {
+                    personPresent = true;
+                    personStartTime = now;
+                    personIndicator.innerHTML = 'PERSON DETECTED - waiting 1.5s...';
+                    personIndicator.className = 'person-indicator detected';
+                    statusMsgSpan.innerHTML = 'PERSON DETECTED';
+                }
+                if (!conversationActive && !autoTriggerCooldown && (now - personStartTime) >= PERSON_PRESENCE_DELAY) {
+                    startConversation();
+                    autoTriggerCooldown = true;
+                    setTimeout(() => { autoTriggerCooldown = false; }, 8000);
+                }
+                if (!conversationActive && personPresent && (now - personStartTime) < PERSON_PRESENCE_DELAY) {
+                    const remaining = ((PERSON_PRESENCE_DELAY - (now - personStartTime)) / 1000).toFixed(1);
+                    personIndicator.innerHTML = `PERSON DETECTED - starting in ${remaining}s`;
+                    personIndicator.className = 'person-indicator detected';
+                }
+                else if (conversationActive) {
+                    personIndicator.innerHTML = 'ACTIVE - VOICE INPUT/OUTPUT';
+                    personIndicator.className = 'person-indicator active';
+                }
+            } else {
+                if (personPresent) {
+                    if (!personLostTime) personLostTime = now;
+                    personPresent = false;
+                }
+                if (conversationActive && personLostTime && (now - personLostTime) >= PERSON_ABSENCE_DELAY) {
+                    stopConversation();
+                }
+                else if (!conversationActive) {
+                    personIndicator.innerHTML = 'NO PERSON DETECTED - approach camera';
+                    personIndicator.className = 'person-indicator not-detected';
+                }
+            }
+        });
     }
-  }, 700);
+    detectionFrameId = requestAnimationFrame(detectionLoop);
+}
+
+async function initDetection() {
+    const modelLoaded = await loadDetectionModel();
+    if (modelLoaded) {
+        const waitForVideo = setInterval(() => {
+            if (videoElement.videoWidth > 0 && videoElement.videoHeight > 0) {
+                clearInterval(waitForVideo);
+                detectionCanvas.width = videoElement.videoWidth;
+                detectionCanvas.height = videoElement.videoHeight;
+                detectionRunning = true;
+                detectionLoop();
+                statusMsgSpan.innerHTML = 'AWAITING PERSON';
+            }
+        }, 200);
+    }
+}
+
+async function initCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoElement.srcObject = stream;
+        document.getElementById('cameraStatus').innerHTML = 'CAMERA ACTIVE - DETECTION READY';
+        setTimeout(() => initDetection(), 500);
+    } catch (err) { console.warn('Camera error:', err); }
+}
+initCamera();
+
+
+// ========== AUDIO & WEBSOCKET ==========
+let audioCtx = null, webSocket = null, speechRec = null;
+let currentAudioSource = null;
+let typingInterval = null;
+
+function stopAllAudio() {
+    if (currentAudioSource) { try { currentAudioSource.stop(); } catch(e) {} currentAudioSource = null; }
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    if (window.avatar2d) window.avatar2d.stopSpeak();
+    document.getElementById('volFill').style.width = '0%';
+    if (typingInterval) clearInterval(typingInterval);
+}
+
+function speakWithBrowserVoice(text) {
+    if (!window.speechSynthesis) return false;
+    stopAllAudio();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.1;
+    utterance.volume = 1;
+    utterance.onstart = () => {
+        if (window.avatar2d) {
+            window.avatar2d.startSpeak(text);
+            window.avatar2d.setEmo('happy');
+        }
+    };
+    utterance.onend = () => {
+        if (window.avatar2d) {
+            window.avatar2d.stopSpeak();
+            window.avatar2d.setEmo('neutral');
+        }
+        isAwaitingResponse = false;
+    };
+    window.speechSynthesis.speak(utterance);
+    return true;
+}
+
+async function playAudioResponse(b64, text) {
+    stopAllAudio();
+    speakWithBrowserVoice(text);
+
+    // Typewriter effect
+    const aiDiv = document.getElementById('aiMsg');
+    if (typingInterval) clearInterval(typingInterval);
+    aiDiv.innerHTML = '';
+    let charIdx = 0;
+    typingInterval = setInterval(() => {
+        if (charIdx < text.length) {
+            aiDiv.innerHTML = text.slice(0, charIdx + 1) + '<span class="cursor-blink"></span>';
+            charIdx++;
+        } else {
+            clearInterval(typingInterval);
+            aiDiv.innerHTML = text + '<span class="cursor-blink"></span>';
+        }
+    }, 45);
+}
+
+function addToConversationLog(userText, botText) {
+    const logDiv = document.getElementById('chatLog');
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const entry = document.createElement('div');
+    entry.className = 'chat-entry';
+    entry.innerHTML = `<span class="chat-user-label">${userText}:</span><span class="chat-time">${timestamp}</span><div class="chat-text">${botText}</div>`;
+    logDiv.appendChild(entry);
+    logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+function initWS() {
+    webSocket = new WebSocket('ws://localhost:8765');
+    webSocket.onopen = () => console.log('WebSocket connected');
+    webSocket.onclose = () => console.log('WebSocket disconnected');
+    webSocket.onmessage = async (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            if (data.type === 'response') {
+                await playAudioResponse(data.audio_b64 || null, data.text);
+                addToConversationLog('System', data.text);
+                isAwaitingResponse = false;
+            }
+        } catch (err) { console.error('WS parse:', err); isAwaitingResponse = false; }
+    };
+}
+initWS();
+
+
+// ========== VOICE COMMAND SYSTEM ==========
+let recognitionActive = false;
+
+function initSpeechRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        document.getElementById('voiceIndicator').innerHTML = 'NOT SUPPORTED';
+        return false;
+    }
+
+    if (speechRec) {
+        try { speechRec.stop(); } catch(e) {}
+    }
+
+    speechRec = new SpeechRecognition();
+    speechRec.continuous = true;
+    speechRec.interimResults = false;
+    speechRec.lang = 'en-US';
+
+    speechRec.onstart = () => {
+        recognitionActive = true;
+        document.getElementById('voiceIndicator').innerHTML = 'LISTENING...';
+        document.getElementById('voiceIndicator').style.background = '#00ffaa22';
+        document.getElementById('voiceIndicator').style.borderColor = '#00ffaa';
+        console.log('Speech recognition active');
+    };
+
+    speechRec.onend = () => {
+        recognitionActive = false;
+        document.getElementById('voiceIndicator').innerHTML = 'VOICE READY';
+        document.getElementById('voiceIndicator').style.background = '#ff00aa22';
+        document.getElementById('voiceIndicator').style.borderColor = '#ff00aa';
+        setTimeout(() => {
+            if (!recognitionActive && document.visibilityState === 'visible') {
+                try { speechRec.start(); } catch(e) { console.log('Restart failed'); }
+            }
+        }, 1000);
+    };
+
+    speechRec.onerror = (event) => {
+        console.log('Speech recognition error:', event.error);
+        if (event.error === 'not-allowed') {
+            document.getElementById('voiceIndicator').innerHTML = 'MIC DENIED';
+        }
+    };
+
+    speechRec.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+        if (!transcript) return;
+
+        console.log('Heard:', transcript);
+
+        // HIGH PRIORITY COMMAND CHECK
+        if (transcript === 'stop' || transcript.includes('stop')) {
+            stopAllAudio();
+            if (conversationActive) {
+                conversationActive = false;
+                isAwaitingResponse = false;
+                statusLed.classList.remove('active');
+                personIndicator.className = 'person-indicator not-detected';
+                personIndicator.innerHTML = 'NO PERSON DETECTED';
+                statusMsgSpan.innerHTML = 'STOPPED';
+                addToConversationLog('COMMAND', '"STOP" - Conversation halted');
+            } else {
+                addToConversationLog('COMMAND', '"STOP" - Audio halted');
+            }
+            document.getElementById('userMsg').innerHTML = `COMMAND: "${transcript}"`;
+            if (window.avatar2d) window.avatar2d.setEmo('neutral');
+            return;
+        }
+
+        if (transcript === 'end' || transcript.includes('end') || transcript === 'terminate') {
+            stopAllAudio();
+            if (speechRec) try { speechRec.stop(); } catch(e) {}
+            if (detectionRunning) detectionRunning = false;
+            if (detectionFrameId) cancelAnimationFrame(detectionFrameId);
+            if (videoElement && videoElement.srcObject) {
+                videoElement.srcObject.getTracks().forEach(track => track.stop());
+            }
+            addToConversationLog('COMMAND', '"END" - Terminating application');
+            statusMsgSpan.innerHTML = 'TERMINATING...';
+            setTimeout(() => {
+                document.body.innerHTML = '<div style="background:#000;color:#0ff;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;"><h1>TERMINATED</h1><p>Command "END" executed.</p><button onclick="location.reload()" style="margin-top:20px;background:#00c8ff;border:none;padding:8px 20px;color:#000;border-radius:4px;cursor:pointer;">RESTART</button></div>';
+            }, 200);
+            return;
+        }
+
+        if (transcript === 'restart' || transcript.includes('restart') || transcript === 'reboot') {
+            stopAllAudio();
+            addToConversationLog('COMMAND', '"RESTART" - Rebooting...');
+            statusMsgSpan.innerHTML = 'RESTARTING...';
+            setTimeout(() => { window.location.reload(); }, 500);
+            return;
+        }
+
+        // Normal conversation
+        if (!conversationActive) return;
+        if (window.speechSynthesis && window.speechSynthesis.speaking) return;
+        if (isAwaitingResponse) return;
+
+        if (transcript.length > 0 && transcript !== lastUserTranscript) {
+            lastUserTranscript = transcript;
+            document.getElementById('userMsg').innerHTML = `"${transcript}" (voice)`;
+            if (window.avatar2d) window.avatar2d.setEmo('thinking');
+
+            if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+                webSocket.send(JSON.stringify({ type: 'user_input', text: transcript }));
+                isAwaitingResponse = true;
+                statusMsgSpan.innerHTML = 'PROCESSING...';
+            } else {
+                const fallbackResponse = `You said: "${transcript}". I'm in offline mode.`;
+                playAudioResponse(null, fallbackResponse);
+                addToConversationLog('You', transcript);
+                addToConversationLog('System', fallbackResponse);
+            }
+            addToConversationLog('You', transcript);
+        }
+    };
+
+    try {
+        speechRec.start();
+        return true;
+    } catch(e) {
+        console.log('Start error:', e);
+        return false;
+    }
+}
+
+
+// Manual mic restart button
+document.getElementById('micRestartBtn').addEventListener('click', () => {
+    addToConversationLog('System', 'Re-initializing microphone...');
+    if (speechRec) {
+        try { speechRec.stop(); } catch(e) {}
+    }
+    setTimeout(() => { initSpeechRecognition(); }, 500);
 });
 
-// ---- File handling ----
-document.getElementById('idDoc').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  const out = document.getElementById('idDocName');
-  if (file) {
-    if (file.size > 5 * 1024 * 1024) {
-      showError('idDoc', 'File too large (max 5 MB).');
-      e.target.value = '';
-      out.textContent = '';
-      return;
+// Start speech recognition
+setTimeout(() => {
+    initSpeechRecognition();
+    addToConversationLog('System', 'Voice recognition active. Say: STOP, END, or RESTART');
+}, 3000);
+
+// Also try to start on any click (helps with browser autoplay policies)
+document.body.addEventListener('click', () => {
+    if (!recognitionActive && speechRec) {
+        try { speechRec.start(); } catch(e) {}
     }
-    out.textContent = `✓ ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-    clearError('idDoc');
-  } else {
-    out.textContent = '';
-  }
-});
+}, { once: true });
 
-// ---- Real-time validation ----
-document.querySelectorAll('input, select').forEach(el => {
-  el.addEventListener('blur', () => {
-    if (el.id && labels[el.id] !== undefined || ['taxConsent', 'finalConsent'].includes(el.id)) {
-      let value;
-      if (el.type === 'checkbox') value = el.checked ? 'on' : '';
-      else if (el.type === 'file') value = el.files.length ? el.files[0].name : '';
-      else value = el.value.trim();
-      const msg = validateField(el.id, value);
-      showError(el.id, msg);
-    }
-  });
-  el.addEventListener('input', () => { if (el.classList.contains('error')) clearError(el.id); });
-});
-
-// ---- Navigation ----
-function goToStep(step) {
-  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
-  const target = document.querySelector(`.form-step[data-step="${step}"]`);
-  if (target) target.classList.add('active');
-
-  document.querySelectorAll('.stepper .step').forEach(s => {
-    const n = parseInt(s.dataset.step);
-    s.classList.toggle('active', n === step);
-    s.classList.toggle('completed', n < step);
-  });
-
-  const pct = step <= TOTAL_STEPS ? (step / TOTAL_STEPS) * 100 : 100;
-  document.getElementById('progressFill').style.width = pct + '%';
-
-  currentStep = step;
-  if (step === 5) renderReview();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-document.querySelectorAll('[data-action="next"]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (validateStep(currentStep)) {
-      saveStep(currentStep);
-      saveDraft();
-      goToStep(currentStep + 1);
-    } else {
-      toast('Please fix the highlighted errors.', 'error');
-    }
-  });
-});
-
-document.querySelectorAll('[data-action="prev"]').forEach(btn => {
-  btn.addEventListener('click', () => goToStep(currentStep - 1));
-});
-
-document.querySelectorAll('.stepper .step').forEach(s => {
-  s.addEventListener('click', () => {
-    const target = parseInt(s.dataset.step);
-    if (target < currentStep) goToStep(target);
-  });
-});
-
-function saveStep(step) {
-  for (const name of stepFields[step].concat(step === 1 ? ['gender'] : []).concat(step === 3 ? ['manager'] : [])) {
-    const el = document.getElementById(name);
-    if (!el) continue;
-    if (el.type === 'checkbox') formData[name] = el.checked;
-    else if (el.type === 'file') formData[name] = el.files[0] ? { name: el.files[0].name, size: el.files[0].size, type: el.files[0].type } : null;
-    else formData[name] = el.value.trim();
-  }
-}
-
-// ---- Review ----
-function renderReview() {
-  // collect everything
-  for (let s = 1; s <= 4; s++) saveStep(s);
-  const container = document.getElementById('reviewContent');
-  container.innerHTML = '';
-  for (const [section, fields] of Object.entries(sectionMap)) {
-    const div = document.createElement('div');
-    div.className = 'review-section';
-    const targetStep = sectionStepMap[section];
-    div.innerHTML = `<h3>${section} <button type="button" class="edit-link" data-go="${targetStep}">Edit</button></h3>`;
-    for (const f of fields) {
-      let v = formData[f];
-      if (v == null || v === '') v = '—';
-      if (f === 'taxId' && typeof v === 'string' && v.length > 4) v = '••••' + v.slice(-4);
-      if (f === 'accountNumber' && typeof v === 'string' && v.length > 4) v = '••••' + v.slice(-4);
-      if (typeof v === 'object' && v && v.name) v = `📎 ${v.name}`;
-      const row = document.createElement('div');
-      row.className = 'review-row';
-      row.innerHTML = `<div class="label">${labels[f] || f}</div><div class="value">${escapeHtml(String(v))}</div>`;
-      div.appendChild(row);
-    }
-    container.appendChild(div);
-  }
-  container.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => goToStep(parseInt(b.dataset.go))));
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
-
-// ---- Submit ----
-document.getElementById('regForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  if (!validateStep(5)) {
-    toast('Please confirm to submit.', 'error');
-    return;
-  }
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting...';
-
-  // Mock async submission
-  setTimeout(() => {
-    const empId = 'EMP-' + Math.floor(100000 + Math.random() * 900000);
-    document.getElementById('employeeId').textContent = empId;
-    const payload = { employeeId: empId, ...formData, finalConsent: document.getElementById('finalConsent').checked, submittedAt: new Date().toISOString() };
-    document.getElementById('jsonPreview').textContent = JSON.stringify(payload, null, 2);
-    localStorage.removeItem('empRegDraft');
-    goToStep(6);
-    toast('Registration submitted successfully!', 'success');
-    btn.disabled = false;
-    btn.textContent = 'Submit Registration ✓';
-  }, 1200);
-});
-
-// ---- Reset ----
-function resetForm() {
-  document.getElementById('regForm').reset();
-  for (const k in formData) delete formData[k];
-  document.getElementById('idDocName').textContent = '';
-  document.getElementById('emailStatus').className = 'async-status';
-  document.getElementById('emailStatus').innerHTML = '';
-  document.querySelectorAll('.error-msg').forEach(e => e.textContent = '');
-  document.querySelectorAll('.error').forEach(e => e.classList.remove('error'));
-  goToStep(1);
-}
-
-// ---- Toast ----
-let toastTimer;
-function toast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ---- Draft autosave ----
-function saveDraft() {
-  try { localStorage.setItem('empRegDraft', JSON.stringify({ formData, currentStep })); } catch (_) {}
-}
-
-function loadDraft() {
-  try {
-    const raw = localStorage.getItem('empRegDraft');
-    if (!raw) return;
-    const draft = JSON.parse(raw);
-    if (!draft.formData) return;
-    for (const [k, v] of Object.entries(draft.formData)) {
-      const el = document.getElementById(k);
-      if (!el) continue;
-      if (el.type === 'checkbox') el.checked = !!v;
-      else if (el.type !== 'file' && typeof v === 'string') el.value = v;
-      formData[k] = v;
-    }
-    toast('Draft restored from your last session.', 'success');
-  } catch (_) {}
-}
-
-// Periodic autosave on input
-document.querySelectorAll('input, select').forEach(el => {
-  el.addEventListener('change', () => { saveStep(currentStep); saveDraft(); });
-});
-
-window.addEventListener('DOMContentLoaded', loadDraft);
+// Mark as loaded
+document.getElementById('modelLoadStatus').innerHTML = 'Avatar Loaded | Voice Active | Say: STOP, END, RESTART';
+document.getElementById('loadFill').style.width = '100%';
+document.getElementById('loadPercent').innerHTML = '100%';
+setTimeout(() => { document.getElementById('loading-screen').style.opacity = '0'; setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 800); }, 500);
 </script>
 </body>
 </html>
