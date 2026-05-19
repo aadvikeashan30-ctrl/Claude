@@ -3,251 +3,726 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Daily Status & Sprint Tracker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>CodeOrigin.ai - Employee Daily Status & Sprint Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#eef7ff',
-                            100: '#d9edff',
-                            200: '#bce0ff',
-                            300: '#8ecdff',
-                            400: '#59b0ff',
-                            500: '#338bff',
-                            600: '#1b6af5',
-                            700: '#1454e1',
-                            800: '#1745b6',
-                            900: '#193d8f',
-                            950: '#142757',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        .spinner { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.7s linear infinite; display: inline-block; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
-        .slide-up { animation: slideUp 0.5s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
+        :root {
+            --gold: #d4a017;
+            --gold-light: #f5d060;
+            --gold-dark: #b8860b;
+            --dark-primary: #0a0a0f;
+            --dark-secondary: #12121a;
+            --dark-card: #1a1a2e;
+            --dark-border: #2a2a3e;
+            --accent-blue: #4f8fff;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06d6a0;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b8;
+            --text-muted: #6b6b80;
+            --gradient-gold: linear-gradient(135deg, #d4a017, #f5d060, #b8860b);
+            --gradient-dark: linear-gradient(180deg, #0a0a0f 0%, #12121a 100%);
+            --gradient-card: linear-gradient(145deg, #1a1a2e 0%, #16162b 100%);
+            --gradient-accent: linear-gradient(135deg, #4f8fff, #8b5cf6);
+            --shadow-gold: 0 4px 30px rgba(212, 160, 23, 0.15);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --shadow-input: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gradient-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-particles::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(ellipse at 20% 50%, rgba(79, 143, 255, 0.04) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 50%),
+                        radial-gradient(ellipse at 50% 80%, rgba(212, 160, 23, 0.03) 0%, transparent 50%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(2%, -2%) rotate(1deg); }
+            66% { transform: translate(-1%, 1%) rotate(-1deg); }
+        }
+
+
+        /* Navbar */
+        .navbar-custom {
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--dark-border);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-custom.scrolled {
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--gradient-gold);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 18px;
+            color: var(--dark-primary);
+            box-shadow: var(--shadow-gold);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: logoShine 3s ease-in-out infinite;
+        }
+
+        @keyframes logoShine {
+            0%, 100% { transform: translateX(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) rotate(45deg); }
+        }
+
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .brand-name span { color: var(--gold); }
+
+        .brand-tagline {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 60px 0 40px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(79, 143, 255, 0.1);
+            border: 1px solid rgba(79, 143, 255, 0.2);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .hero-title .highlight {
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+
+        /* Form Cards */
+        .form-card {
+            background: var(--gradient-card);
+            border: 1px solid var(--dark-border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-card);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.5s ease-out both;
+        }
+
+        .form-card:nth-child(1) { animation-delay: 0.1s; }
+        .form-card:nth-child(2) { animation-delay: 0.2s; }
+        .form-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--gradient-accent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .form-card:hover::before { opacity: 1; }
+
+        .form-card:hover {
+            border-color: rgba(79, 143, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(79, 143, 255, 0.1);
+        }
+
+        .card-header-custom {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .card-icon.blue { background: rgba(79, 143, 255, 0.12); color: var(--accent-blue); }
+        .card-icon.purple { background: rgba(139, 92, 246, 0.12); color: var(--accent-purple); }
+        .card-icon.green { background: rgba(6, 214, 160, 0.12); color: var(--accent-cyan); }
+
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+
+        /* Form Inputs */
+        .form-label-custom {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-label-custom .required { color: #ef4444; }
+
+        .form-control-custom {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--dark-border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: var(--shadow-input);
+        }
+
+        .form-control-custom::placeholder {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: rgba(79, 143, 255, 0.03);
+            box-shadow: 0 0 0 3px rgba(79, 143, 255, 0.1), var(--shadow-input);
+        }
+
+        .form-control-custom.is-invalid {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.03);
+        }
+
+        .form-control-custom:read-only {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        textarea.form-control-custom {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .invalid-feedback-custom {
+            color: #f87171;
+            font-size: 0.75rem;
+            margin-top: 6px;
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .invalid-feedback-custom.show {
+            display: flex;
+        }
+
+
+        /* Status Indicators */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .status-dot.assigned { background: var(--accent-blue); box-shadow: 0 0 8px rgba(79, 143, 255, 0.4); }
+        .status-dot.completed { background: var(--accent-cyan); box-shadow: 0 0 8px rgba(6, 214, 160, 0.4); }
+        .status-dot.pending { background: var(--gold); box-shadow: 0 0 8px rgba(212, 160, 23, 0.4); }
+        .status-dot.blocker { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+
+        /* Submit Button */
+        .btn-submit {
+            background: var(--gradient-gold);
+            color: var(--dark-primary);
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 16px 40px;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-gold);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-submit:hover::before { left: 100%; }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 40px rgba(212, 160, 23, 0.3);
+        }
+
+        .btn-submit:active { transform: translateY(-1px); }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-submit .spinner-border {
+            width: 18px;
+            height: 18px;
+            border-width: 2px;
+        }
+
+
+        /* Notification Toast */
+        .toast-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 340px;
+            max-width: 420px;
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            display: none;
+            animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
         }
-        .input-glow:focus {
-            box-shadow: 0 0 0 3px rgba(51, 139, 255, 0.15);
+
+        .toast-notification.show { display: flex; }
+
+        .toast-notification.success {
+            background: rgba(6, 214, 160, 0.1);
+            border: 1px solid rgba(6, 214, 160, 0.3);
         }
-        .hero-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+
+        .toast-notification.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
-        .accent-line {
-            background: linear-gradient(90deg, #338bff, #8b5cf6, #ec4899);
+
+        /* Footer */
+        .footer-custom {
+            background: rgba(10, 10, 15, 0.95);
+            border-top: 1px solid var(--dark-border);
+            padding: 30px 0;
+            margin-top: 60px;
         }
-        .btn-gradient {
-            background: linear-gradient(135deg, #338bff 0%, #1b6af5 50%, #1454e1 100%);
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .btn-gradient:hover {
-            background: linear-gradient(135deg, #59b0ff 0%, #338bff 50%, #1b6af5 100%);
+
+        .footer-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-gold);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--dark-primary);
         }
-        .section-icon {
-            background: linear-gradient(135deg, #338bff, #8b5cf6);
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        textarea::-webkit-scrollbar { width: 6px; }
-        textarea::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
-        textarea::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        textarea::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section { padding: 40px 0 24px; }
+            .hero-title { font-size: 1.6rem; }
+            .form-card { padding: 20px; margin-bottom: 16px; }
+            .card-header-custom { margin-bottom: 18px; }
+            .card-icon { width: 38px; height: 38px; font-size: 1rem; }
+            .card-title { font-size: 1rem; }
+            .btn-submit { width: 100%; padding: 16px; }
+            .toast-notification { left: 16px; right: 16px; min-width: auto; top: 70px; }
+            .brand-name { font-size: 1.1rem; }
+            .brand-tagline { font-size: 0.6rem; }
+            .navbar-custom { padding: 10px 0; }
+        }
+
+        @media (max-width: 576px) {
+            .hero-section { padding: 30px 0 20px; }
+            .hero-title { font-size: 1.4rem; }
+            .hero-subtitle { font-size: 0.85rem; }
+            .form-card { padding: 16px; border-radius: var(--radius-md); }
+            .form-control-custom { padding: 12px 14px; font-size: 0.88rem; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--dark-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--dark-border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* Selection */
+        ::selection { background: rgba(212, 160, 23, 0.3); color: var(--text-primary); }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen">
 
-    <!-- Notification Banner -->
-    <div id="notification" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-xl shadow-2xl fade-in max-w-md w-full mx-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span id="notif-icon" class="text-2xl"></span>
-                <div>
-                    <span id="notif-message" class="font-semibold block"></span>
-                    <span id="notif-sub" class="text-xs opacity-75"></span>
-                </div>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-particles"></div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="toast-notification">
+        <div class="d-flex align-items-start gap-3 w-100">
+            <div id="notif-icon" style="font-size: 1.5rem; flex-shrink: 0;"></div>
+            <div class="flex-grow-1">
+                <div id="notif-message" class="fw-semibold" style="font-size: 0.92rem;"></div>
+                <div id="notif-sub" style="font-size: 0.78rem; opacity: 0.7; margin-top: 4px;"></div>
             </div>
-            <button onclick="hideNotification()" class="text-current opacity-50 hover:opacity-100 text-xl ml-4 font-bold">&times;</button>
+            <button onclick="hideNotification()" class="btn-close btn-close-white ms-2" style="font-size: 0.65rem; opacity: 0.5;"></button>
         </div>
     </div>
 
-    <!-- Hero Header -->
-    <header class="hero-gradient relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 right-1/4 w-72 h-72 bg-purple-500 rounded-full blur-3xl"></div>
-        </div>
-        <div class="relative max-w-4xl mx-auto px-4 py-8">
-            <div class="flex items-center gap-4">
-                <div class="section-icon p-3 rounded-2xl shadow-lg shadow-blue-500/25">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="text-3xl font-bold text-white tracking-tight">Daily Status & Sprint Tracker</h1>
-                    <p class="text-sm text-slate-300 mt-1">Submit your daily work report efficiently</p>
+    <!-- Navbar -->
+    <nav class="navbar-custom" id="mainNav">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between w-100">
+                <a href="#" class="brand-logo">
+                    <div class="logo-icon">CO</div>
+                    <div class="brand-text">
+                        <div class="brand-name">Code<span>Origin</span>.ai</div>
+                        <div class="brand-tagline">AI-Powered Solutions</div>
+                    </div>
+                </a>
+                <div class="d-none d-md-flex align-items-center gap-3">
+                    <span class="badge" style="background: rgba(6, 214, 160, 0.1); color: var(--accent-cyan); border: 1px solid rgba(6, 214, 160, 0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.72rem;">
+                        <i class="fas fa-circle" style="font-size: 6px; margin-right: 5px; animation: pulse 2s infinite;"></i> System Active
+                    </span>
                 </div>
             </div>
         </div>
-        <div class="accent-line h-1"></div>
-    </header>
+    </nav>
 
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-badge">
+                <i class="fas fa-bolt"></i> Employee Daily Reporting System
+            </div>
+            <h1 class="hero-title">
+                Daily Status &<br><span class="highlight">Sprint Tracker</span>
+            </h1>
+            <p class="hero-subtitle">Submit your daily work report with ease. Track progress, manage sprints, and stay aligned with your team.</p>
+        </div>
+    </section>
 
     <!-- Main Form -->
-    <main class="max-w-4xl mx-auto px-4 py-10 -mt-2">
-        <form id="statusForm" novalidate class="space-y-6">
+    <main class="container pb-5" style="position: relative; z-index: 1;">
+        <form id="statusForm" novalidate>
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-10 col-xl-9">
 
-            <!-- Section 1: Employee Details -->
-            <section class="glass-card rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-200/60 p-7 slide-up">
-                <h2 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-3">
-                    <span class="w-9 h-9 rounded-xl section-icon flex items-center justify-center shadow-md shadow-blue-500/20">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    </span>
-                    Employee Details
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label for="employeeName" class="block text-sm font-semibold text-slate-600 mb-1.5">Employee Name <span class="text-red-500">*</span></label>
-                        <input type="text" id="employeeName" name="employeeName" required placeholder="Enter your full name"
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white">
-                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">Employee name is required</p>
+                    <!-- Card 1: Employee Details -->
+                    <div class="form-card">
+                        <div class="card-header-custom">
+                            <div class="card-icon blue">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Employee Details</div>
+                                <div class="card-subtitle">Your identification and reporting information</div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label-custom">Employee Name <span class="required">*</span></label>
+                                <input type="text" id="employeeName" class="form-control-custom" required placeholder="Enter your full name">
+                                <div class="invalid-feedback-custom" id="err-employeeName"><i class="fas fa-exclamation-circle"></i> Name is required</div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label-custom">Employee Email <span class="required">*</span></label>
+                                <input type="email" id="employeeEmail" class="form-control-custom" required placeholder="you@company.com">
+                                <div class="invalid-feedback-custom" id="err-employeeEmail"><i class="fas fa-exclamation-circle"></i> Valid email required</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label-custom">Direct Manager's Email <span class="required">*</span></label>
+                                <input type="email" id="managerEmail" class="form-control-custom" required placeholder="manager@company.com">
+                                <div class="invalid-feedback-custom" id="err-managerEmail"><i class="fas fa-exclamation-circle"></i> Valid manager email required</div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label for="employeeEmail" class="block text-sm font-semibold text-slate-600 mb-1.5">Employee Email <span class="text-red-500">*</span></label>
-                        <input type="email" id="employeeEmail" name="employeeEmail" required placeholder="you@company.com"
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white">
-                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">Valid email is required</p>
+
+
+                    <!-- Card 2: Time & Project -->
+                    <div class="form-card">
+                        <div class="card-header-custom">
+                            <div class="card-icon purple">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Time & Project Tracking</div>
+                                <div class="card-subtitle">Your shift timing and current sprint information</div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label class="form-label-custom">Date</label>
+                                <input type="date" id="reportDate" class="form-control-custom" readonly>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label-custom">Login / Shift Start <span class="required">*</span></label>
+                                <input type="time" id="loginTime" class="form-control-custom" required>
+                                <div class="invalid-feedback-custom" id="err-loginTime"><i class="fas fa-exclamation-circle"></i> Login time required</div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label-custom">Project / Sprint ID <span class="required">*</span></label>
+                                <input type="text" id="projectName" class="form-control-custom" required placeholder="e.g., Sprint-24">
+                                <div class="invalid-feedback-custom" id="err-projectName"><i class="fas fa-exclamation-circle"></i> Project name required</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="md:col-span-2">
-                        <label for="managerEmail" class="block text-sm font-semibold text-slate-600 mb-1.5">Direct Manager's Email <span class="text-red-500">*</span></label>
-                        <input type="email" id="managerEmail" name="managerEmail" required placeholder="manager@company.com"
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white">
-                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">Valid manager email is required</p>
+
+
+                    <!-- Card 3: Work Status -->
+                    <div class="form-card">
+                        <div class="card-header-custom">
+                            <div class="card-icon green">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div>
+                                <div class="card-title">Work Status Report</div>
+                                <div class="card-subtitle">Detail your tasks, progress, and any blockers</div>
+                            </div>
+                        </div>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <label class="form-label-custom">
+                                    <span class="status-dot assigned"></span>
+                                    Assigned Work for Today <span class="required">*</span>
+                                </label>
+                                <textarea id="assignedWork" class="form-control-custom" required rows="3" placeholder="Describe tasks assigned to you for today..."></textarea>
+                                <div class="invalid-feedback-custom" id="err-assignedWork"><i class="fas fa-exclamation-circle"></i> This field is required</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label-custom">
+                                    <span class="status-dot completed"></span>
+                                    Completed Work & Hours Spent <span class="required">*</span>
+                                </label>
+                                <textarea id="completedWork" class="form-control-custom" required rows="3" placeholder="List completed tasks with hours spent on each..."></textarea>
+                                <div class="invalid-feedback-custom" id="err-completedWork"><i class="fas fa-exclamation-circle"></i> This field is required</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label-custom">
+                                    <span class="status-dot pending"></span>
+                                    Pending Work / Carryover Tasks <span class="required">*</span>
+                                </label>
+                                <textarea id="pendingWork" class="form-control-custom" required rows="3" placeholder="Tasks pending or carried over to next day..."></textarea>
+                                <div class="invalid-feedback-custom" id="err-pendingWork"><i class="fas fa-exclamation-circle"></i> This field is required</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label-custom">
+                                    <span class="status-dot blocker"></span>
+                                    Blockers / Difficulties <span style="color: var(--text-muted); font-weight: 400;">(Optional)</span>
+                                </label>
+                                <textarea id="blockers" class="form-control-custom" rows="3" placeholder="Any blockers, dependencies, or challenges..."></textarea>
+                            </div>
+                        </div>
                     </div>
+
+
+                    <!-- Submit Area -->
+                    <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 mt-4" style="animation: slideInUp 0.5s ease-out 0.4s both;">
+                        <p class="text-center text-sm-start mb-0" style="color: var(--text-muted); font-size: 0.8rem;">
+                            <i class="fas fa-lock me-1"></i> Your data is securely transmitted via encrypted email
+                        </p>
+                        <button type="submit" class="btn-submit d-flex align-items-center gap-2" id="submitBtn">
+                            <span id="btnText">Submit Report</span>
+                            <span id="btnSpinner" class="d-none"><span class="spinner-border spinner-border-sm"></span></span>
+                            <i id="btnIcon" class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+
                 </div>
-            </section>
-
-            <!-- Section 2: Time & Project Tracking -->
-            <section class="glass-card rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-200/60 p-7 slide-up" style="animation-delay: 0.1s">
-                <h2 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-3">
-                    <span class="w-9 h-9 rounded-xl section-icon flex items-center justify-center shadow-md shadow-blue-500/20">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </span>
-                    Time & Project Tracking
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <div>
-                        <label for="reportDate" class="block text-sm font-semibold text-slate-600 mb-1.5">Date</label>
-                        <input type="date" id="reportDate" name="reportDate" readonly
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 cursor-not-allowed font-medium">
-                    </div>
-                    <div>
-                        <label for="loginTime" class="block text-sm font-semibold text-slate-600 mb-1.5">Login / Shift Start <span class="text-red-500">*</span></label>
-                        <input type="time" id="loginTime" name="loginTime" required
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white">
-                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">Login time is required</p>
-                    </div>
-                    <div>
-                        <label for="projectName" class="block text-sm font-semibold text-slate-600 mb-1.5">Project / Sprint ID <span class="text-red-500">*</span></label>
-                        <input type="text" id="projectName" name="projectName" required placeholder="e.g., Sprint-24"
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white">
-                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">Project name is required</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section 3: Work Status -->
-            <section class="glass-card rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-200/60 p-7 slide-up" style="animation-delay: 0.2s">
-                <h2 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-3">
-                    <span class="w-9 h-9 rounded-xl section-icon flex items-center justify-center shadow-md shadow-blue-500/20">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    </span>
-                    Work Status
-                </h2>
-                <div class="space-y-5">
-                    <div>
-                        <label for="assignedWork" class="block text-sm font-semibold text-slate-600 mb-1.5">
-                            <span class="inline-flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                                Assigned Work for Today <span class="text-red-500">*</span>
-                            </span>
-                        </label>
-                        <textarea id="assignedWork" name="assignedWork" required rows="3" placeholder="Describe the tasks assigned to you for today..."
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white resize-y"></textarea>
-                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">This field is required</p>
-                    </div>
-                    <div>
-                        <label for="completedWork" class="block text-sm font-semibold text-slate-600 mb-1.5">
-                            <span class="inline-flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                                Completed Work & Hours Spent <span class="text-red-500">*</span>
-                            </span>
-                        </label>
-                        <textarea id="completedWork" name="completedWork" required rows="3" placeholder="List completed tasks with hours spent on each..."
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white resize-y"></textarea>
-                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">This field is required</p>
-                    </div>
-                    <div>
-                        <label for="pendingWork" class="block text-sm font-semibold text-slate-600 mb-1.5">
-                            <span class="inline-flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                                Pending Work / Carryover Tasks <span class="text-red-500">*</span>
-                            </span>
-                        </label>
-                        <textarea id="pendingWork" name="pendingWork" required rows="3" placeholder="Tasks that are pending or carried over to the next day..."
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white resize-y"></textarea>
-                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">This field is required</p>
-                    </div>
-                    <div>
-                        <label for="blockers" class="block text-sm font-semibold text-slate-600 mb-1.5">
-                            <span class="inline-flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-red-400"></span>
-                                Blockers / Difficulties Faced <span class="text-slate-400 font-normal">(Optional)</span>
-                            </span>
-                        </label>
-                        <textarea id="blockers" name="blockers" rows="3" placeholder="Any blockers, dependencies, or challenges faced..."
-                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white resize-y"></textarea>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Submit Button -->
-            <div class="flex justify-end pt-2">
-                <button type="submit" id="submitBtn"
-                    class="btn-gradient text-white font-bold px-10 py-4 rounded-xl shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 transition-all duration-300 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transform hover:-translate-y-0.5 active:translate-y-0">
-                    <span id="btnText">Submit Daily Report</span>
-                    <span id="btnSpinner" class="hidden"><span class="spinner"></span></span>
-                    <svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                </button>
             </div>
-
         </form>
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-200 mt-8">
-        <div class="max-w-4xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p class="text-sm text-slate-400">&copy; 2026 Employee Daily Status Tracker. All rights reserved.</p>
-            <p class="text-xs text-slate-300">Powered by AI Code Origin</p>
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="row align-items-center gy-3">
+                <div class="col-12 col-md-6">
+                    <div class="footer-brand">
+                        <div class="footer-logo">CO</div>
+                        <div>
+                            <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1rem; color: var(--text-primary);">Code<span style="color: var(--gold);">Origin</span>.ai</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">AI-Powered Development Solutions</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 text-md-end">
+                    <p style="color: var(--text-muted); font-size: 0.78rem; margin: 0;">&copy; 2026 CodeOrigin.ai. All rights reserved.</p>
+                </div>
+            </div>
         </div>
     </footer>
 
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
     // ============================================================
-    // EMAILJS CONFIGURATION
+    // EMAILJS CONFIGURATION (PRODUCTION)
     // ============================================================
     const EMAILJS_PUBLIC_KEY = 'gzt0AvmB6crin7QwJ';
     const EMAILJS_SERVICE_ID = 'service_mc808ed';
@@ -262,103 +737,124 @@
     // Auto-populate today's date
     document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
 
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const nav = document.getElementById('mainNav');
+        if (window.scrollY > 20) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
+
     // Format time to 12-hour format
     function formatTime(time24) {
+        if (!time24) return '';
         const [hours, minutes] = time24.split(':');
         const h = parseInt(hours);
         const ampm = h >= 12 ? 'PM' : 'AM';
         const h12 = h % 12 || 12;
-        return `${h12}:${minutes} ${ampm}`;
+        return h12 + ':' + minutes + ' ' + ampm;
     }
 
+
     // Show notification
-    function showNotification(type, message) {
+    function showNotification(type, message, sub) {
         const notif = document.getElementById('notification');
         const icon = document.getElementById('notif-icon');
         const msg = document.getElementById('notif-message');
-        const sub = document.getElementById('notif-sub');
+        const subEl = document.getElementById('notif-sub');
 
-        notif.className = `fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-xl shadow-2xl fade-in max-w-md w-full mx-4 ${
-            type === 'success' 
-                ? 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200' 
-                : 'bg-gradient-to-r from-red-50 to-rose-50 border border-red-200'
-        }`;
-        icon.textContent = type === 'success' ? '✅' : '❌';
+        notif.className = 'toast-notification show ' + type;
+        icon.innerHTML = type === 'success' ? '<i class="fas fa-check-circle" style="color: var(--accent-cyan);"></i>' : '<i class="fas fa-times-circle" style="color: #ef4444;"></i>';
         msg.textContent = message;
-        msg.className = `font-semibold block ${type === 'success' ? 'text-green-800' : 'text-red-800'}`;
-        sub.textContent = type === 'success' ? 'Email sent to all recipients' : 'Please try again';
-        sub.className = `text-xs ${type === 'success' ? 'text-green-600' : 'text-red-600'}`;
-        notif.classList.remove('hidden');
+        msg.style.color = type === 'success' ? 'var(--accent-cyan)' : '#f87171';
+        subEl.textContent = sub || '';
+        subEl.style.color = 'var(--text-muted)';
 
-        setTimeout(() => hideNotification(), 6000);
+        setTimeout(hideNotification, 6000);
     }
 
     function hideNotification() {
-        document.getElementById('notification').classList.add('hidden');
+        document.getElementById('notification').className = 'toast-notification';
     }
 
     // Validate form
     function validateForm() {
         let isValid = true;
-        const requiredFields = document.querySelectorAll('[required]');
+        const fields = [
+            { id: 'employeeName', type: 'text' },
+            { id: 'employeeEmail', type: 'email' },
+            { id: 'managerEmail', type: 'email' },
+            { id: 'loginTime', type: 'text' },
+            { id: 'projectName', type: 'text' },
+            { id: 'assignedWork', type: 'text' },
+            { id: 'completedWork', type: 'text' },
+            { id: 'pendingWork', type: 'text' }
+        ];
 
-        requiredFields.forEach(field => {
-            const errorMsg = field.parentElement.querySelector('.error-msg');
-            if (!field.value.trim()) {
-                field.classList.add('border-red-300', 'bg-red-50/50');
-                field.classList.remove('border-slate-200', 'bg-white');
-                if (errorMsg) errorMsg.classList.remove('hidden');
+        fields.forEach(function(field) {
+            const el = document.getElementById(field.id);
+            const err = document.getElementById('err-' + field.id);
+            const value = el.value.trim();
+
+            if (!value) {
+                el.classList.add('is-invalid');
+                if (err) err.classList.add('show');
                 isValid = false;
-            } else if (field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
-                field.classList.add('border-red-300', 'bg-red-50/50');
-                field.classList.remove('border-slate-200', 'bg-white');
-                if (errorMsg) errorMsg.classList.remove('hidden');
+            } else if (field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                el.classList.add('is-invalid');
+                if (err) err.classList.add('show');
                 isValid = false;
             } else {
-                field.classList.remove('border-red-300', 'bg-red-50/50');
-                field.classList.add('border-slate-200', 'bg-white');
-                if (errorMsg) errorMsg.classList.add('hidden');
+                el.classList.remove('is-invalid');
+                if (err) err.classList.remove('show');
             }
         });
 
         return isValid;
     }
 
+
     // Clear validation on input
-    document.querySelectorAll('input, textarea').forEach(field => {
-        field.addEventListener('input', () => {
-            field.classList.remove('border-red-300', 'bg-red-50/50');
-            field.classList.add('border-slate-200', 'bg-white');
-            const errorMsg = field.parentElement.querySelector('.error-msg');
-            if (errorMsg) errorMsg.classList.add('hidden');
+    document.querySelectorAll('.form-control-custom').forEach(function(field) {
+        field.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+            var err = document.getElementById('err-' + this.id);
+            if (err) err.classList.remove('show');
         });
     });
 
     // Set loading state
     function setLoading(loading) {
-        const btn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const btnSpinner = document.getElementById('btnSpinner');
-        const btnIcon = document.getElementById('btnIcon');
+        var btn = document.getElementById('submitBtn');
+        var btnText = document.getElementById('btnText');
+        var btnSpinner = document.getElementById('btnSpinner');
+        var btnIcon = document.getElementById('btnIcon');
 
         btn.disabled = loading;
-        btnText.textContent = loading ? 'Sending Report...' : 'Submit Daily Report';
-        btnSpinner.classList.toggle('hidden', !loading);
-        btnIcon.classList.toggle('hidden', loading);
+        btnText.textContent = loading ? 'Sending...' : 'Submit Report';
+        if (loading) {
+            btnSpinner.classList.remove('d-none');
+            btnIcon.classList.add('d-none');
+        } else {
+            btnSpinner.classList.add('d-none');
+            btnIcon.classList.remove('d-none');
+        }
     }
 
     // Handle form submission
-    document.getElementById('statusForm').addEventListener('submit', async function(e) {
+    document.getElementById('statusForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
         if (!validateForm()) {
-            showNotification('error', 'Please fill in all required fields correctly.');
+            showNotification('error', 'Please fill all required fields correctly.', 'Check highlighted fields above');
             return;
         }
 
         setLoading(true);
 
-        const formData = {
+        var formData = {
             employee_name: document.getElementById('employeeName').value.trim(),
             employee_email: document.getElementById('employeeEmail').value.trim(),
             manager_email: document.getElementById('managerEmail').value.trim(),
@@ -369,23 +865,24 @@
             completed_work: document.getElementById('completedWork').value.trim(),
             pending_work: document.getElementById('pendingWork').value.trim(),
             blockers: document.getElementById('blockers').value.trim() || 'None reported',
-            cc_emails: `${document.getElementById('employeeEmail').value.trim()},${document.getElementById('managerEmail').value.trim()}`
+            cc_emails: document.getElementById('employeeEmail').value.trim() + ',' + document.getElementById('managerEmail').value.trim()
         };
 
-        try {
-            const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formData);
-            console.log('EmailJS Response:', response);
-            showNotification('success', 'Daily status report sent successfully!');
-            document.getElementById('assignedWork').value = '';
-            document.getElementById('completedWork').value = '';
-            document.getElementById('pendingWork').value = '';
-            document.getElementById('blockers').value = '';
-        } catch (error) {
-            console.error('EmailJS Error:', error);
-            showNotification('error', `Failed to send: ${error.text || 'Check your EmailJS configuration.'}`);
-        } finally {
-            setLoading(false);
-        }
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formData)
+            .then(function(response) {
+                console.log('EmailJS Success:', response);
+                showNotification('success', 'Report submitted successfully!', 'Email sent to all recipients');
+                document.getElementById('assignedWork').value = '';
+                document.getElementById('completedWork').value = '';
+                document.getElementById('pendingWork').value = '';
+                document.getElementById('blockers').value = '';
+                setLoading(false);
+            })
+            .catch(function(error) {
+                console.error('EmailJS Error:', error);
+                showNotification('error', 'Failed to send report', error.text || 'Please check your connection and try again');
+                setLoading(false);
+            });
     });
     </script>
 </body>
