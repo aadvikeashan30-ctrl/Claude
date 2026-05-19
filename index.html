@@ -1,1075 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Employee Registration System</title>
-<style>
-  :root {
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-    --primary-light: #eef2ff;
-    --success: #10b981;
-    --error: #ef4444;
-    --warning: #f59e0b;
-    --gray-50: #f9fafb;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-400: #9ca3af;
-    --gray-500: #6b7280;
-    --gray-600: #4b5563;
-    --gray-700: #374151;
-    --gray-800: #1f2937;
-    --gray-900: #111827;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-    --radius: 8px;
-    --radius-lg: 12px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    padding: 24px 16px;
-    color: var(--gray-800);
-    line-height: 1.5;
-  }
-
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-  }
-
-  .header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: #fff;
-    padding: 32px 32px 24px;
-  }
-
-  .header h1 {
-    font-size: 1.75rem;
-    margin-bottom: 4px;
-  }
-
-  .header p {
-    opacity: 0.9;
-    font-size: 0.95rem;
-  }
-
-  .stepper {
-    display: flex;
-    background: var(--gray-50);
-    border-bottom: 1px solid var(--gray-200);
-    overflow-x: auto;
-  }
-
-  .step {
-    flex: 1;
-    min-width: 140px;
-    padding: 16px 12px;
-    text-align: center;
-    border-right: 1px solid var(--gray-200);
-    cursor: pointer;
-    transition: background 0.2s;
-    position: relative;
-  }
-
-  .step:last-child { border-right: none; }
-  .step:hover { background: var(--gray-100); }
-
-  .step.active {
-    background: #fff;
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  .step.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--primary);
-  }
-
-  .step.completed { color: var(--success); }
-
-  .step-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: var(--gray-200);
-    color: var(--gray-600);
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-
-  .step.active .step-number { background: var(--primary); color: #fff; }
-  .step.completed .step-number { background: var(--success); color: #fff; }
-
-  .step-label {
-    display: block;
-    font-size: 0.85rem;
-  }
-
-  .progress-bar {
-    height: 4px;
-    background: var(--gray-200);
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-    transition: width 0.3s ease;
-  }
-
-  form { padding: 32px; }
-
-  .form-step { display: none; }
-  .form-step.active { display: block; animation: fadeIn 0.3s; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .step-title {
-    font-size: 1.35rem;
-    color: var(--gray-900);
-    margin-bottom: 4px;
-  }
-
-  .step-subtitle {
-    color: var(--gray-500);
-    margin-bottom: 24px;
-    font-size: 0.95rem;
-  }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px 20px;
-  }
-
-  .form-group { display: flex; flex-direction: column; }
-  .form-group.full { grid-column: 1 / -1; }
-
-  label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--gray-700);
-    margin-bottom: 6px;
-  }
-
-  label .required { color: var(--error); margin-left: 2px; }
-
-  input, select, textarea {
-    padding: 10px 12px;
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius);
-    font-size: 0.95rem;
-    font-family: inherit;
-    background: #fff;
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
-
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-  }
-
-  input.error, select.error, textarea.error {
-    border-color: var(--error);
-  }
-
-  input.success { border-color: var(--success); }
-
-  .error-msg {
-    color: var(--error);
-    font-size: 0.8rem;
-    margin-top: 4px;
-    min-height: 16px;
-  }
-
-  .hint {
-    color: var(--gray-500);
-    font-size: 0.8rem;
-    margin-top: 4px;
-  }
-
-  .file-upload {
-    border: 2px dashed var(--gray-300);
-    border-radius: var(--radius);
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-  }
-
-  .file-upload:hover {
-    border-color: var(--primary);
-    background: var(--primary-light);
-  }
-
-  .file-upload input[type="file"] { display: none; }
-
-  .file-upload-icon { font-size: 2rem; margin-bottom: 8px; }
-
-  .file-name {
-    margin-top: 8px;
-    color: var(--success);
-    font-size: 0.85rem;
-    font-weight: 500;
-  }
-
-  .checkbox-group {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .checkbox-group input[type="checkbox"] {
-    width: 18px; height: 18px;
-    margin-top: 2px;
-    cursor: pointer;
-    accent-color: var(--primary);
-  }
-
-  .checkbox-group label {
-    margin: 0;
-    cursor: pointer;
-    font-weight: 400;
-  }
-
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid var(--gray-200);
-  }
-
-  button {
-    padding: 10px 24px;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.05s;
-    font-family: inherit;
-  }
-
-  button:active { transform: translateY(1px); }
-
-  .btn-primary {
-    background: var(--primary);
-    color: #fff;
-  }
-
-  .btn-primary:hover { background: var(--primary-dark); }
-  .btn-primary:disabled {
-    background: var(--gray-300);
-    cursor: not-allowed;
-  }
-
-  .btn-secondary {
-    background: var(--gray-100);
-    color: var(--gray-700);
-  }
-
-  .btn-secondary:hover { background: var(--gray-200); }
-
-  .review-section {
-    background: var(--gray-50);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 16px;
-  }
-
-  .review-section h3 {
-    font-size: 1rem;
-    color: var(--gray-700);
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .review-section .edit-link {
-    font-size: 0.85rem;
-    color: var(--primary);
-    cursor: pointer;
-    font-weight: 500;
-    background: none;
-    border: none;
-    padding: 0;
-  }
-
-  .review-row {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    padding: 6px 0;
-    font-size: 0.9rem;
-    border-bottom: 1px solid var(--gray-200);
-  }
-
-  .review-row:last-child { border-bottom: none; }
-  .review-row .label { color: var(--gray-500); }
-  .review-row .value { color: var(--gray-900); font-weight: 500; }
-
-  .success-screen {
-    text-align: center;
-    padding: 48px 24px;
-  }
-
-  .success-icon {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: var(--success);
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    margin-bottom: 16px;
-  }
-
-  .success-screen h2 {
-    color: var(--gray-900);
-    margin-bottom: 8px;
-  }
-
-  .success-screen p {
-    color: var(--gray-600);
-    margin-bottom: 24px;
-  }
-
-  .employee-id {
-    background: var(--primary-light);
-    color: var(--primary-dark);
-    padding: 12px 20px;
-    border-radius: var(--radius);
-    font-family: 'SF Mono', Consolas, Monaco, monospace;
-    font-size: 1.1rem;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 20px;
-  }
-
-  .json-preview {
-    background: var(--gray-900);
-    color: #a5f3fc;
-    padding: 16px;
-    border-radius: var(--radius);
-    font-family: 'SF Mono', Consolas, Monaco, monospace;
-    font-size: 0.8rem;
-    text-align: left;
-    overflow-x: auto;
-    margin-top: 16px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: var(--gray-800);
-    color: #fff;
-    padding: 12px 18px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lg);
-    z-index: 1000;
-    transform: translateX(120%);
-    transition: transform 0.3s;
-    font-size: 0.9rem;
-  }
-
-  .toast.show { transform: translateX(0); }
-  .toast.success { background: var(--success); }
-  .toast.error { background: var(--error); }
-
-  .async-status {
-    font-size: 0.8rem;
-    margin-top: 4px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .async-status.checking { color: var(--gray-500); }
-  .async-status.valid { color: var(--success); }
-  .async-status.invalid { color: var(--error); }
-
-  .spinner {
-    width: 12px; height: 12px;
-    border: 2px solid var(--gray-300);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-    display: inline-block;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  @media (max-width: 640px) {
-    body { padding: 12px 8px; }
-    .header { padding: 20px; }
-    form { padding: 20px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .step-label { display: none; }
-    .step { min-width: 60px; padding: 12px 4px; }
-    .review-row { grid-template-columns: 1fr; gap: 2px; }
-    .actions { flex-direction: column-reverse; gap: 8px; }
-    .actions button { width: 100%; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Daily Status & Sprint Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-<body>
-<div class="container" role="main">
-  <header class="header">
-    <h1>Employee Registration</h1>
-    <p>Welcome aboard! Please complete the steps below to set up your profile.</p>
-  </header>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
 
-  <nav class="stepper" aria-label="Registration progress">
-    <div class="step active" data-step="1">
-      <span class="step-number">1</span>
-      <span class="step-label">Personal</span>
+    <!-- Notification Banner -->
+    <div id="notification" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-lg shadow-lg fade-in max-w-lg w-full mx-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span id="notif-icon" class="text-xl"></span>
+                <span id="notif-message" class="font-medium"></span>
+            </div>
+            <button onclick="hideNotification()" class="text-gray-500 hover:text-gray-700 ml-4">&times;</button>
+        </div>
     </div>
-    <div class="step" data-step="2">
-      <span class="step-number">2</span>
-      <span class="step-label">Identity</span>
-    </div>
-    <div class="step" data-step="3">
-      <span class="step-number">3</span>
-      <span class="step-label">Role</span>
-    </div>
-    <div class="step" data-step="4">
-      <span class="step-number">4</span>
-      <span class="step-label">Payroll</span>
-    </div>
-    <div class="step" data-step="5">
-      <span class="step-number">5</span>
-      <span class="step-label">Review</span>
-    </div>
-  </nav>
 
-  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 20%"></div></div>
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 py-5">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">Daily Status & Sprint Tracker</h1>
+                    <p class="text-sm text-slate-500">Submit your daily work report</p>
+                </div>
+            </div>
+        </div>
+    </header>
 
-  <form id="regForm" novalidate>
 
-    <!-- STEP 1: Personal Details -->
-    <section class="form-step active" data-step="1" aria-labelledby="step1-title">
-      <h2 class="step-title" id="step1-title">Personal Details</h2>
-      <p class="step-subtitle">Tell us a little about yourself.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="firstName">First Name<span class="required">*</span></label>
-          <input type="text" id="firstName" name="firstName" required autocomplete="given-name" />
-          <div class="error-msg" data-error-for="firstName"></div>
-        </div>
-        <div class="form-group">
-          <label for="lastName">Last Name<span class="required">*</span></label>
-          <input type="text" id="lastName" name="lastName" required autocomplete="family-name" />
-          <div class="error-msg" data-error-for="lastName"></div>
-        </div>
-        <div class="form-group">
-          <label for="email">Email<span class="required">*</span></label>
-          <input type="email" id="email" name="email" required autocomplete="email" />
-          <div class="async-status" id="emailStatus"></div>
-          <div class="error-msg" data-error-for="email"></div>
-        </div>
-        <div class="form-group">
-          <label for="phone">Phone<span class="required">*</span></label>
-          <input type="tel" id="phone" name="phone" required placeholder="+1 555 123 4567" autocomplete="tel" />
-          <div class="error-msg" data-error-for="phone"></div>
-        </div>
-        <div class="form-group">
-          <label for="dob">Date of Birth<span class="required">*</span></label>
-          <input type="date" id="dob" name="dob" required autocomplete="bday" />
-          <div class="error-msg" data-error-for="dob"></div>
-        </div>
-        <div class="form-group">
-          <label for="gender">Gender</label>
-          <select id="gender" name="gender">
-            <option value="">Prefer not to say</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="non_binary">Non-binary</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="form-group full">
-          <label for="address">Address<span class="required">*</span></label>
-          <input type="text" id="address" name="address" required placeholder="Street address" autocomplete="street-address" />
-          <div class="error-msg" data-error-for="address"></div>
-        </div>
-        <div class="form-group">
-          <label for="city">City<span class="required">*</span></label>
-          <input type="text" id="city" name="city" required autocomplete="address-level2" />
-          <div class="error-msg" data-error-for="city"></div>
-        </div>
-        <div class="form-group">
-          <label for="country">Country<span class="required">*</span></label>
-          <select id="country" name="country" required autocomplete="country">
-            <option value="">Select country</option>
-            <option value="US">United States</option>
-            <option value="IN">India</option>
-            <option value="UK">United Kingdom</option>
-            <option value="CA">Canada</option>
-            <option value="AU">Australia</option>
-            <option value="DE">Germany</option>
-            <option value="SG">Singapore</option>
-          </select>
-          <div class="error-msg" data-error-for="country"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <span></span>
-        <button type="button" class="btn-primary" data-action="next">Next: Identity →</button>
-      </div>
-    </section>
+    <!-- Main Form -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <form id="statusForm" novalidate class="space-y-8">
 
-    <!-- STEP 2: Identity Verification -->
-    <section class="form-step" data-step="2" aria-labelledby="step2-title">
-      <h2 class="step-title" id="step2-title">Identity Verification</h2>
-      <p class="step-subtitle">Upload a government-issued ID for verification.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="idType">ID Type<span class="required">*</span></label>
-          <select id="idType" name="idType" required>
-            <option value="">Select ID type</option>
-            <option value="passport">Passport</option>
-            <option value="drivers_license">Driver's License</option>
-            <option value="national_id">National ID</option>
-            <option value="aadhaar">Aadhaar</option>
-          </select>
-          <div class="error-msg" data-error-for="idType"></div>
-        </div>
-        <div class="form-group">
-          <label for="idNumber">ID Number<span class="required">*</span></label>
-          <input type="text" id="idNumber" name="idNumber" required />
-          <div class="error-msg" data-error-for="idNumber"></div>
-        </div>
-        <div class="form-group full">
-          <label for="idDoc">Upload ID Document<span class="required">*</span></label>
-          <label class="file-upload" for="idDoc">
-            <div class="file-upload-icon">📄</div>
-            <div>Click to upload (PDF, JPG, PNG — max 5 MB)</div>
-            <input type="file" id="idDoc" name="idDoc" accept=".pdf,.jpg,.jpeg,.png" required />
-            <div class="file-name" id="idDocName"></div>
-          </label>
-          <div class="error-msg" data-error-for="idDoc"></div>
-        </div>
-        <div class="form-group full">
-          <label for="taxId">Tax ID / SSN<span class="required">*</span></label>
-          <input type="text" id="taxId" name="taxId" required placeholder="XXX-XX-XXXX" />
-          <div class="hint">Encrypted and tokenized — never stored in plain text.</div>
-          <div class="error-msg" data-error-for="taxId"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Role →</button>
-      </div>
-    </section>
+            <!-- Section 1: Employee Details -->
+            <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    Employee Details
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="employeeName" class="block text-sm font-medium text-slate-600 mb-1">Employee Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="employeeName" name="employeeName" required placeholder="Enter your full name"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                        <p class="text-red-500 text-xs mt-1 hidden error-msg">Employee name is required</p>
+                    </div>
+                    <div>
+                        <label for="employeeEmail" class="block text-sm font-medium text-slate-600 mb-1">Employee Email <span class="text-red-500">*</span></label>
+                        <input type="email" id="employeeEmail" name="employeeEmail" required placeholder="you@company.com"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                        <p class="text-red-500 text-xs mt-1 hidden error-msg">Valid email is required</p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="managerEmail" class="block text-sm font-medium text-slate-600 mb-1">Direct Manager's Email <span class="text-red-500">*</span></label>
+                        <input type="email" id="managerEmail" name="managerEmail" required placeholder="manager@company.com"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                        <p class="text-red-500 text-xs mt-1 hidden error-msg">Valid manager email is required</p>
+                    </div>
+                </div>
+            </section>
 
-    <!-- STEP 3: Work / Role -->
-    <section class="form-step" data-step="3" aria-labelledby="step3-title">
-      <h2 class="step-title" id="step3-title">Work & Role Assignment</h2>
-      <p class="step-subtitle">Confirm your role and start details.</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="jobTitle">Job Title<span class="required">*</span></label>
-          <input type="text" id="jobTitle" name="jobTitle" required />
-          <div class="error-msg" data-error-for="jobTitle"></div>
-        </div>
-        <div class="form-group">
-          <label for="department">Department<span class="required">*</span></label>
-          <select id="department" name="department" required>
-            <option value="">Select department</option>
-            <option value="engineering">Engineering</option>
-            <option value="product">Product</option>
-            <option value="design">Design</option>
-            <option value="marketing">Marketing</option>
-            <option value="sales">Sales</option>
-            <option value="hr">Human Resources</option>
-            <option value="finance">Finance</option>
-            <option value="operations">Operations</option>
-          </select>
-          <div class="error-msg" data-error-for="department"></div>
-        </div>
-        <div class="form-group">
-          <label for="employmentType">Employment Type<span class="required">*</span></label>
-          <select id="employmentType" name="employmentType" required>
-            <option value="">Select type</option>
-            <option value="full_time">Full-Time</option>
-            <option value="part_time">Part-Time</option>
-            <option value="contract">Contract</option>
-            <option value="intern">Intern</option>
-          </select>
-          <div class="error-msg" data-error-for="employmentType"></div>
-        </div>
-        <div class="form-group">
-          <label for="manager">Reporting Manager</label>
-          <input type="text" id="manager" name="manager" placeholder="Manager's full name" />
-        </div>
-        <div class="form-group">
-          <label for="startDate">Start Date<span class="required">*</span></label>
-          <input type="date" id="startDate" name="startDate" required />
-          <div class="error-msg" data-error-for="startDate"></div>
-        </div>
-        <div class="form-group">
-          <label for="workLocation">Work Location<span class="required">*</span></label>
-          <select id="workLocation" name="workLocation" required>
-            <option value="">Select location</option>
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="onsite">On-site</option>
-          </select>
-          <div class="error-msg" data-error-for="workLocation"></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Payroll →</button>
-      </div>
-    </section>
 
-    <!-- STEP 4: Payroll & Banking -->
-    <section class="form-step" data-step="4" aria-labelledby="step4-title">
-      <h2 class="step-title" id="step4-title">Payroll & Banking</h2>
-      <p class="step-subtitle">Where should we send your salary?</p>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="bankName">Bank Name<span class="required">*</span></label>
-          <input type="text" id="bankName" name="bankName" required />
-          <div class="error-msg" data-error-for="bankName"></div>
-        </div>
-        <div class="form-group">
-          <label for="accountHolder">Account Holder Name<span class="required">*</span></label>
-          <input type="text" id="accountHolder" name="accountHolder" required />
-          <div class="error-msg" data-error-for="accountHolder"></div>
-        </div>
-        <div class="form-group">
-          <label for="accountNumber">Account Number<span class="required">*</span></label>
-          <input type="text" id="accountNumber" name="accountNumber" required inputmode="numeric" />
-          <div class="error-msg" data-error-for="accountNumber"></div>
-        </div>
-        <div class="form-group">
-          <label for="routingCode">Routing / IFSC / Swift Code<span class="required">*</span></label>
-          <input type="text" id="routingCode" name="routingCode" required />
-          <div class="error-msg" data-error-for="routingCode"></div>
-        </div>
-        <div class="form-group">
-          <label for="currency">Salary Currency<span class="required">*</span></label>
-          <select id="currency" name="currency" required>
-            <option value="">Select currency</option>
-            <option value="USD">USD — US Dollar</option>
-            <option value="INR">INR — Indian Rupee</option>
-            <option value="GBP">GBP — British Pound</option>
-            <option value="EUR">EUR — Euro</option>
-            <option value="CAD">CAD — Canadian Dollar</option>
-            <option value="AUD">AUD — Australian Dollar</option>
-            <option value="SGD">SGD — Singapore Dollar</option>
-          </select>
-          <div class="error-msg" data-error-for="currency"></div>
-        </div>
-        <div class="form-group full checkbox-group">
-          <input type="checkbox" id="taxConsent" name="taxConsent" required />
-          <label for="taxConsent">I confirm that all banking and tax information provided is accurate, and authorize the deposit of salary to this account.<span class="required">*</span></label>
-        </div>
-        <div class="error-msg full" data-error-for="taxConsent"></div>
-      </div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="button" class="btn-primary" data-action="next">Next: Review →</button>
-      </div>
-    </section>
+            <!-- Section 2: Time & Project Tracking -->
+            <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Time & Project Tracking
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                        <label for="reportDate" class="block text-sm font-medium text-slate-600 mb-1">Date</label>
+                        <input type="date" id="reportDate" name="reportDate" readonly
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label for="loginTime" class="block text-sm font-medium text-slate-600 mb-1">Login / Shift Start Time <span class="text-red-500">*</span></label>
+                        <input type="time" id="loginTime" name="loginTime" required
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                        <p class="text-red-500 text-xs mt-1 hidden error-msg">Login time is required</p>
+                    </div>
+                    <div>
+                        <label for="projectName" class="block text-sm font-medium text-slate-600 mb-1">Project Name / Sprint ID <span class="text-red-500">*</span></label>
+                        <input type="text" id="projectName" name="projectName" required placeholder="e.g., Sprint-24 or Project Alpha"
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                        <p class="text-red-500 text-xs mt-1 hidden error-msg">Project name is required</p>
+                    </div>
+                </div>
+            </section>
 
-    <!-- STEP 5: Review & Submit -->
-    <section class="form-step" data-step="5" aria-labelledby="step5-title">
-      <h2 class="step-title" id="step5-title">Review & Submit</h2>
-      <p class="step-subtitle">Please review your information before submitting.</p>
-      <div id="reviewContent"></div>
-      <div class="checkbox-group" style="margin-top: 20px;">
-        <input type="checkbox" id="finalConsent" name="finalConsent" required />
-        <label for="finalConsent">I confirm all the information above is accurate and agree to the company's privacy policy, code of conduct and terms of employment.<span class="required">*</span></label>
-      </div>
-      <div class="error-msg" data-error-for="finalConsent"></div>
-      <div class="actions">
-        <button type="button" class="btn-secondary" data-action="prev">← Back</button>
-        <button type="submit" class="btn-primary" id="submitBtn">Submit Registration ✓</button>
-      </div>
-    </section>
 
-    <!-- SUCCESS SCREEN -->
-    <section class="form-step" data-step="6">
-      <div class="success-screen">
-        <div class="success-icon">✓</div>
-        <h2>Registration Complete!</h2>
-        <p>Welcome to the team. Your registration has been submitted successfully.</p>
-        <div class="employee-id" id="employeeId">EMP-XXXXXX</div>
-        <p style="font-size: 0.9rem; color: var(--gray-500);">A confirmation email has been sent. Our HR team will be in touch shortly.</p>
-        <details style="margin-top: 24px; text-align: left;">
-          <summary style="cursor: pointer; color: var(--primary); font-weight: 500;">View submission JSON</summary>
-          <pre class="json-preview" id="jsonPreview"></pre>
-        </details>
-        <button type="button" class="btn-secondary" style="margin-top: 24px;" onclick="resetForm()">Register Another Employee</button>
-      </div>
-    </section>
+            <!-- Section 3: Work Status -->
+            <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Work Status
+                </h2>
+                <div class="space-y-5">
+                    <div>
+                        <label for="assignedWork" class="block text-sm font-medium text-slate-600 mb-1">Assigned Work for Today <span class="text-red-500">*</span></label>
+                        <textarea id="assignedWork" name="assignedWork" required rows="3" placeholder="Describe the tasks assigned to you for today..."
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-y"></textarea>
+                        <p class="text-red-500 text-xs mt-1 hidden error-msg">This field is required</p>
+                    </div>
+                    <div>
+                        <label for="completedWork" class="block text-sm font-medium text-slate-600 mb-1">Completed Work & Hours Spent <span class="text-red-500">*</span></label>
+                        <textarea id="completedWork" name="completedWork" required rows="3" placeholder="List completed tasks with hours spent on each..."
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-y"></textarea>
+                        <p class="text-red-500 text-xs mt-1 hidden error-msg">This field is required</p>
+                    </div>
+                    <div>
+                        <label for="pendingWork" class="block text-sm font-medium text-slate-600 mb-1">Pending Work / Carryover Tasks <span class="text-red-500">*</span></label>
+                        <textarea id="pendingWork" name="pendingWork" required rows="3" placeholder="Tasks that are pending or carried over to the next day..."
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-y"></textarea>
+                        <p class="text-red-500 text-xs mt-1 hidden error-msg">This field is required</p>
+                    </div>
+                    <div>
+                        <label for="blockers" class="block text-sm font-medium text-slate-600 mb-1">Blockers / Difficulties Faced <span class="text-slate-400">(Optional)</span></label>
+                        <textarea id="blockers" name="blockers" rows="3" placeholder="Any blockers, dependencies, or challenges faced..."
+                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-y"></textarea>
+                    </div>
+                </div>
+            </section>
 
-  </form>
-</div>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+            <!-- Submit Button -->
+            <div class="flex justify-end">
+                <button type="submit" id="submitBtn"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <span id="btnText">Submit Daily Report</span>
+                    <span id="btnSpinner" class="hidden"><span class="spinner"></span></span>
+                    <svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                </button>
+            </div>
 
-<script>
-'use strict';
+        </form>
+    </main>
 
-const TOTAL_STEPS = 5;
-let currentStep = 1;
-const formData = {};
+    <!-- Footer -->
+    <footer class="text-center py-6 text-sm text-slate-400">
+        <p>&copy; 2026 Employee Daily Status Tracker. All rights reserved.</p>
+    </footer>
 
-const stepFields = {
-  1: ['firstName', 'lastName', 'email', 'phone', 'dob', 'address', 'city', 'country'],
-  2: ['idType', 'idNumber', 'idDoc', 'taxId'],
-  3: ['jobTitle', 'department', 'employmentType', 'startDate', 'workLocation'],
-  4: ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency', 'taxConsent'],
-  5: ['finalConsent']
-};
 
-const labels = {
-  firstName: 'First Name', lastName: 'Last Name', email: 'Email', phone: 'Phone',
-  dob: 'Date of Birth', gender: 'Gender', address: 'Address', city: 'City', country: 'Country',
-  idType: 'ID Type', idNumber: 'ID Number', idDoc: 'ID Document', taxId: 'Tax ID',
-  jobTitle: 'Job Title', department: 'Department', employmentType: 'Employment Type',
-  manager: 'Manager', startDate: 'Start Date', workLocation: 'Work Location',
-  bankName: 'Bank Name', accountHolder: 'Account Holder', accountNumber: 'Account Number',
-  routingCode: 'Routing/IFSC', currency: 'Currency'
-};
+    <script>
+    // ============================================================
+    // EMAILJS CONFIGURATION - INSERT YOUR CREDENTIALS HERE
+    // ============================================================
+    const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY_HERE';   // Step 1: Replace with your EmailJS Public Key
+    const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID_HERE';  // Step 2: Replace with your EmailJS Service ID
+    const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID_HERE'; // Step 3: Replace with your EmailJS Template ID
+    // ============================================================
 
-const sectionMap = {
-  'Personal Details': ['firstName', 'lastName', 'email', 'phone', 'dob', 'gender', 'address', 'city', 'country'],
-  'Identity Verification': ['idType', 'idNumber', 'idDoc', 'taxId'],
-  'Work & Role': ['jobTitle', 'department', 'employmentType', 'manager', 'startDate', 'workLocation'],
-  'Payroll & Banking': ['bankName', 'accountHolder', 'accountNumber', 'routingCode', 'currency']
-};
+    // Initialize EmailJS
+    (function() {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+    })();
 
-const sectionStepMap = {
-  'Personal Details': 1,
-  'Identity Verification': 2,
-  'Work & Role': 3,
-  'Payroll & Banking': 4
-};
+    // Auto-populate today's date
+    document.getElementById('reportDate').value = new Date().toISOString().split('T')[0];
 
-// ---- Validation ----
-function validateField(name, value) {
-  if (!value && !['gender', 'manager'].includes(name)) {
-    if (name === 'idDoc' && !document.getElementById('idDoc').files.length) return 'Please upload a document.';
-    if (name === 'taxConsent' || name === 'finalConsent') {
-      const cb = document.getElementById(name);
-      if (cb && !cb.checked) return 'You must agree to continue.';
-      return '';
+    // Format time to 12-hour format
+    function formatTime(time24) {
+        const [hours, minutes] = time24.split(':');
+        const h = parseInt(hours);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        return `${h12}:${minutes} ${ampm}`;
     }
-    return 'This field is required.';
-  }
-  switch (name) {
-    case 'email':
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email address.';
-      break;
-    case 'phone':
-      if (!/^[+\d][\d\s\-()]{6,}$/.test(value)) return 'Enter a valid phone number.';
-      break;
-    case 'dob': {
-      const d = new Date(value);
-      const age = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
-      if (age < 16) return 'You must be at least 16 years old.';
-      if (age > 100) return 'Please enter a valid date of birth.';
-      break;
+
+    // Show notification
+    function showNotification(type, message) {
+        const notif = document.getElementById('notification');
+        const icon = document.getElementById('notif-icon');
+        const msg = document.getElementById('notif-message');
+
+        notif.className = `fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-lg shadow-lg fade-in max-w-lg w-full mx-4 ${
+            type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+        }`;
+        icon.textContent = type === 'success' ? '✅' : '❌';
+        msg.textContent = message;
+        msg.className = `font-medium ${type === 'success' ? 'text-green-800' : 'text-red-800'}`;
+        notif.classList.remove('hidden');
+
+        setTimeout(() => hideNotification(), 6000);
     }
-    case 'startDate': {
-      const d = new Date(value);
-      const today = new Date(); today.setHours(0,0,0,0);
-      const oneYear = new Date(); oneYear.setFullYear(oneYear.getFullYear() + 1);
-      if (d < today) return 'Start date cannot be in the past.';
-      if (d > oneYear) return 'Start date cannot be more than a year from today.';
-      break;
+
+    function hideNotification() {
+        document.getElementById('notification').classList.add('hidden');
     }
-    case 'taxId':
-      if (value.replace(/\D/g, '').length < 4) return 'Enter a valid Tax ID / SSN.';
-      break;
-    case 'accountNumber':
-      if (!/^\d{6,20}$/.test(value.replace(/\s/g, ''))) return 'Account number should be 6–20 digits.';
-      break;
-  }
-  return '';
-}
 
-function showError(name, msg) {
-  const el = document.querySelector(`[data-error-for="${name}"]`);
-  const input = document.getElementById(name);
-  if (el) el.textContent = msg;
-  if (input) input.classList.toggle('error', !!msg);
-}
 
-function clearError(name) { showError(name, ''); }
+    // Validate form
+    function validateForm() {
+        let isValid = true;
+        const requiredFields = document.querySelectorAll('[required]');
 
-function validateStep(step) {
-  let valid = true;
-  for (const name of stepFields[step]) {
-    const el = document.getElementById(name);
-    if (!el) continue;
-    let value;
-    if (el.type === 'checkbox') value = el.checked ? 'on' : '';
-    else if (el.type === 'file') value = el.files.length ? el.files[0].name : '';
-    else value = el.value.trim();
-    const msg = validateField(name, value);
-    showError(name, msg);
-    if (msg) valid = false;
-  }
-  // Email duplicate state must be valid
-  if (step === 1) {
-    const emailStatus = document.getElementById('emailStatus');
-    if (emailStatus.classList.contains('invalid')) {
-      showError('email', 'This email is already registered.');
-      valid = false;
+        requiredFields.forEach(field => {
+            const errorMsg = field.parentElement.querySelector('.error-msg');
+            if (!field.value.trim()) {
+                field.classList.add('border-red-500');
+                field.classList.remove('border-slate-300');
+                if (errorMsg) errorMsg.classList.remove('hidden');
+                isValid = false;
+            } else if (field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
+                field.classList.add('border-red-500');
+                field.classList.remove('border-slate-300');
+                if (errorMsg) errorMsg.classList.remove('hidden');
+                isValid = false;
+            } else {
+                field.classList.remove('border-red-500');
+                field.classList.add('border-slate-300');
+                if (errorMsg) errorMsg.classList.add('hidden');
+            }
+        });
+
+        return isValid;
     }
-  }
-  return valid;
-}
 
-// ---- Async email validation (mocked) ----
-const TAKEN_EMAILS = ['admin@company.com', 'test@test.com', 'employee@corp.com'];
-let emailDebounce;
-document.getElementById('email').addEventListener('input', (e) => {
-  clearTimeout(emailDebounce);
-  const status = document.getElementById('emailStatus');
-  const value = e.target.value.trim();
-  if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-    status.className = 'async-status';
-    status.innerHTML = '';
-    return;
-  }
-  status.className = 'async-status checking';
-  status.innerHTML = '<span class="spinner"></span> Checking availability...';
-  emailDebounce = setTimeout(() => {
-    if (TAKEN_EMAILS.includes(value.toLowerCase())) {
-      status.className = 'async-status invalid';
-      status.innerHTML = '✗ Email already registered';
-    } else {
-      status.className = 'async-status valid';
-      status.innerHTML = '✓ Email is available';
+    // Clear validation on input
+    document.querySelectorAll('input, textarea').forEach(field => {
+        field.addEventListener('input', () => {
+            field.classList.remove('border-red-500');
+            field.classList.add('border-slate-300');
+            const errorMsg = field.parentElement.querySelector('.error-msg');
+            if (errorMsg) errorMsg.classList.add('hidden');
+        });
+    });
+
+    // Set loading state
+    function setLoading(loading) {
+        const btn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const btnIcon = document.getElementById('btnIcon');
+
+        btn.disabled = loading;
+        btnText.textContent = loading ? 'Sending Report...' : 'Submit Daily Report';
+        btnSpinner.classList.toggle('hidden', !loading);
+        btnIcon.classList.toggle('hidden', loading);
     }
-  }, 700);
-});
 
-// ---- File handling ----
-document.getElementById('idDoc').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  const out = document.getElementById('idDocName');
-  if (file) {
-    if (file.size > 5 * 1024 * 1024) {
-      showError('idDoc', 'File too large (max 5 MB).');
-      e.target.value = '';
-      out.textContent = '';
-      return;
-    }
-    out.textContent = `✓ ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-    clearError('idDoc');
-  } else {
-    out.textContent = '';
-  }
-});
 
-// ---- Real-time validation ----
-document.querySelectorAll('input, select').forEach(el => {
-  el.addEventListener('blur', () => {
-    if (el.id && labels[el.id] !== undefined || ['taxConsent', 'finalConsent'].includes(el.id)) {
-      let value;
-      if (el.type === 'checkbox') value = el.checked ? 'on' : '';
-      else if (el.type === 'file') value = el.files.length ? el.files[0].name : '';
-      else value = el.value.trim();
-      const msg = validateField(el.id, value);
-      showError(el.id, msg);
-    }
-  });
-  el.addEventListener('input', () => { if (el.classList.contains('error')) clearError(el.id); });
-});
+    // Handle form submission
+    document.getElementById('statusForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
 
-// ---- Navigation ----
-function goToStep(step) {
-  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
-  const target = document.querySelector(`.form-step[data-step="${step}"]`);
-  if (target) target.classList.add('active');
+        if (!validateForm()) {
+            showNotification('error', 'Please fill in all required fields correctly.');
+            return;
+        }
 
-  document.querySelectorAll('.stepper .step').forEach(s => {
-    const n = parseInt(s.dataset.step);
-    s.classList.toggle('active', n === step);
-    s.classList.toggle('completed', n < step);
-  });
+        setLoading(true);
 
-  const pct = step <= TOTAL_STEPS ? (step / TOTAL_STEPS) * 100 : 100;
-  document.getElementById('progressFill').style.width = pct + '%';
+        const formData = {
+            employee_name: document.getElementById('employeeName').value.trim(),
+            employee_email: document.getElementById('employeeEmail').value.trim(),
+            manager_email: document.getElementById('managerEmail').value.trim(),
+            report_date: document.getElementById('reportDate').value,
+            login_time: formatTime(document.getElementById('loginTime').value),
+            project_name: document.getElementById('projectName').value.trim(),
+            assigned_work: document.getElementById('assignedWork').value.trim(),
+            completed_work: document.getElementById('completedWork').value.trim(),
+            pending_work: document.getElementById('pendingWork').value.trim(),
+            blockers: document.getElementById('blockers').value.trim() || 'None reported',
+            cc_emails: `${document.getElementById('employeeEmail').value.trim()},${document.getElementById('managerEmail').value.trim()}`
+        };
 
-  currentStep = step;
-  if (step === 5) renderReview();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-document.querySelectorAll('[data-action="next"]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (validateStep(currentStep)) {
-      saveStep(currentStep);
-      saveDraft();
-      goToStep(currentStep + 1);
-    } else {
-      toast('Please fix the highlighted errors.', 'error');
-    }
-  });
-});
-
-document.querySelectorAll('[data-action="prev"]').forEach(btn => {
-  btn.addEventListener('click', () => goToStep(currentStep - 1));
-});
-
-document.querySelectorAll('.stepper .step').forEach(s => {
-  s.addEventListener('click', () => {
-    const target = parseInt(s.dataset.step);
-    if (target < currentStep) goToStep(target);
-  });
-});
-
-function saveStep(step) {
-  for (const name of stepFields[step].concat(step === 1 ? ['gender'] : []).concat(step === 3 ? ['manager'] : [])) {
-    const el = document.getElementById(name);
-    if (!el) continue;
-    if (el.type === 'checkbox') formData[name] = el.checked;
-    else if (el.type === 'file') formData[name] = el.files[0] ? { name: el.files[0].name, size: el.files[0].size, type: el.files[0].type } : null;
-    else formData[name] = el.value.trim();
-  }
-}
-
-// ---- Review ----
-function renderReview() {
-  // collect everything
-  for (let s = 1; s <= 4; s++) saveStep(s);
-  const container = document.getElementById('reviewContent');
-  container.innerHTML = '';
-  for (const [section, fields] of Object.entries(sectionMap)) {
-    const div = document.createElement('div');
-    div.className = 'review-section';
-    const targetStep = sectionStepMap[section];
-    div.innerHTML = `<h3>${section} <button type="button" class="edit-link" data-go="${targetStep}">Edit</button></h3>`;
-    for (const f of fields) {
-      let v = formData[f];
-      if (v == null || v === '') v = '—';
-      if (f === 'taxId' && typeof v === 'string' && v.length > 4) v = '••••' + v.slice(-4);
-      if (f === 'accountNumber' && typeof v === 'string' && v.length > 4) v = '••••' + v.slice(-4);
-      if (typeof v === 'object' && v && v.name) v = `📎 ${v.name}`;
-      const row = document.createElement('div');
-      row.className = 'review-row';
-      row.innerHTML = `<div class="label">${labels[f] || f}</div><div class="value">${escapeHtml(String(v))}</div>`;
-      div.appendChild(row);
-    }
-    container.appendChild(div);
-  }
-  container.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => goToStep(parseInt(b.dataset.go))));
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
-
-// ---- Submit ----
-document.getElementById('regForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  if (!validateStep(5)) {
-    toast('Please confirm to submit.', 'error');
-    return;
-  }
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting...';
-
-  // Mock async submission
-  setTimeout(() => {
-    const empId = 'EMP-' + Math.floor(100000 + Math.random() * 900000);
-    document.getElementById('employeeId').textContent = empId;
-    const payload = { employeeId: empId, ...formData, finalConsent: document.getElementById('finalConsent').checked, submittedAt: new Date().toISOString() };
-    document.getElementById('jsonPreview').textContent = JSON.stringify(payload, null, 2);
-    localStorage.removeItem('empRegDraft');
-    goToStep(6);
-    toast('Registration submitted successfully!', 'success');
-    btn.disabled = false;
-    btn.textContent = 'Submit Registration ✓';
-  }, 1200);
-});
-
-// ---- Reset ----
-function resetForm() {
-  document.getElementById('regForm').reset();
-  for (const k in formData) delete formData[k];
-  document.getElementById('idDocName').textContent = '';
-  document.getElementById('emailStatus').className = 'async-status';
-  document.getElementById('emailStatus').innerHTML = '';
-  document.querySelectorAll('.error-msg').forEach(e => e.textContent = '');
-  document.querySelectorAll('.error').forEach(e => e.classList.remove('error'));
-  goToStep(1);
-}
-
-// ---- Toast ----
-let toastTimer;
-function toast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ---- Draft autosave ----
-function saveDraft() {
-  try { localStorage.setItem('empRegDraft', JSON.stringify({ formData, currentStep })); } catch (_) {}
-}
-
-function loadDraft() {
-  try {
-    const raw = localStorage.getItem('empRegDraft');
-    if (!raw) return;
-    const draft = JSON.parse(raw);
-    if (!draft.formData) return;
-    for (const [k, v] of Object.entries(draft.formData)) {
-      const el = document.getElementById(k);
-      if (!el) continue;
-      if (el.type === 'checkbox') el.checked = !!v;
-      else if (el.type !== 'file' && typeof v === 'string') el.value = v;
-      formData[k] = v;
-    }
-    toast('Draft restored from your last session.', 'success');
-  } catch (_) {}
-}
-
-// Periodic autosave on input
-document.querySelectorAll('input, select').forEach(el => {
-  el.addEventListener('change', () => { saveStep(currentStep); saveDraft(); });
-});
-
-window.addEventListener('DOMContentLoaded', loadDraft);
-</script>
+        try {
+            const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formData);
+            console.log('EmailJS Response:', response);
+            showNotification('success', 'Daily status report submitted and emailed successfully!');
+            // Optionally reset form (keep employee details)
+            document.getElementById('assignedWork').value = '';
+            document.getElementById('completedWork').value = '';
+            document.getElementById('pendingWork').value = '';
+            document.getElementById('blockers').value = '';
+        } catch (error) {
+            console.error('EmailJS Error:', error);
+            showNotification('error', `Failed to send report: ${error.text || 'Please check your EmailJS configuration.'}`);
+        } finally {
+            setLoading(false);
+        }
+    });
+    </script>
 </body>
 </html>
