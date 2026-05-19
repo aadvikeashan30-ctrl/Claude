@@ -6,143 +6,227 @@
     <title>Employee Daily Status & Sprint Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef7ff',
+                            100: '#d9edff',
+                            200: '#bce0ff',
+                            300: '#8ecdff',
+                            400: '#59b0ff',
+                            500: '#338bff',
+                            600: '#1b6af5',
+                            700: '#1454e1',
+                            800: '#1745b6',
+                            900: '#193d8f',
+                            950: '#142757',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; display: inline-block; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .spinner { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.7s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-up { animation: slideUp 0.5s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .input-glow:focus {
+            box-shadow: 0 0 0 3px rgba(51, 139, 255, 0.15);
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        }
+        .accent-line {
+            background: linear-gradient(90deg, #338bff, #8b5cf6, #ec4899);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #338bff 0%, #1b6af5 50%, #1454e1 100%);
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #59b0ff 0%, #338bff 50%, #1b6af5 100%);
+        }
+        .section-icon {
+            background: linear-gradient(135deg, #338bff, #8b5cf6);
+        }
+        textarea::-webkit-scrollbar { width: 6px; }
+        textarea::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
+        textarea::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        textarea::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+<body class="bg-slate-100 min-h-screen">
 
     <!-- Notification Banner -->
-    <div id="notification" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-lg shadow-lg fade-in max-w-lg w-full mx-4">
+    <div id="notification" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-xl shadow-2xl fade-in max-w-md w-full mx-4">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <span id="notif-icon" class="text-xl"></span>
-                <span id="notif-message" class="font-medium"></span>
+                <span id="notif-icon" class="text-2xl"></span>
+                <div>
+                    <span id="notif-message" class="font-semibold block"></span>
+                    <span id="notif-sub" class="text-xs opacity-75"></span>
+                </div>
             </div>
-            <button onclick="hideNotification()" class="text-gray-500 hover:text-gray-700 ml-4">&times;</button>
+            <button onclick="hideNotification()" class="text-current opacity-50 hover:opacity-100 text-xl ml-4 font-bold">&times;</button>
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-slate-200">
-        <div class="max-w-4xl mx-auto px-4 py-5">
-            <div class="flex items-center gap-3">
-                <div class="bg-blue-600 text-white p-2 rounded-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Hero Header -->
+    <header class="hero-gradient relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-1/4 w-72 h-72 bg-purple-500 rounded-full blur-3xl"></div>
+        </div>
+        <div class="relative max-w-4xl mx-auto px-4 py-8">
+            <div class="flex items-center gap-4">
+                <div class="section-icon p-3 rounded-2xl shadow-lg shadow-blue-500/25">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-800">Daily Status & Sprint Tracker</h1>
-                    <p class="text-sm text-slate-500">Submit your daily work report</p>
+                    <h1 class="text-3xl font-bold text-white tracking-tight">Daily Status & Sprint Tracker</h1>
+                    <p class="text-sm text-slate-300 mt-1">Submit your daily work report efficiently</p>
                 </div>
             </div>
         </div>
+        <div class="accent-line h-1"></div>
     </header>
 
 
     <!-- Main Form -->
-    <main class="max-w-4xl mx-auto px-4 py-8">
-        <form id="statusForm" novalidate class="space-y-8">
+    <main class="max-w-4xl mx-auto px-4 py-10 -mt-2">
+        <form id="statusForm" novalidate class="space-y-6">
 
             <!-- Section 1: Employee Details -->
-            <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <section class="glass-card rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-200/60 p-7 slide-up">
+                <h2 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl section-icon flex items-center justify-center shadow-md shadow-blue-500/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </span>
                     Employee Details
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label for="employeeName" class="block text-sm font-medium text-slate-600 mb-1">Employee Name <span class="text-red-500">*</span></label>
+                        <label for="employeeName" class="block text-sm font-semibold text-slate-600 mb-1.5">Employee Name <span class="text-red-500">*</span></label>
                         <input type="text" id="employeeName" name="employeeName" required placeholder="Enter your full name"
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-                        <p class="text-red-500 text-xs mt-1 hidden error-msg">Employee name is required</p>
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white">
+                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">Employee name is required</p>
                     </div>
                     <div>
-                        <label for="employeeEmail" class="block text-sm font-medium text-slate-600 mb-1">Employee Email <span class="text-red-500">*</span></label>
+                        <label for="employeeEmail" class="block text-sm font-semibold text-slate-600 mb-1.5">Employee Email <span class="text-red-500">*</span></label>
                         <input type="email" id="employeeEmail" name="employeeEmail" required placeholder="you@company.com"
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-                        <p class="text-red-500 text-xs mt-1 hidden error-msg">Valid email is required</p>
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white">
+                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">Valid email is required</p>
                     </div>
                     <div class="md:col-span-2">
-                        <label for="managerEmail" class="block text-sm font-medium text-slate-600 mb-1">Direct Manager's Email <span class="text-red-500">*</span></label>
+                        <label for="managerEmail" class="block text-sm font-semibold text-slate-600 mb-1.5">Direct Manager's Email <span class="text-red-500">*</span></label>
                         <input type="email" id="managerEmail" name="managerEmail" required placeholder="manager@company.com"
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-                        <p class="text-red-500 text-xs mt-1 hidden error-msg">Valid manager email is required</p>
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white">
+                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">Valid manager email is required</p>
                     </div>
                 </div>
             </section>
 
-
             <!-- Section 2: Time & Project Tracking -->
-            <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <section class="glass-card rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-200/60 p-7 slide-up" style="animation-delay: 0.1s">
+                <h2 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl section-icon flex items-center justify-center shadow-md shadow-blue-500/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </span>
                     Time & Project Tracking
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div>
-                        <label for="reportDate" class="block text-sm font-medium text-slate-600 mb-1">Date</label>
+                        <label for="reportDate" class="block text-sm font-semibold text-slate-600 mb-1.5">Date</label>
                         <input type="date" id="reportDate" name="reportDate" readonly
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed">
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 cursor-not-allowed font-medium">
                     </div>
                     <div>
-                        <label for="loginTime" class="block text-sm font-medium text-slate-600 mb-1">Login / Shift Start Time <span class="text-red-500">*</span></label>
+                        <label for="loginTime" class="block text-sm font-semibold text-slate-600 mb-1.5">Login / Shift Start <span class="text-red-500">*</span></label>
                         <input type="time" id="loginTime" name="loginTime" required
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-                        <p class="text-red-500 text-xs mt-1 hidden error-msg">Login time is required</p>
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white">
+                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">Login time is required</p>
                     </div>
                     <div>
-                        <label for="projectName" class="block text-sm font-medium text-slate-600 mb-1">Project Name / Sprint ID <span class="text-red-500">*</span></label>
-                        <input type="text" id="projectName" name="projectName" required placeholder="e.g., Sprint-24 or Project Alpha"
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
-                        <p class="text-red-500 text-xs mt-1 hidden error-msg">Project name is required</p>
+                        <label for="projectName" class="block text-sm font-semibold text-slate-600 mb-1.5">Project / Sprint ID <span class="text-red-500">*</span></label>
+                        <input type="text" id="projectName" name="projectName" required placeholder="e.g., Sprint-24"
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white">
+                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">Project name is required</p>
                     </div>
                 </div>
             </section>
 
-
             <!-- Section 3: Work Status -->
-            <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                <h2 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <section class="glass-card rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-200/60 p-7 slide-up" style="animation-delay: 0.2s">
+                <h2 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-xl section-icon flex items-center justify-center shadow-md shadow-blue-500/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </span>
                     Work Status
                 </h2>
                 <div class="space-y-5">
                     <div>
-                        <label for="assignedWork" class="block text-sm font-medium text-slate-600 mb-1">Assigned Work for Today <span class="text-red-500">*</span></label>
+                        <label for="assignedWork" class="block text-sm font-semibold text-slate-600 mb-1.5">
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                Assigned Work for Today <span class="text-red-500">*</span>
+                            </span>
+                        </label>
                         <textarea id="assignedWork" name="assignedWork" required rows="3" placeholder="Describe the tasks assigned to you for today..."
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-y"></textarea>
-                        <p class="text-red-500 text-xs mt-1 hidden error-msg">This field is required</p>
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white resize-y"></textarea>
+                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">This field is required</p>
                     </div>
                     <div>
-                        <label for="completedWork" class="block text-sm font-medium text-slate-600 mb-1">Completed Work & Hours Spent <span class="text-red-500">*</span></label>
+                        <label for="completedWork" class="block text-sm font-semibold text-slate-600 mb-1.5">
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                Completed Work & Hours Spent <span class="text-red-500">*</span>
+                            </span>
+                        </label>
                         <textarea id="completedWork" name="completedWork" required rows="3" placeholder="List completed tasks with hours spent on each..."
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-y"></textarea>
-                        <p class="text-red-500 text-xs mt-1 hidden error-msg">This field is required</p>
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white resize-y"></textarea>
+                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">This field is required</p>
                     </div>
                     <div>
-                        <label for="pendingWork" class="block text-sm font-medium text-slate-600 mb-1">Pending Work / Carryover Tasks <span class="text-red-500">*</span></label>
+                        <label for="pendingWork" class="block text-sm font-semibold text-slate-600 mb-1.5">
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                Pending Work / Carryover Tasks <span class="text-red-500">*</span>
+                            </span>
+                        </label>
                         <textarea id="pendingWork" name="pendingWork" required rows="3" placeholder="Tasks that are pending or carried over to the next day..."
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-y"></textarea>
-                        <p class="text-red-500 text-xs mt-1 hidden error-msg">This field is required</p>
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white resize-y"></textarea>
+                        <p class="text-red-500 text-xs mt-1.5 hidden error-msg">This field is required</p>
                     </div>
                     <div>
-                        <label for="blockers" class="block text-sm font-medium text-slate-600 mb-1">Blockers / Difficulties Faced <span class="text-slate-400">(Optional)</span></label>
+                        <label for="blockers" class="block text-sm font-semibold text-slate-600 mb-1.5">
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                                Blockers / Difficulties Faced <span class="text-slate-400 font-normal">(Optional)</span>
+                            </span>
+                        </label>
                         <textarea id="blockers" name="blockers" rows="3" placeholder="Any blockers, dependencies, or challenges faced..."
-                            class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-y"></textarea>
+                            class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all duration-200 input-glow bg-white resize-y"></textarea>
                     </div>
                 </div>
             </section>
 
-
             <!-- Submit Button -->
-            <div class="flex justify-end">
+            <div class="flex justify-end pt-2">
                 <button type="submit" id="submitBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                    class="btn-gradient text-white font-bold px-10 py-4 rounded-xl shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 transition-all duration-300 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transform hover:-translate-y-0.5 active:translate-y-0">
                     <span id="btnText">Submit Daily Report</span>
                     <span id="btnSpinner" class="hidden"><span class="spinner"></span></span>
                     <svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
@@ -153,18 +237,21 @@
     </main>
 
     <!-- Footer -->
-    <footer class="text-center py-6 text-sm text-slate-400">
-        <p>&copy; 2026 Employee Daily Status Tracker. All rights reserved.</p>
+    <footer class="border-t border-slate-200 mt-8">
+        <div class="max-w-4xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p class="text-sm text-slate-400">&copy; 2026 Employee Daily Status Tracker. All rights reserved.</p>
+            <p class="text-xs text-slate-300">Powered by AI Code Origin</p>
+        </div>
     </footer>
 
 
     <script>
     // ============================================================
-    // EMAILJS CONFIGURATION - INSERT YOUR CREDENTIALS HERE
+    // EMAILJS CONFIGURATION
     // ============================================================
-    const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY_HERE';   // Step 1: Replace with your EmailJS Public Key
-    const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID_HERE';  // Step 2: Replace with your EmailJS Service ID
-    const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID_HERE'; // Step 3: Replace with your EmailJS Template ID
+    const EMAILJS_PUBLIC_KEY = 'gzt0AvmB6crin7QwJ';
+    const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID_HERE';  // Replace after creating service in EmailJS dashboard
+    const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID_HERE'; // Replace after creating template in EmailJS dashboard
     // ============================================================
 
     // Initialize EmailJS
@@ -189,13 +276,18 @@
         const notif = document.getElementById('notification');
         const icon = document.getElementById('notif-icon');
         const msg = document.getElementById('notif-message');
+        const sub = document.getElementById('notif-sub');
 
-        notif.className = `fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-lg shadow-lg fade-in max-w-lg w-full mx-4 ${
-            type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+        notif.className = `fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-xl shadow-2xl fade-in max-w-md w-full mx-4 ${
+            type === 'success' 
+                ? 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200' 
+                : 'bg-gradient-to-r from-red-50 to-rose-50 border border-red-200'
         }`;
         icon.textContent = type === 'success' ? '✅' : '❌';
         msg.textContent = message;
-        msg.className = `font-medium ${type === 'success' ? 'text-green-800' : 'text-red-800'}`;
+        msg.className = `font-semibold block ${type === 'success' ? 'text-green-800' : 'text-red-800'}`;
+        sub.textContent = type === 'success' ? 'Email sent to all recipients' : 'Please try again';
+        sub.className = `text-xs ${type === 'success' ? 'text-green-600' : 'text-red-600'}`;
         notif.classList.remove('hidden');
 
         setTimeout(() => hideNotification(), 6000);
@@ -205,7 +297,6 @@
         document.getElementById('notification').classList.add('hidden');
     }
 
-
     // Validate form
     function validateForm() {
         let isValid = true;
@@ -214,18 +305,18 @@
         requiredFields.forEach(field => {
             const errorMsg = field.parentElement.querySelector('.error-msg');
             if (!field.value.trim()) {
-                field.classList.add('border-red-500');
-                field.classList.remove('border-slate-300');
+                field.classList.add('border-red-300', 'bg-red-50/50');
+                field.classList.remove('border-slate-200', 'bg-white');
                 if (errorMsg) errorMsg.classList.remove('hidden');
                 isValid = false;
             } else if (field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
-                field.classList.add('border-red-500');
-                field.classList.remove('border-slate-300');
+                field.classList.add('border-red-300', 'bg-red-50/50');
+                field.classList.remove('border-slate-200', 'bg-white');
                 if (errorMsg) errorMsg.classList.remove('hidden');
                 isValid = false;
             } else {
-                field.classList.remove('border-red-500');
-                field.classList.add('border-slate-300');
+                field.classList.remove('border-red-300', 'bg-red-50/50');
+                field.classList.add('border-slate-200', 'bg-white');
                 if (errorMsg) errorMsg.classList.add('hidden');
             }
         });
@@ -236,8 +327,8 @@
     // Clear validation on input
     document.querySelectorAll('input, textarea').forEach(field => {
         field.addEventListener('input', () => {
-            field.classList.remove('border-red-500');
-            field.classList.add('border-slate-300');
+            field.classList.remove('border-red-300', 'bg-red-50/50');
+            field.classList.add('border-slate-200', 'bg-white');
             const errorMsg = field.parentElement.querySelector('.error-msg');
             if (errorMsg) errorMsg.classList.add('hidden');
         });
@@ -255,7 +346,6 @@
         btnSpinner.classList.toggle('hidden', !loading);
         btnIcon.classList.toggle('hidden', loading);
     }
-
 
     // Handle form submission
     document.getElementById('statusForm').addEventListener('submit', async function(e) {
@@ -285,15 +375,14 @@
         try {
             const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formData);
             console.log('EmailJS Response:', response);
-            showNotification('success', 'Daily status report submitted and emailed successfully!');
-            // Optionally reset form (keep employee details)
+            showNotification('success', 'Daily status report sent successfully!');
             document.getElementById('assignedWork').value = '';
             document.getElementById('completedWork').value = '';
             document.getElementById('pendingWork').value = '';
             document.getElementById('blockers').value = '';
         } catch (error) {
             console.error('EmailJS Error:', error);
-            showNotification('error', `Failed to send report: ${error.text || 'Please check your EmailJS configuration.'}`);
+            showNotification('error', `Failed to send: ${error.text || 'Check your EmailJS configuration.'}`);
         } finally {
             setLoading(false);
         }
