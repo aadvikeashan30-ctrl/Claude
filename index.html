@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --bg-primary: #0a0a12;
@@ -21,14 +23,25 @@
             --border-color: rgba(212, 160, 23, 0.15);
             --glass-bg: rgba(15, 15, 30, 0.6);
             --glass-border: rgba(212, 160, 23, 0.1);
-            --status-assigned: #4a90ff;
-            --status-completed: #00e5ff;
-            --status-pending: #d4a017;
-            --status-blockers: #ff4057;
+            --blue: #4a90ff;
+            --cyan: #00e5ff;
+            --red: #ff4057;
+            --green: #00e676;
             --shadow-gold: 0 0 30px rgba(212, 160, 23, 0.15);
             --radius-lg: 16px;
             --radius-md: 12px;
             --radius-sm: 8px;
+        }
+        [data-theme="light"] {
+            --bg-primary: #f5f5fa;
+            --bg-secondary: #ffffff;
+            --bg-card: rgba(255,255,255,0.9);
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --text-muted: #8888a0;
+            --border-color: rgba(212, 160, 23, 0.25);
+            --glass-bg: rgba(255,255,255,0.8);
+            --glass-border: rgba(212, 160, 23, 0.2);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -39,6 +52,7 @@
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
@@ -47,322 +61,190 @@
 
 
         /* Animated Background */
-        .bg-animated {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none; overflow: hidden;
-        }
+        .bg-animated { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
         .bg-animated::before {
-            content: '';
-            position: absolute; top: -50%; left: -50%;
-            width: 200%; height: 200%;
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: radial-gradient(ellipse at 20% 50%, rgba(212,160,23,0.03) 0%, transparent 50%),
                         radial-gradient(ellipse at 80% 20%, rgba(74,144,255,0.02) 0%, transparent 50%),
                         radial-gradient(ellipse at 50% 80%, rgba(212,160,23,0.02) 0%, transparent 50%);
             animation: bgShift 20s ease-in-out infinite;
         }
-        @keyframes bgShift {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(-2%, 1%) rotate(1deg); }
-            66% { transform: translate(1%, -1%) rotate(-0.5deg); }
-        }
-        .floating-orb {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4;
-            animation: floatOrb 15s ease-in-out infinite;
-        }
-        .floating-orb:nth-child(1) {
-            width: 300px; height: 300px; top: 10%; left: 10%;
-            background: rgba(212, 160, 23, 0.08);
-            animation-delay: 0s; animation-duration: 18s;
-        }
-        .floating-orb:nth-child(2) {
-            width: 200px; height: 200px; top: 60%; right: 10%;
-            background: rgba(74, 144, 255, 0.06);
-            animation-delay: -5s; animation-duration: 22s;
-        }
-        .floating-orb:nth-child(3) {
-            width: 250px; height: 250px; bottom: 10%; left: 40%;
-            background: rgba(212, 160, 23, 0.05);
-            animation-delay: -10s; animation-duration: 20s;
-        }
-        @keyframes floatOrb {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(30px, -20px) scale(1.05); }
-            50% { transform: translate(-20px, 30px) scale(0.95); }
-            75% { transform: translate(20px, 20px) scale(1.02); }
-        }
-
+        @keyframes bgShift { 0%,100%{transform:translate(0,0) rotate(0deg)} 33%{transform:translate(-2%,1%) rotate(1deg)} 66%{transform:translate(1%,-1%) rotate(-0.5deg)} }
+        .floating-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: floatOrb 15s ease-in-out infinite; }
+        .floating-orb:nth-child(1) { width: 300px; height: 300px; top: 10%; left: 10%; background: rgba(212,160,23,0.08); animation-duration: 18s; }
+        .floating-orb:nth-child(2) { width: 200px; height: 200px; top: 60%; right: 10%; background: rgba(74,144,255,0.06); animation-delay: -5s; animation-duration: 22s; }
+        .floating-orb:nth-child(3) { width: 250px; height: 250px; bottom: 10%; left: 40%; background: rgba(212,160,23,0.05); animation-delay: -10s; animation-duration: 20s; }
+        @keyframes floatOrb { 0%,100%{transform:translate(0,0) scale(1)} 25%{transform:translate(30px,-20px) scale(1.05)} 50%{transform:translate(-20px,30px) scale(0.95)} 75%{transform:translate(20px,20px) scale(1.02)} }
 
         /* Navbar */
         .navbar-custom {
-            background: rgba(10, 10, 18, 0.85);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 0.8rem 0; transition: all 0.3s ease;
-            position: sticky; top: 0; z-index: 1000;
+            background: rgba(10,10,18,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border); padding: 0.8rem 0;
+            transition: all 0.3s ease; position: sticky; top: 0; z-index: 1000;
         }
-        .navbar-custom.scrolled {
-            box-shadow: 0 4px 30px rgba(0,0,0,0.5), 0 0 20px rgba(212,160,23,0.05);
-            border-bottom-color: rgba(212, 160, 23, 0.2);
-        }
+        [data-theme="light"] .navbar-custom { background: rgba(255,255,255,0.9); }
+        .navbar-custom.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.3), 0 0 20px rgba(212,160,23,0.05); }
         .logo-box {
-            width: 40px; height: 40px; border-radius: 10px;
-            background: var(--gold-gradient);
+            width: 40px; height: 40px; border-radius: 10px; background: var(--gold-gradient);
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700; font-size: 1rem; color: var(--bg-primary);
+            font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1rem; color: #0a0a12;
             position: relative; overflow: hidden;
         }
         .logo-box::after {
-            content: '';
-            position: absolute; top: -50%; left: -50%;
-            width: 200%; height: 200%;
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
             background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
             animation: logoShine 3s ease-in-out infinite;
         }
-        @keyframes logoShine {
-            0%, 100% { transform: translateX(-100%) rotate(45deg); }
-            50% { transform: translateX(100%) rotate(45deg); }
-        }
-        .brand-text {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.3rem; font-weight: 700; color: var(--text-primary);
-            margin-left: 10px;
-        }
+        @keyframes logoShine { 0%,100%{transform:translateX(-100%) rotate(45deg)} 50%{transform:translateX(100%) rotate(45deg)} }
+        .brand-text { font-family:'Space Grotesk',sans-serif; font-size:1.3rem; font-weight:700; color:var(--text-primary); margin-left:10px; }
         .brand-text .gold { color: var(--gold-primary); }
-        .brand-tagline {
-            font-size: 0.65rem; color: var(--text-muted);
-            letter-spacing: 2px; text-transform: uppercase;
-            margin-left: 10px; margin-top: -2px;
-        }
-        .system-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2);
-            border-radius: 20px; padding: 4px 12px;
-            font-size: 0.7rem; color: #00e5ff; font-weight: 500;
-        }
-        .system-badge .pulse-dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: #00e5ff; animation: pulse 2s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,255,0.4); }
-            50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(0,229,255,0); }
-        }
+        .brand-tagline { font-size:0.65rem; color:var(--text-muted); letter-spacing:2px; text-transform:uppercase; margin-left:10px; margin-top:-2px; }
+        .system-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.2); border-radius:20px; padding:4px 12px; font-size:0.7rem; color:#00e5ff; font-weight:500; }
+        .system-badge .pulse-dot { width:6px; height:6px; border-radius:50%; background:#00e5ff; animation:pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,229,255,0.4)} 50%{opacity:0.7;box-shadow:0 0 0 6px rgba(0,229,255,0)} }
+        .theme-toggle { background:none; border:1px solid var(--glass-border); border-radius:8px; padding:6px 10px; color:var(--text-secondary); cursor:pointer; transition:all 0.3s ease; }
+        .theme-toggle:hover { border-color:var(--gold-primary); color:var(--gold-primary); }
 
 
-        /* Hero Section */
-        .hero-section {
-            text-align: center; padding: 3rem 1rem 2rem;
-            position: relative; z-index: 1;
-        }
-        .hero-section h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            font-weight: 700; margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--text-primary), var(--gold-light));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero-section p {
-            color: var(--text-secondary); font-size: clamp(0.85rem, 2vw, 1rem);
-            max-width: 500px; margin: 0 auto;
-        }
+        /* Hero */
+        .hero-section { text-align:center; padding:3rem 1rem 2rem; position:relative; z-index:1; }
+        .hero-section h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.5rem,4vw,2.5rem); font-weight:700; margin-bottom:0.5rem; background:linear-gradient(135deg,var(--text-primary),var(--gold-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .hero-section p { color:var(--text-secondary); font-size:clamp(0.85rem,2vw,1rem); max-width:500px; margin:0 auto; }
 
         /* Glass Card */
         .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02);
-            position: relative; z-index: 1;
-            animation: slideUp 0.8s ease forwards;
-            opacity: 0; transform: translateY(30px);
+            background:var(--glass-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border:1px solid var(--glass-border); border-radius:var(--radius-lg); padding:2rem;
+            box-shadow:0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.02);
+            position:relative; z-index:1; opacity:0; transform:translateY(30px); transition:all 0.6s ease;
         }
-        .glass-card.visible { opacity: 1; transform: translateY(0); }
-        @keyframes slideUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .card-delay-1 { animation-delay: 0.1s; }
-        .card-delay-2 { animation-delay: 0.25s; }
-        .card-delay-3 { animation-delay: 0.4s; }
-        .card-delay-4 { animation-delay: 0.55s; }
-
-        .section-header {
-            display: flex; align-items: center; gap: 10px;
-            margin-bottom: 1.5rem; padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .section-header .icon-circle {
-            width: 36px; height: 36px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.85rem;
-        }
-        .section-header h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.1rem; font-weight: 600; margin: 0;
-        }
-        .icon-blue { background: rgba(74,144,255,0.1); color: var(--status-assigned); }
-        .icon-cyan { background: rgba(0,229,255,0.1); color: var(--status-completed); }
-        .icon-gold { background: rgba(212,160,23,0.1); color: var(--status-pending); }
-        .icon-red { background: rgba(255,64,87,0.1); color: var(--status-blockers); }
-
+        .glass-card.visible { opacity:1; transform:translateY(0); }
+        .section-header { display:flex; align-items:center; gap:10px; margin-bottom:1.5rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-color); }
+        .section-header .icon-circle { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.85rem; }
+        .section-header h3 { font-family:'Space Grotesk',sans-serif; font-size:1.1rem; font-weight:600; margin:0; }
+        .icon-blue { background:rgba(74,144,255,0.1); color:var(--blue); }
+        .icon-cyan { background:rgba(0,229,255,0.1); color:var(--cyan); }
+        .icon-gold { background:rgba(212,160,23,0.1); color:var(--gold-primary); }
+        .icon-red { background:rgba(255,64,87,0.1); color:var(--red); }
+        .icon-green { background:rgba(0,230,118,0.1); color:var(--green); }
+        .icon-purple { background:rgba(156,39,176,0.1); color:#ce93d8; }
 
         /* Form Controls */
-        .form-label-custom {
-            font-size: 0.8rem; font-weight: 500; color: var(--text-secondary);
-            margin-bottom: 0.4rem; letter-spacing: 0.3px;
-        }
-        .form-label-custom .required { color: var(--status-blockers); margin-left: 2px; }
+        .form-label-custom { font-size:0.8rem; font-weight:500; color:var(--text-secondary); margin-bottom:0.4rem; letter-spacing:0.3px; display:block; }
+        .form-label-custom .required { color:var(--red); margin-left:2px; }
         .form-control-custom {
-            background: rgba(10, 10, 18, 0.8);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            padding: 0.7rem 1rem;
-            font-size: 0.9rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background:rgba(10,10,18,0.8); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm);
+            color:var(--text-primary); padding:0.7rem 1rem; font-size:0.9rem; width:100%;
+            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
         }
-        .form-control-custom:focus {
-            background: rgba(10, 10, 18, 0.95);
-            border-color: var(--gold-primary);
-            box-shadow: 0 0 0 3px rgba(212,160,23,0.1), 0 0 20px rgba(212,160,23,0.05);
-            color: var(--text-primary);
-            outline: none;
-        }
-        .form-control-custom::placeholder { color: var(--text-muted); }
-        .form-control-custom:read-only {
-            background: rgba(10, 10, 18, 0.5);
-            border-color: rgba(255,255,255,0.03);
-            color: var(--text-muted);
-        }
-        textarea.form-control-custom { min-height: 100px; resize: vertical; }
-        .error-message {
-            font-size: 0.72rem; color: var(--status-blockers);
-            margin-top: 0.3rem; display: none;
-            animation: errorIn 0.3s ease;
-        }
-        .error-message.show { display: block; }
-        @keyframes errorIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .field-group { margin-bottom: 1.2rem; }
-
-        /* Status Dots */
-        .status-dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            display: inline-block; margin-right: 6px;
-        }
-        .status-dot.blue { background: var(--status-assigned); box-shadow: 0 0 8px var(--status-assigned); }
-        .status-dot.cyan { background: var(--status-completed); box-shadow: 0 0 8px var(--status-completed); }
-        .status-dot.gold { background: var(--status-pending); box-shadow: 0 0 8px var(--status-pending); }
-        .status-dot.red { background: var(--status-blockers); box-shadow: 0 0 8px var(--status-blockers); }
+        [data-theme="light"] .form-control-custom { background:rgba(245,245,250,0.9); border-color:rgba(0,0,0,0.1); color:#1a1a2e; }
+        .form-control-custom:focus { background:rgba(10,10,18,0.95); border-color:var(--gold-primary); box-shadow:0 0 0 3px rgba(212,160,23,0.1),0 0 20px rgba(212,160,23,0.05); color:var(--text-primary); outline:none; }
+        [data-theme="light"] .form-control-custom:focus { background:#fff; }
+        .form-control-custom::placeholder { color:var(--text-muted); }
+        .form-control-custom:read-only { background:rgba(10,10,18,0.5); border-color:rgba(255,255,255,0.03); color:var(--text-muted); }
+        textarea.form-control-custom { min-height:100px; resize:vertical; }
+        select.form-control-custom { cursor:pointer; }
+        .field-group { margin-bottom:1.2rem; }
+        .error-message { font-size:0.72rem; color:var(--red); margin-top:0.3rem; display:none; animation:errorIn 0.3s ease; }
+        .error-message.show { display:block; }
+        @keyframes errorIn { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:translateY(0)} }
+        .char-counter { font-size:0.7rem; color:var(--text-muted); text-align:right; margin-top:0.3rem; }
+        .char-counter.over-limit { color:var(--red); font-weight:600; }
 
 
-        /* Submit Button */
+        /* Range Slider */
+        .range-slider { -webkit-appearance:none; width:100%; height:6px; border-radius:3px; background:rgba(255,255,255,0.1); outline:none; cursor:pointer; }
+        .range-slider::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--gold-gradient); box-shadow:0 0 10px rgba(212,160,23,0.3); cursor:pointer; }
+        .range-slider::-moz-range-thumb { width:20px; height:20px; border-radius:50%; background:var(--gold-primary); border:none; cursor:pointer; }
+        .range-value { font-family:'Space Grotesk',sans-serif; font-size:1.5rem; font-weight:700; color:var(--gold-primary); }
+
+        /* Progress Bar */
+        .progress-custom { height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden; }
+        .progress-custom .progress-bar-custom { height:100%; background:var(--gold-gradient); border-radius:4px; transition:width 0.5s ease; }
+
+        /* Buttons */
         .btn-submit {
-            background: var(--gold-gradient);
-            border: none; border-radius: var(--radius-sm);
-            color: var(--bg-primary); font-weight: 700;
-            font-size: 1rem; padding: 0.85rem 2.5rem;
-            position: relative; overflow: hidden;
-            transition: all 0.3s ease;
-            letter-spacing: 0.5px;
+            background:var(--gold-gradient); border:none; border-radius:var(--radius-sm);
+            color:#0a0a12; font-weight:700; font-size:1rem; padding:0.85rem 2.5rem;
+            position:relative; overflow:hidden; transition:all 0.3s ease; letter-spacing:0.5px;
         }
-        .btn-submit::before {
-            content: '';
-            position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.6s ease;
-        }
-        .btn-submit:hover::before { left: 100%; }
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(212,160,23,0.3);
-            color: var(--bg-primary);
-        }
-        .btn-submit:active { transform: translateY(0); }
-        .btn-submit:disabled {
-            opacity: 0.7; cursor: not-allowed;
-            transform: none !important;
-        }
-        .btn-submit .spinner-border {
-            width: 1rem; height: 1rem; border-width: 2px;
-        }
-        .security-note {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 0.72rem; color: var(--text-muted);
-            margin-top: 1rem;
-        }
-        .security-note i { color: var(--gold-primary); }
+        .btn-submit::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent); transition:left 0.6s ease; }
+        .btn-submit:hover::before { left:100%; }
+        .btn-submit:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(212,160,23,0.3); color:#0a0a12; }
+        .btn-submit:active { transform:translateY(0); }
+        .btn-submit:disabled { opacity:0.7; cursor:not-allowed; transform:none !important; }
+        .btn-glass { background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); border-radius:var(--radius-sm); color:var(--text-secondary); padding:0.6rem 1.2rem; font-size:0.85rem; transition:all 0.3s ease; cursor:pointer; }
+        .btn-glass:hover { border-color:var(--gold-primary); color:var(--gold-primary); background:rgba(212,160,23,0.05); }
+        .btn-danger-glass { background:rgba(255,64,87,0.05); border:1px solid rgba(255,64,87,0.2); color:var(--red); }
+        .btn-danger-glass:hover { background:rgba(255,64,87,0.1); border-color:var(--red); color:var(--red); }
+        .security-note { display:flex; align-items:center; gap:8px; font-size:0.72rem; color:var(--text-muted); margin-top:1rem; }
+        .security-note i { color:var(--gold-primary); }
 
         /* Toast */
-        .toast-container {
-            position: fixed; top: 20px; right: 20px;
-            z-index: 9999;
-        }
+        .toast-container { position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; }
         .toast-custom {
-            background: rgba(15, 15, 26, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: 1rem 1.5rem;
-            min-width: 300px; max-width: 400px;
-            display: flex; align-items: center; gap: 12px;
-            transform: translateX(120%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            background:rgba(15,15,26,0.95); backdrop-filter:blur(20px); border:1px solid var(--glass-border);
+            border-radius:var(--radius-md); padding:1rem 1.5rem; min-width:300px; max-width:400px;
+            display:flex; align-items:center; gap:12px; transform:translateX(120%);
+            transition:transform 0.4s cubic-bezier(0.4,0,0.2,1); box-shadow:0 10px 40px rgba(0,0,0,0.5);
         }
-        .toast-custom.show { transform: translateX(0); }
-        .toast-custom.success { border-left: 3px solid #00e676; }
-        .toast-custom.error { border-left: 3px solid var(--status-blockers); }
-        .toast-custom .toast-icon { font-size: 1.2rem; }
-        .toast-custom.success .toast-icon { color: #00e676; }
-        .toast-custom.error .toast-icon { color: var(--status-blockers); }
-        .toast-custom .toast-msg { font-size: 0.85rem; color: var(--text-primary); }
+        [data-theme="light"] .toast-custom { background:rgba(255,255,255,0.95); }
+        .toast-custom.show { transform:translateX(0); }
+        .toast-custom.success { border-left:3px solid var(--green); }
+        .toast-custom.error { border-left:3px solid var(--red); }
+        .toast-custom.info { border-left:3px solid var(--blue); }
+        .toast-custom .toast-icon { font-size:1.2rem; }
+        .toast-custom.success .toast-icon { color:var(--green); }
+        .toast-custom.error .toast-icon { color:var(--red); }
+        .toast-custom.info .toast-icon { color:var(--blue); }
+        .toast-custom .toast-msg { font-size:0.85rem; color:var(--text-primary); }
 
+        /* Scroll to Top */
+        .scroll-top-btn { position:fixed; bottom:30px; right:30px; width:44px; height:44px; border-radius:50%; background:var(--gold-gradient); border:none; color:#0a0a12; font-size:1.1rem; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; visibility:hidden; transform:translateY(20px); transition:all 0.3s ease; z-index:999; box-shadow:0 4px 15px rgba(212,160,23,0.3); }
+        .scroll-top-btn.visible { opacity:1; visibility:visible; transform:translateY(0); }
+        .scroll-top-btn:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(212,160,23,0.4); }
+
+        /* Draft Indicator */
+        .draft-indicator { position:fixed; bottom:20px; left:20px; background:rgba(15,15,26,0.9); border:1px solid var(--glass-border); border-radius:20px; padding:6px 14px; font-size:0.7rem; color:var(--green); opacity:0; transition:opacity 0.3s ease; z-index:999; }
+        .draft-indicator.show { opacity:1; }
 
         /* Footer */
-        .footer-section {
-            text-align: center; padding: 2.5rem 1rem;
-            border-top: 1px solid var(--border-color);
-            margin-top: 3rem; position: relative; z-index: 1;
-        }
-        .footer-section .footer-brand {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600; font-size: 1rem; color: var(--text-secondary);
-            margin-bottom: 0.3rem;
-        }
-        .footer-section .footer-brand .gold { color: var(--gold-primary); }
-        .footer-section .footer-copy {
-            font-size: 0.72rem; color: var(--text-muted);
-        }
+        .footer-section { text-align:center; padding:2.5rem 1rem; border-top:1px solid var(--border-color); margin-top:3rem; position:relative; z-index:1; }
+        .footer-section .footer-brand { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1rem; color:var(--text-secondary); margin-bottom:0.3rem; }
+        .footer-section .footer-brand .gold { color:var(--gold-primary); }
+        .footer-section .footer-copy { font-size:0.72rem; color:var(--text-muted); }
+
+        /* Modal */
+        .modal-custom .modal-content { background:var(--bg-secondary); border:1px solid var(--glass-border); border-radius:var(--radius-lg); color:var(--text-primary); }
+        .modal-custom .modal-header { border-bottom:1px solid var(--border-color); }
+        .modal-custom .modal-footer { border-top:1px solid var(--border-color); }
+        .modal-custom .btn-close { filter:invert(1); }
+        [data-theme="light"] .modal-custom .btn-close { filter:none; }
+        .preview-section { margin-bottom:1rem; padding:1rem; background:rgba(255,255,255,0.03); border-radius:var(--radius-sm); border-left:3px solid var(--gold-primary); }
+        .preview-section h6 { color:var(--gold-primary); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem; }
+        .preview-section p { color:var(--text-secondary); font-size:0.85rem; margin:0; white-space:pre-wrap; }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .glass-card { padding: 1.5rem; margin-left: 0.5rem; margin-right: 0.5rem; }
-            .hero-section { padding: 2rem 1rem 1.5rem; }
-            .navbar-custom { padding: 0.6rem 0; }
-            .brand-text { font-size: 1.1rem; }
-            .brand-tagline { display: none; }
-            .toast-custom { min-width: unset; max-width: 90vw; right: 5vw; }
-            .toast-container { right: 10px; left: 10px; }
+        @media(max-width:768px) {
+            .glass-card { padding:1.5rem; }
+            .hero-section { padding:2rem 1rem 1.5rem; }
+            .brand-tagline { display:none; }
+            .toast-custom { min-width:unset; max-width:90vw; }
+            .toast-container { right:10px; left:10px; }
         }
-        @media (max-width: 576px) {
-            .glass-card { padding: 1.2rem; border-radius: var(--radius-md); }
-            .section-header h3 { font-size: 0.95rem; }
-            .btn-submit { width: 100%; padding: 0.8rem; }
-            .system-badge { font-size: 0.6rem; padding: 3px 8px; }
+        @media(max-width:576px) {
+            .glass-card { padding:1.2rem; border-radius:var(--radius-md); }
+            .section-header h3 { font-size:0.95rem; }
+            .btn-submit { width:100%; padding:0.8rem; }
+            .system-badge { font-size:0.6rem; padding:3px 8px; }
+            .scroll-top-btn { bottom:20px; right:20px; width:38px; height:38px; }
         }
-        @media (max-width: 320px) {
-            .hero-section h1 { font-size: 1.3rem; }
-            .glass-card { padding: 1rem; }
-        }
+        @media(max-width:320px) { .hero-section h1 { font-size:1.3rem; } .glass-card { padding:1rem; } }
     </style>
 </head>
 <body>
+
+
     <!-- Animated Background -->
     <div class="bg-animated">
         <div class="floating-orb"></div>
@@ -370,14 +252,14 @@
         <div class="floating-orb"></div>
     </div>
 
-
     <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer">
-        <div class="toast-custom" id="toastNotification">
-            <i class="toast-icon"></i>
-            <span class="toast-msg" id="toastMessage"></span>
-        </div>
-    </div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Draft Indicator -->
+    <div class="draft-indicator" id="draftIndicator"><i class="fa-solid fa-floppy-disk me-1"></i>Draft saved</div>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top-btn" id="scrollTopBtn" title="Scroll to top"><i class="fa-solid fa-chevron-up"></i></button>
 
     <!-- Navbar -->
     <nav class="navbar-custom" id="mainNavbar">
@@ -390,9 +272,14 @@
                         <div class="brand-tagline">AI-Powered Solutions</div>
                     </div>
                 </div>
-                <div class="system-badge">
-                    <div class="pulse-dot"></div>
-                    System Active
+                <div class="d-flex align-items-center gap-3">
+                    <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
+                        <i class="fa-solid fa-moon" id="themeIcon"></i>
+                    </button>
+                    <div class="system-badge">
+                        <div class="pulse-dot"></div>
+                        System Active
+                    </div>
                 </div>
             </div>
         </div>
@@ -400,313 +287,969 @@
 
     <!-- Hero Section -->
     <section class="hero-section">
-        <h1><i class="fa-solid fa-chart-line me-2"></i>Daily Status &amp; Sprint Tracker</h1>
+        <h1><i class="fa-solid fa-chart-line me-2"></i>Employee Daily Status &amp; Sprint Tracker</h1>
         <p>Submit your daily progress report securely. Track sprints, flag blockers, and keep your team aligned.</p>
     </section>
 
     <!-- Main Form -->
-    <main class="container pb-4" style="max-width: 820px;">
+    <main class="container pb-4" style="max-width:820px;">
         <form id="statusForm" novalidate>
 
 
-            <!-- Section 1: Employee Details -->
-            <div class="glass-card card-delay-1 mb-4">
+            <!-- Card 1: Employee Details -->
+            <div class="glass-card mb-4">
                 <div class="section-header">
-                    <div class="icon-circle icon-blue"><i class="fa-solid fa-user"></i></div>
+                    <div class="icon-circle icon-blue"><i class="fa-solid fa-user-tie"></i></div>
                     <h3>Employee Details</h3>
                 </div>
                 <div class="row">
                     <div class="col-md-6 field-group">
                         <label class="form-label-custom">Employee Name <span class="required">*</span></label>
-                        <input type="text" class="form-control form-control-custom" id="employeeName" placeholder="Enter your full name" required>
+                        <input type="text" class="form-control-custom" id="employeeName" placeholder="Enter your full name" required>
                         <div class="error-message" id="errName">Please enter your full name</div>
                     </div>
                     <div class="col-md-6 field-group">
                         <label class="form-label-custom">Employee Email <span class="required">*</span></label>
-                        <input type="email" class="form-control form-control-custom" id="employeeEmail" placeholder="you@codeorigin.ai" required>
+                        <input type="email" class="form-control-custom" id="employeeEmail" placeholder="you@codeorigin.ai" required>
                         <div class="error-message" id="errEmail">Please enter a valid email address</div>
                     </div>
                     <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Direct Manager's Email <span class="required">*</span></label>
-                        <input type="email" class="form-control form-control-custom" id="managerEmail" placeholder="manager@codeorigin.ai" required>
+                        <label class="form-label-custom">Employee ID <span class="required">*</span></label>
+                        <input type="text" class="form-control-custom" id="employeeId" placeholder="EMP-001" required>
+                        <div class="error-message" id="errEmpId">Please enter your Employee ID</div>
+                    </div>
+                    <div class="col-md-6 field-group">
+                        <label class="form-label-custom">Department <span class="required">*</span></label>
+                        <select class="form-control-custom" id="department" required>
+                            <option value="">Select Department</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Design">Design</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Sales">Sales</option>
+                            <option value="HR">HR</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Operations">Operations</option>
+                            <option value="QA">QA</option>
+                        </select>
+                        <div class="error-message" id="errDept">Please select a department</div>
+                    </div>
+                    <div class="col-md-6 field-group">
+                        <label class="form-label-custom">Designation <span class="required">*</span></label>
+                        <input type="text" class="form-control-custom" id="designation" placeholder="e.g. Senior Software Engineer" required>
+                        <div class="error-message" id="errDesig">Please enter your designation</div>
+                    </div>
+                    <div class="col-md-6 field-group">
+                        <label class="form-label-custom">Direct Manager Email <span class="required">*</span></label>
+                        <input type="email" class="form-control-custom" id="managerEmail" placeholder="manager@codeorigin.ai" required>
                         <div class="error-message" id="errManager">Please enter manager's valid email</div>
                     </div>
                     <div class="col-md-6 field-group">
+                        <label class="form-label-custom">HR Email <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
+                        <input type="email" class="form-control-custom" id="hrEmail" placeholder="hr@codeorigin.ai" value="hr@codeorigin.ai">
+                    </div>
+                    <div class="col-md-6 field-group">
+                        <label class="form-label-custom">Team Lead Email <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
+                        <input type="email" class="form-control-custom" id="teamLeadEmail" placeholder="teamlead@codeorigin.ai">
+                    </div>
+                    <div class="col-md-6 field-group">
                         <label class="form-label-custom">Date</label>
-                        <input type="text" class="form-control form-control-custom" id="reportDate" readonly>
+                        <input type="text" class="form-control-custom" id="reportDate" readonly>
                     </div>
                     <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Login / Shift Start Time <span class="required">*</span></label>
-                        <input type="time" class="form-control form-control-custom" id="loginTime" required>
-                        <div class="error-message" id="errTime">Please enter your login time</div>
+                        <label class="form-label-custom">Login Time <span class="required">*</span></label>
+                        <input type="time" class="form-control-custom" id="loginTime" required>
+                        <div class="error-message" id="errLogin">Please enter your login time</div>
                     </div>
                     <div class="col-md-6 field-group">
-                        <label class="form-label-custom">Project Name / Sprint ID <span class="required">*</span></label>
-                        <input type="text" class="form-control form-control-custom" id="projectName" placeholder="e.g. Phoenix-v2 / SPR-42" required>
-                        <div class="error-message" id="errProject">Please enter project or sprint info</div>
+                        <label class="form-label-custom">Logout Time <span class="required">*</span></label>
+                        <input type="time" class="form-control-custom" id="logoutTime" required>
+                        <div class="error-message" id="errLogout">Please enter your logout time</div>
+                    </div>
+                    <div class="col-md-6 field-group">
+                        <label class="form-label-custom">Total Working Hours</label>
+                        <input type="text" class="form-control-custom" id="totalHours" readonly placeholder="Auto-calculated">
+                    </div>
+                    <div class="col-md-6 field-group">
+                        <label class="form-label-custom">Project Name <span class="required">*</span></label>
+                        <input type="text" class="form-control-custom" id="projectName" placeholder="e.g. Phoenix-v2" required>
+                        <div class="error-message" id="errProject">Please enter project name</div>
+                    </div>
+                    <div class="col-md-6 field-group">
+                        <label class="form-label-custom">Sprint ID <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
+                        <input type="text" class="form-control-custom" id="sprintId" placeholder="SPR-042">
                     </div>
                 </div>
             </div>
 
 
-            <!-- Section 2: Assigned Work -->
-            <div class="glass-card card-delay-2 mb-4">
+            <!-- Card 2: Assigned Work Today -->
+            <div class="glass-card mb-4">
                 <div class="section-header">
                     <div class="icon-circle icon-blue"><i class="fa-solid fa-list-check"></i></div>
-                    <h3><span class="status-dot blue"></span>Assigned Work for Today</h3>
+                    <h3>Assigned Work Today</h3>
                 </div>
                 <div class="field-group">
-                    <label class="form-label-custom">Describe tasks assigned to you today <span class="required">*</span></label>
-                    <textarea class="form-control form-control-custom" id="assignedWork" placeholder="- Task 1: Implement user authentication module&#10;- Task 2: Review PR #234&#10;- Task 3: Fix pagination bug on dashboard" required></textarea>
-                    <div class="error-message" id="errAssigned">Please describe your assigned work</div>
+                    <label class="form-label-custom">Tasks assigned to you today <span class="required">*</span></label>
+                    <textarea class="form-control-custom" id="assignedWork" maxlength="2000" placeholder="- Task 1: Implement user authentication module&#10;- Task 2: Review PR #234 for API changes&#10;- Task 3: Fix pagination bug on dashboard" required></textarea>
+                    <div class="d-flex justify-content-between">
+                        <div class="error-message" id="errAssigned">Please describe your assigned work</div>
+                        <div class="char-counter" id="counterAssigned">0/2000</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Section 3: Completed Work -->
-            <div class="glass-card card-delay-2 mb-4">
+            <!-- Card 3: Completed Work & Hours -->
+            <div class="glass-card mb-4">
                 <div class="section-header">
                     <div class="icon-circle icon-cyan"><i class="fa-solid fa-circle-check"></i></div>
-                    <h3><span class="status-dot cyan"></span>Completed Work &amp; Hours Spent</h3>
+                    <h3>Completed Work &amp; Hours</h3>
                 </div>
                 <div class="field-group">
                     <label class="form-label-custom">What did you complete? Include hours per task <span class="required">*</span></label>
-                    <textarea class="form-control form-control-custom" id="completedWork" placeholder="- Auth module: 3 hrs (completed)&#10;- PR #234 review: 1 hr (approved with comments)&#10;- Bug fix: 2 hrs (in testing)" required></textarea>
-                    <div class="error-message" id="errCompleted">Please describe completed work and hours</div>
+                    <textarea class="form-control-custom" id="completedWork" maxlength="2000" placeholder="- Auth module: 3 hrs (completed &amp; deployed)&#10;- PR #234 review: 1 hr (approved with comments)&#10;- Bug fix: 2 hrs (in testing phase)" required></textarea>
+                    <div class="d-flex justify-content-between">
+                        <div class="error-message" id="errCompleted">Please describe completed work</div>
+                        <div class="char-counter" id="counterCompleted">0/2000</div>
+                    </div>
                 </div>
             </div>
 
-
-            <!-- Section 4: Pending Work -->
-            <div class="glass-card card-delay-3 mb-4">
+            <!-- Card 4: Pending Work / Carryover -->
+            <div class="glass-card mb-4">
                 <div class="section-header">
                     <div class="icon-circle icon-gold"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <h3><span class="status-dot gold"></span>Pending Work / Carryover Tasks</h3>
+                    <h3>Pending Work / Carryover</h3>
                 </div>
                 <div class="field-group">
-                    <label class="form-label-custom">Tasks not completed today / carried over <span class="required">*</span></label>
-                    <textarea class="form-control form-control-custom" id="pendingWork" placeholder="- Pagination fix: needs QA sign-off (ETA tomorrow)&#10;- Documentation update: 40% done, will continue" required></textarea>
-                    <div class="error-message" id="errPending">Please describe pending/carryover tasks</div>
+                    <label class="form-label-custom">Tasks not completed / carried over <span class="required">*</span></label>
+                    <textarea class="form-control-custom" id="pendingWork" maxlength="2000" placeholder="- Pagination fix: needs QA sign-off (ETA tomorrow)&#10;- Documentation update: 40% done, will continue&#10;- Unit tests for auth: blocked on API specs" required></textarea>
+                    <div class="d-flex justify-content-between">
+                        <div class="error-message" id="errPending">Please describe pending tasks</div>
+                        <div class="char-counter" id="counterPending">0/2000</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Section 5: Blockers -->
-            <div class="glass-card card-delay-4 mb-4">
+            <!-- Card 5: Blockers / Issues -->
+            <div class="glass-card mb-4">
                 <div class="section-header">
                     <div class="icon-circle icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <h3><span class="status-dot red"></span>Blockers / Difficulties Faced</h3>
+                    <h3>Blockers / Issues</h3>
                 </div>
                 <div class="field-group">
-                    <label class="form-label-custom">Any blockers or challenges? <span style="color: var(--text-muted); font-weight: 400;">(Optional)</span></label>
-                    <textarea class="form-control form-control-custom" id="blockers" placeholder="- Waiting on API credentials from DevOps team&#10;- Build failing on staging due to env config&#10;- Or type 'None' if no blockers"></textarea>
+                    <label class="form-label-custom">Any blockers or challenges? <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
+                    <textarea class="form-control-custom" id="blockers" maxlength="2000" placeholder="- Waiting on API credentials from DevOps team&#10;- Build failing on staging due to env config&#10;- Or type 'None' if no blockers"></textarea>
+                    <div class="char-counter" id="counterBlockers">0/2000</div>
+                </div>
+            </div>
+
+            <!-- Card 6: Tomorrow's Plan -->
+            <div class="glass-card mb-4">
+                <div class="section-header">
+                    <div class="icon-circle icon-green"><i class="fa-solid fa-forward"></i></div>
+                    <h3>Tomorrow's Plan</h3>
+                </div>
+                <div class="field-group">
+                    <label class="form-label-custom">Planned tasks for tomorrow <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
+                    <textarea class="form-control-custom" id="tomorrowPlan" maxlength="2000" placeholder="- Continue auth module testing&#10;- Start API integration for payments&#10;- Team standup at 10 AM"></textarea>
+                    <div class="char-counter" id="counterTomorrow">0/2000</div>
+                </div>
+            </div>
+
+            <!-- Card 7: Additional Notes -->
+            <div class="glass-card mb-4">
+                <div class="section-header">
+                    <div class="icon-circle icon-purple"><i class="fa-solid fa-note-sticky"></i></div>
+                    <h3>Additional Notes</h3>
+                </div>
+                <div class="field-group">
+                    <label class="form-label-custom">Any other information <span style="color:var(--text-muted);font-weight:400">(Optional)</span></label>
+                    <textarea class="form-control-custom" id="additionalNotes" maxlength="2000" placeholder="Any additional context, learnings, suggestions, or notes for your manager..."></textarea>
+                    <div class="char-counter" id="counterNotes">0/2000</div>
                 </div>
             </div>
 
 
-            <!-- Submit Section -->
-            <div class="glass-card card-delay-4">
-                <div class="text-center">
-                    <button type="submit" class="btn btn-submit" id="submitBtn">
-                        <span id="btnText"><i class="fa-solid fa-paper-plane me-2"></i>Submit Daily Report</span>
-                        <span id="btnSpinner" style="display:none;">
-                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>Sending...
-                        </span>
-                    </button>
-                    <div class="security-note justify-content-center">
-                        <i class="fa-solid fa-lock"></i>
-                        <span>Your data is transmitted securely via encrypted channels. Reports are sent directly to your manager.</span>
+            <!-- Card 8: Priority & Status -->
+            <div class="glass-card mb-4">
+                <div class="section-header">
+                    <div class="icon-circle icon-gold"><i class="fa-solid fa-gauge-high"></i></div>
+                    <h3>Priority &amp; Status</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 field-group">
+                        <label class="form-label-custom">Task Priority</label>
+                        <select class="form-control-custom" id="taskPriority">
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                        </select>
                     </div>
+                    <div class="col-md-6 field-group">
+                        <label class="form-label-custom">Overall Status</label>
+                        <select class="form-control-custom" id="overallStatus">
+                            <option value="On Track">On Track</option>
+                            <option value="At Risk">At Risk</option>
+                            <option value="Blocked">Blocked</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="col-12 field-group">
+                        <label class="form-label-custom">Completion Percentage</label>
+                        <div class="d-flex align-items-center gap-3">
+                            <input type="range" class="range-slider flex-grow-1" id="completionRange" min="0" max="100" value="50">
+                            <span class="range-value" id="rangeValue">50%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 9: Submit Section -->
+            <div class="glass-card">
+                <div class="section-header">
+                    <div class="icon-circle icon-gold"><i class="fa-solid fa-paper-plane"></i></div>
+                    <h3>Submit Report</h3>
+                </div>
+                <!-- Progress indicator -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="form-label-custom mb-0">Form Completion</span>
+                        <span class="form-label-custom mb-0" id="progressText">0%</span>
+                    </div>
+                    <div class="progress-custom">
+                        <div class="progress-bar-custom" id="progressBar" style="width:0%"></div>
+                    </div>
+                </div>
+                <!-- Action buttons -->
+                <div class="d-flex flex-wrap gap-2 justify-content-center mb-3">
+                    <button type="button" class="btn-glass" id="previewBtn"><i class="fa-solid fa-eye me-1"></i>Preview Report</button>
+                    <button type="button" class="btn-glass" id="downloadPdfBtn"><i class="fa-solid fa-file-pdf me-1"></i>Download PDF</button>
+                    <button type="button" class="btn-glass" id="printBtn"><i class="fa-solid fa-print me-1"></i>Print</button>
+                    <button type="button" class="btn-glass" id="copyBtn"><i class="fa-solid fa-copy me-1"></i>Copy to Clipboard</button>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-submit mb-2" id="submitBtn">
+                        <span id="btnText"><i class="fa-solid fa-paper-plane me-2"></i>Submit Daily Report</span>
+                        <span id="btnSpinner" style="display:none;"><span class="spinner-border spinner-border-sm me-2"></span>Sending...</span>
+                    </button>
+                    <br>
+                    <button type="button" class="btn-glass btn-danger-glass mt-2" id="clearBtn"><i class="fa-solid fa-trash-can me-1"></i>Clear Form</button>
+                </div>
+                <div class="security-note justify-content-center">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Your data is transmitted securely via encrypted channels. Reports are sent directly to your manager.</span>
                 </div>
             </div>
         </form>
     </main>
 
+
+    <!-- Preview Modal -->
+    <div class="modal fade modal-custom" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="font-family:'Space Grotesk',sans-serif;font-weight:600;">
+                        <i class="fa-solid fa-eye me-2" style="color:var(--gold-primary)"></i>Report Preview
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="previewBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-glass" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-submit" id="modalSubmitBtn"><i class="fa-solid fa-check me-1"></i>Looks Good, Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear Confirmation Modal -->
+    <div class="modal fade modal-custom" id="clearModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="font-family:'Space Grotesk',sans-serif;font-weight:600;">
+                        <i class="fa-solid fa-triangle-exclamation me-2" style="color:var(--red)"></i>Clear Form?
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p style="color:var(--text-secondary)">Are you sure you want to clear all form data? This will also remove your saved draft. This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-glass" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-glass btn-danger-glass" id="confirmClearBtn"><i class="fa-solid fa-trash-can me-1"></i>Yes, Clear Everything</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer-section">
         <div class="container">
             <div class="footer-brand">Code<span class="gold">Origin</span>.ai</div>
-            <div class="footer-copy">&copy; 2024 CodeOrigin.ai &mdash; All Rights Reserved. Built with precision for high-performance teams.</div>
+            <div class="footer-copy">&copy; 2026 CodeOrigin.ai &mdash; All Rights Reserved. Built for high-performance teams.</div>
         </div>
     </footer>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- EmailJS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
     <script>
-        (function() {
-            // Initialize EmailJS
-            emailjs.init('gzt0AvmB6crin7QwJ');
+    (function() {
+        'use strict';
 
-            // Set today's date
-            var today = new Date();
-            var dateStr = today.toLocaleDateString('en-US', {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        // ===== Initialize EmailJS =====
+        emailjs.init('gzt0AvmB6crin7QwJ');
+
+        // ===== DOM References =====
+        var form = document.getElementById('statusForm');
+        var submitBtn = document.getElementById('submitBtn');
+        var btnText = document.getElementById('btnText');
+        var btnSpinner = document.getElementById('btnSpinner');
+        var previewBtn = document.getElementById('previewBtn');
+        var downloadPdfBtn = document.getElementById('downloadPdfBtn');
+        var printBtn = document.getElementById('printBtn');
+        var copyBtn = document.getElementById('copyBtn');
+        var clearBtn = document.getElementById('clearBtn');
+        var confirmClearBtn = document.getElementById('confirmClearBtn');
+        var modalSubmitBtn = document.getElementById('modalSubmitBtn');
+        var themeToggle = document.getElementById('themeToggle');
+        var themeIcon = document.getElementById('themeIcon');
+        var scrollTopBtn = document.getElementById('scrollTopBtn');
+        var draftIndicator = document.getElementById('draftIndicator');
+        var progressBar = document.getElementById('progressBar');
+        var progressText = document.getElementById('progressText');
+        var completionRange = document.getElementById('completionRange');
+        var rangeValue = document.getElementById('rangeValue');
+        var navbar = document.getElementById('mainNavbar');
+
+        // ===== Set Date =====
+        var today = new Date();
+        var options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+        document.getElementById('reportDate').value = today.toLocaleDateString('en-US', options);
+
+        // ===== Theme Toggle =====
+        var savedTheme = localStorage.getItem('co_theme') || 'dark';
+        if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeIcon.className = 'fa-solid fa-sun';
+        }
+        themeToggle.addEventListener('click', function() {
+            var current = document.documentElement.getAttribute('data-theme');
+            if (current === 'light') {
+                document.documentElement.removeAttribute('data-theme');
+                themeIcon.className = 'fa-solid fa-moon';
+                localStorage.setItem('co_theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeIcon.className = 'fa-solid fa-sun';
+                localStorage.setItem('co_theme', 'light');
+            }
+        });
+
+
+        // ===== Navbar Scroll Effect =====
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 20) { navbar.classList.add('scrolled'); }
+            else { navbar.classList.remove('scrolled'); }
+            // Scroll to top button
+            if (window.scrollY > 400) { scrollTopBtn.classList.add('visible'); }
+            else { scrollTopBtn.classList.remove('visible'); }
+        });
+        scrollTopBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // ===== IntersectionObserver for Cards =====
+        var cards = document.querySelectorAll('.glass-card');
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) { entry.target.classList.add('visible'); }
             });
-            document.getElementById('reportDate').value = dateStr;
+        }, { threshold: 0.1 });
+        cards.forEach(function(card) { observer.observe(card); });
 
-            // Navbar scroll effect
-            var navbar = document.getElementById('mainNavbar');
-            window.addEventListener('scroll', function() {
-                if (window.scrollY > 20) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
-                }
+        // ===== Toast Notification System =====
+        function showToast(type, message) {
+            var container = document.getElementById('toastContainer');
+            var toast = document.createElement('div');
+            toast.className = 'toast-custom ' + type;
+            var iconClass = type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info';
+            toast.innerHTML = '<i class="toast-icon fa-solid ' + iconClass + '"></i><span class="toast-msg">' + message + '</span>';
+            container.appendChild(toast);
+            setTimeout(function() { toast.classList.add('show'); }, 50);
+            setTimeout(function() {
+                toast.classList.remove('show');
+                setTimeout(function() { toast.remove(); }, 400);
+            }, 5000);
+        }
+
+        // ===== Auto-Calculate Working Hours =====
+        var loginTime = document.getElementById('loginTime');
+        var logoutTime = document.getElementById('logoutTime');
+        var totalHours = document.getElementById('totalHours');
+
+        function calculateHours() {
+            var login = loginTime.value;
+            var logout = logoutTime.value;
+            if (login && logout) {
+                var loginParts = login.split(':');
+                var logoutParts = logout.split(':');
+                var loginMin = parseInt(loginParts[0]) * 60 + parseInt(loginParts[1]);
+                var logoutMin = parseInt(logoutParts[0]) * 60 + parseInt(logoutParts[1]);
+                var diff = logoutMin - loginMin;
+                if (diff < 0) diff += 24 * 60; // handle overnight
+                var hours = Math.floor(diff / 60);
+                var mins = diff % 60;
+                totalHours.value = hours + 'h ' + mins + 'm';
+            } else {
+                totalHours.value = '';
+            }
+        }
+        loginTime.addEventListener('change', calculateHours);
+        logoutTime.addEventListener('change', calculateHours);
+
+        // ===== Completion Range Slider =====
+        completionRange.addEventListener('input', function() {
+            rangeValue.textContent = this.value + '%';
+        });
+
+
+        // ===== Character Counters =====
+        var textareas = [
+            { id: 'assignedWork', counter: 'counterAssigned' },
+            { id: 'completedWork', counter: 'counterCompleted' },
+            { id: 'pendingWork', counter: 'counterPending' },
+            { id: 'blockers', counter: 'counterBlockers' },
+            { id: 'tomorrowPlan', counter: 'counterTomorrow' },
+            { id: 'additionalNotes', counter: 'counterNotes' }
+        ];
+        textareas.forEach(function(item) {
+            var ta = document.getElementById(item.id);
+            var counter = document.getElementById(item.counter);
+            ta.addEventListener('input', function() {
+                var len = ta.value.length;
+                counter.textContent = len + '/2000';
+                if (len > 2000) { counter.classList.add('over-limit'); }
+                else { counter.classList.remove('over-limit'); }
             });
+        });
 
-            // Animate cards on load
-            var cards = document.querySelectorAll('.glass-card');
-            var observer = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
+        // ===== Progress Indicator =====
+        var requiredFields = ['employeeName','employeeEmail','employeeId','department','designation','managerEmail','loginTime','logoutTime','projectName','assignedWork','completedWork','pendingWork'];
+
+        function updateProgress() {
+            var filled = 0;
+            requiredFields.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el && el.value.trim() !== '') filled++;
+            });
+            var pct = Math.round((filled / requiredFields.length) * 100);
+            progressBar.style.width = pct + '%';
+            progressText.textContent = pct + '%';
+        }
+        // Listen to all inputs for progress
+        requiredFields.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updateProgress);
+                el.addEventListener('change', updateProgress);
+            }
+        });
+
+        // ===== Auto-Save Draft =====
+        var DRAFT_KEY = 'co_daily_draft';
+        var saveTimeout = null;
+
+        function getAllFormData() {
+            var data = {};
+            var allInputs = form.querySelectorAll('input, textarea, select');
+            allInputs.forEach(function(el) {
+                if (el.id && !el.readOnly) { data[el.id] = el.value; }
+            });
+            data.completionRange = completionRange.value;
+            return data;
+        }
+
+        function saveDraft() {
+            var data = getAllFormData();
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+            draftIndicator.classList.add('show');
+            setTimeout(function() { draftIndicator.classList.remove('show'); }, 2000);
+        }
+
+        function restoreDraft() {
+            var saved = localStorage.getItem(DRAFT_KEY);
+            if (saved) {
+                try {
+                    var data = JSON.parse(saved);
+                    Object.keys(data).forEach(function(key) {
+                        var el = document.getElementById(key);
+                        if (el && !el.readOnly) { el.value = data[key]; }
+                    });
+                    if (data.completionRange) {
+                        completionRange.value = data.completionRange;
+                        rangeValue.textContent = data.completionRange + '%';
                     }
-                });
-            }, { threshold: 0.1 });
-            cards.forEach(function(card) { observer.observe(card); });
-
-
-            // Toast notification
-            function showToast(type, message) {
-                var toast = document.getElementById('toastNotification');
-                var toastMsg = document.getElementById('toastMessage');
-                var toastIcon = toast.querySelector('.toast-icon');
-
-                toast.className = 'toast-custom ' + type;
-                toastMsg.textContent = message;
-                toastIcon.className = 'toast-icon fa-solid ' + (type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark');
-
-                setTimeout(function() { toast.classList.add('show'); }, 50);
-                setTimeout(function() { toast.classList.remove('show'); }, 5000);
+                    // Update counters
+                    textareas.forEach(function(item) {
+                        var ta = document.getElementById(item.id);
+                        var counter = document.getElementById(item.counter);
+                        counter.textContent = ta.value.length + '/2000';
+                    });
+                    calculateHours();
+                    updateProgress();
+                    showToast('info', 'Draft restored from your last session');
+                } catch(e) { /* ignore parse errors */ }
             }
+        }
 
-            // Validation helpers
-            function showError(id) {
-                var el = document.getElementById(id);
-                if (el) el.classList.add('show');
-            }
-            function hideError(id) {
-                var el = document.getElementById(id);
-                if (el) el.classList.remove('show');
-            }
-            function clearAllErrors() {
-                var errors = document.querySelectorAll('.error-message');
-                errors.forEach(function(e) { e.classList.remove('show'); });
-            }
-            function isValidEmail(email) {
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-            }
+        // Debounced save on input
+        form.addEventListener('input', function() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveDraft, 2000);
+        });
+        form.addEventListener('change', function() {
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveDraft, 2000);
+        });
+        // Also save every 30 seconds
+        setInterval(saveDraft, 30000);
+        // Restore on load
+        restoreDraft();
 
 
-            // Form validation
-            function validateForm() {
-                var valid = true;
-                clearAllErrors();
+        // ===== Form Validation =====
+        function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
 
-                var name = document.getElementById('employeeName').value.trim();
-                var email = document.getElementById('employeeEmail').value.trim();
-                var manager = document.getElementById('managerEmail').value.trim();
-                var time = document.getElementById('loginTime').value;
-                var project = document.getElementById('projectName').value.trim();
-                var assigned = document.getElementById('assignedWork').value.trim();
-                var completed = document.getElementById('completedWork').value.trim();
-                var pending = document.getElementById('pendingWork').value.trim();
+        function showError(id) { var el = document.getElementById(id); if (el) el.classList.add('show'); }
+        function hideError(id) { var el = document.getElementById(id); if (el) el.classList.remove('show'); }
+        function clearAllErrors() { document.querySelectorAll('.error-message').forEach(function(e) { e.classList.remove('show'); }); }
 
-                if (!name) { showError('errName'); valid = false; }
-                if (!email || !isValidEmail(email)) { showError('errEmail'); valid = false; }
-                if (!manager || !isValidEmail(manager)) { showError('errManager'); valid = false; }
-                if (!time) { showError('errTime'); valid = false; }
-                if (!project) { showError('errProject'); valid = false; }
-                if (!assigned) { showError('errAssigned'); valid = false; }
-                if (!completed) { showError('errCompleted'); valid = false; }
-                if (!pending) { showError('errPending'); valid = false; }
-
-                return valid;
-            }
-
-            // Real-time validation on input
-            var requiredFields = [
-                { id: 'employeeName', err: 'errName', type: 'text' },
-                { id: 'employeeEmail', err: 'errEmail', type: 'email' },
-                { id: 'managerEmail', err: 'errManager', type: 'email' },
-                { id: 'loginTime', err: 'errTime', type: 'text' },
-                { id: 'projectName', err: 'errProject', type: 'text' },
-                { id: 'assignedWork', err: 'errAssigned', type: 'text' },
-                { id: 'completedWork', err: 'errCompleted', type: 'text' },
-                { id: 'pendingWork', err: 'errPending', type: 'text' }
+        function validateForm() {
+            var valid = true;
+            clearAllErrors();
+            var checks = [
+                { id:'employeeName', err:'errName', type:'text' },
+                { id:'employeeEmail', err:'errEmail', type:'email' },
+                { id:'employeeId', err:'errEmpId', type:'text' },
+                { id:'department', err:'errDept', type:'select' },
+                { id:'designation', err:'errDesig', type:'text' },
+                { id:'managerEmail', err:'errManager', type:'email' },
+                { id:'loginTime', err:'errLogin', type:'text' },
+                { id:'logoutTime', err:'errLogout', type:'text' },
+                { id:'projectName', err:'errProject', type:'text' },
+                { id:'assignedWork', err:'errAssigned', type:'text' },
+                { id:'completedWork', err:'errCompleted', type:'text' },
+                { id:'pendingWork', err:'errPending', type:'text' }
             ];
-            requiredFields.forEach(function(field) {
-                var el = document.getElementById(field.id);
-                if (el) {
-                    el.addEventListener('input', function() {
-                        var val = el.value.trim();
-                        if (field.type === 'email') {
-                            if (val && isValidEmail(val)) hideError(field.err);
-                        } else {
-                            if (val) hideError(field.err);
-                        }
-                    });
+            var firstError = null;
+            checks.forEach(function(check) {
+                var el = document.getElementById(check.id);
+                var val = el ? el.value.trim() : '';
+                var failed = false;
+                if (check.type === 'email') { if (!val || !isValidEmail(val)) failed = true; }
+                else if (check.type === 'select') { if (!val) failed = true; }
+                else { if (!val) failed = true; }
+                if (failed) {
+                    showError(check.err);
+                    valid = false;
+                    if (!firstError) firstError = el;
                 }
             });
+            if (firstError) { firstError.scrollIntoView({ behavior:'smooth', block:'center' }); }
+            return valid;
+        }
+
+        // Real-time validation clearing
+        requiredFields.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', function() {
+                    var errEl = el.parentElement.querySelector('.error-message');
+                    if (errEl) errEl.classList.remove('show');
+                });
+            }
+        });
 
 
-            // Form submit handler
-            var form = document.getElementById('statusForm');
-            form.addEventListener('submit', function(e) {
+        // ===== Build Report Text =====
+        function buildReportText() {
+            var report = '';
+            report += '════════════════════════════════════════\n';
+            report += '   DAILY STATUS REPORT - CodeOrigin.ai\n';
+            report += '════════════════════════════════════════\n\n';
+            report += 'Date: ' + document.getElementById('reportDate').value + '\n';
+            report += 'Employee: ' + document.getElementById('employeeName').value + '\n';
+            report += 'Email: ' + document.getElementById('employeeEmail').value + '\n';
+            report += 'Employee ID: ' + document.getElementById('employeeId').value + '\n';
+            report += 'Department: ' + document.getElementById('department').value + '\n';
+            report += 'Designation: ' + document.getElementById('designation').value + '\n';
+            report += 'Project: ' + document.getElementById('projectName').value + '\n';
+            var sprint = document.getElementById('sprintId').value;
+            if (sprint) report += 'Sprint ID: ' + sprint + '\n';
+            report += 'Login: ' + document.getElementById('loginTime').value + '\n';
+            report += 'Logout: ' + document.getElementById('logoutTime').value + '\n';
+            report += 'Total Hours: ' + (document.getElementById('totalHours').value || 'N/A') + '\n';
+            report += 'Priority: ' + document.getElementById('taskPriority').value + '\n';
+            report += 'Status: ' + document.getElementById('overallStatus').value + '\n';
+            report += 'Completion: ' + completionRange.value + '%\n';
+            report += '\n────────────────────────────────────────\n';
+            report += 'ASSIGNED WORK TODAY:\n────────────────────────────────────────\n';
+            report += document.getElementById('assignedWork').value + '\n';
+            report += '\n────────────────────────────────────────\n';
+            report += 'COMPLETED WORK & HOURS:\n────────────────────────────────────────\n';
+            report += document.getElementById('completedWork').value + '\n';
+            report += '\n────────────────────────────────────────\n';
+            report += 'PENDING WORK / CARRYOVER:\n────────────────────────────────────────\n';
+            report += document.getElementById('pendingWork').value + '\n';
+            var blockers = document.getElementById('blockers').value;
+            if (blockers) {
+                report += '\n────────────────────────────────────────\n';
+                report += 'BLOCKERS / ISSUES:\n────────────────────────────────────────\n';
+                report += blockers + '\n';
+            }
+            var tomorrow = document.getElementById('tomorrowPlan').value;
+            if (tomorrow) {
+                report += '\n────────────────────────────────────────\n';
+                report += "TOMORROW'S PLAN:\n────────────────────────────────────────\n";
+                report += tomorrow + '\n';
+            }
+            var notes = document.getElementById('additionalNotes').value;
+            if (notes) {
+                report += '\n────────────────────────────────────────\n';
+                report += 'ADDITIONAL NOTES:\n────────────────────────────────────────\n';
+                report += notes + '\n';
+            }
+            report += '\n════════════════════════════════════════\n';
+            report += '  Submitted via CodeOrigin.ai Tracker\n';
+            report += '════════════════════════════════════════\n';
+            return report;
+        }
+
+
+        // ===== Preview Modal =====
+        function buildPreviewHTML() {
+            var html = '';
+            html += '<div class="preview-section"><h6><i class="fa-solid fa-user me-1"></i>Employee Info</h6>';
+            html += '<p><strong>Name:</strong> ' + document.getElementById('employeeName').value + '<br>';
+            html += '<strong>Email:</strong> ' + document.getElementById('employeeEmail').value + '<br>';
+            html += '<strong>ID:</strong> ' + document.getElementById('employeeId').value + '<br>';
+            html += '<strong>Department:</strong> ' + document.getElementById('department').value + '<br>';
+            html += '<strong>Designation:</strong> ' + document.getElementById('designation').value + '<br>';
+            html += '<strong>Project:</strong> ' + document.getElementById('projectName').value;
+            var sprint = document.getElementById('sprintId').value;
+            if (sprint) html += ' | <strong>Sprint:</strong> ' + sprint;
+            html += '</p></div>';
+            html += '<div class="preview-section"><h6><i class="fa-solid fa-clock me-1"></i>Time</h6>';
+            html += '<p><strong>Date:</strong> ' + document.getElementById('reportDate').value + '<br>';
+            html += '<strong>Login:</strong> ' + document.getElementById('loginTime').value + ' | <strong>Logout:</strong> ' + document.getElementById('logoutTime').value + '<br>';
+            html += '<strong>Total Hours:</strong> ' + (document.getElementById('totalHours').value || 'N/A') + '</p></div>';
+            html += '<div class="preview-section" style="border-left-color:var(--blue)"><h6><i class="fa-solid fa-list-check me-1"></i>Assigned Work</h6>';
+            html += '<p>' + document.getElementById('assignedWork').value.replace(/\n/g, '<br>') + '</p></div>';
+            html += '<div class="preview-section" style="border-left-color:var(--cyan)"><h6><i class="fa-solid fa-circle-check me-1"></i>Completed Work</h6>';
+            html += '<p>' + document.getElementById('completedWork').value.replace(/\n/g, '<br>') + '</p></div>';
+            html += '<div class="preview-section" style="border-left-color:var(--gold-primary)"><h6><i class="fa-solid fa-clock-rotate-left me-1"></i>Pending Work</h6>';
+            html += '<p>' + document.getElementById('pendingWork').value.replace(/\n/g, '<br>') + '</p></div>';
+            var blockers = document.getElementById('blockers').value;
+            if (blockers) {
+                html += '<div class="preview-section" style="border-left-color:var(--red)"><h6><i class="fa-solid fa-triangle-exclamation me-1"></i>Blockers</h6>';
+                html += '<p>' + blockers.replace(/\n/g, '<br>') + '</p></div>';
+            }
+            var tomorrow = document.getElementById('tomorrowPlan').value;
+            if (tomorrow) {
+                html += '<div class="preview-section" style="border-left-color:var(--green)"><h6><i class="fa-solid fa-forward me-1"></i>Tomorrow\'s Plan</h6>';
+                html += '<p>' + tomorrow.replace(/\n/g, '<br>') + '</p></div>';
+            }
+            var notes = document.getElementById('additionalNotes').value;
+            if (notes) {
+                html += '<div class="preview-section" style="border-left-color:#ce93d8"><h6><i class="fa-solid fa-note-sticky me-1"></i>Additional Notes</h6>';
+                html += '<p>' + notes.replace(/\n/g, '<br>') + '</p></div>';
+            }
+            html += '<div class="preview-section"><h6><i class="fa-solid fa-gauge-high me-1"></i>Status</h6>';
+            html += '<p><strong>Priority:</strong> ' + document.getElementById('taskPriority').value + ' | ';
+            html += '<strong>Status:</strong> ' + document.getElementById('overallStatus').value + ' | ';
+            html += '<strong>Completion:</strong> ' + completionRange.value + '%</p></div>';
+            return html;
+        }
+
+        previewBtn.addEventListener('click', function() {
+            document.getElementById('previewBody').innerHTML = buildPreviewHTML();
+            var modal = new bootstrap.Modal(document.getElementById('previewModal'));
+            modal.show();
+        });
+
+
+        // ===== Email Submission =====
+        function submitReport() {
+            if (!validateForm()) return;
+            if (!confirm('Are you sure you want to submit this daily report?')) return;
+
+            // Show spinner
+            btnText.style.display = 'none';
+            btnSpinner.style.display = 'inline';
+            submitBtn.disabled = true;
+
+            // Build CC list
+            var ccEmails = [];
+            var empEmail = document.getElementById('employeeEmail').value.trim();
+            var mgrEmail = document.getElementById('managerEmail').value.trim();
+            var tlEmail = document.getElementById('teamLeadEmail').value.trim();
+            var hrEmailVal = document.getElementById('hrEmail').value.trim();
+            if (empEmail) ccEmails.push(empEmail);
+            if (mgrEmail) ccEmails.push(mgrEmail);
+            if (tlEmail) ccEmails.push(tlEmail);
+            if (hrEmailVal) ccEmails.push(hrEmailVal);
+
+            var templateParams = {
+                employee_name: document.getElementById('employeeName').value,
+                employee_email: empEmail,
+                employee_id: document.getElementById('employeeId').value,
+                department: document.getElementById('department').value,
+                designation: document.getElementById('designation').value,
+                manager_email: mgrEmail,
+                hr_email: hrEmailVal,
+                team_lead_email: tlEmail,
+                report_date: document.getElementById('reportDate').value,
+                login_time: document.getElementById('loginTime').value,
+                logout_time: document.getElementById('logoutTime').value,
+                total_hours: document.getElementById('totalHours').value || 'N/A',
+                project_name: document.getElementById('projectName').value,
+                sprint_id: document.getElementById('sprintId').value || 'N/A',
+                assigned_work: document.getElementById('assignedWork').value,
+                completed_work: document.getElementById('completedWork').value,
+                pending_work: document.getElementById('pendingWork').value,
+                blockers: document.getElementById('blockers').value || 'None',
+                tomorrow_plan: document.getElementById('tomorrowPlan').value || 'N/A',
+                additional_notes: document.getElementById('additionalNotes').value || 'N/A',
+                task_priority: document.getElementById('taskPriority').value,
+                overall_status: document.getElementById('overallStatus').value,
+                completion_percentage: completionRange.value + '%',
+                cc_emails: ccEmails.join(',')
+            };
+
+            emailjs.send('service_mc808ed', 'template_qf9u9op', templateParams)
+                .then(function(response) {
+                    showToast('success', 'Report submitted successfully! Check your email for confirmation.');
+                    // Clear work fields but keep employee details
+                    document.getElementById('assignedWork').value = '';
+                    document.getElementById('completedWork').value = '';
+                    document.getElementById('pendingWork').value = '';
+                    document.getElementById('blockers').value = '';
+                    document.getElementById('tomorrowPlan').value = '';
+                    document.getElementById('additionalNotes').value = '';
+                    completionRange.value = 50;
+                    rangeValue.textContent = '50%';
+                    // Reset counters
+                    textareas.forEach(function(item) {
+                        document.getElementById(item.counter).textContent = '0/2000';
+                    });
+                    updateProgress();
+                    // Reset button
+                    btnText.style.display = 'inline';
+                    btnSpinner.style.display = 'none';
+                    submitBtn.disabled = false;
+                })
+                .catch(function(error) {
+                    showToast('error', 'Failed to send report: ' + (error.text || 'Unknown error'));
+                    btnText.style.display = 'inline';
+                    btnSpinner.style.display = 'none';
+                    submitBtn.disabled = false;
+                });
+        }
+
+        // Form submit handler
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitReport();
+        });
+
+        // Modal submit button
+        modalSubmitBtn.addEventListener('click', function() {
+            var modal = bootstrap.Modal.getInstance(document.getElementById('previewModal'));
+            if (modal) modal.hide();
+            submitReport();
+        });
+
+
+        // ===== Download PDF =====
+        downloadPdfBtn.addEventListener('click', function() {
+            var jsPDF = window.jspdf.jsPDF;
+            var doc = new jsPDF();
+            var margin = 15;
+            var y = 20;
+            var pageWidth = doc.internal.pageSize.getWidth();
+
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Daily Status Report', pageWidth / 2, y, { align: 'center' });
+            y += 8;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('CodeOrigin.ai - Employee Sprint Tracker', pageWidth / 2, y, { align: 'center' });
+            y += 12;
+
+            doc.setDrawColor(212, 160, 23);
+            doc.line(margin, y, pageWidth - margin, y);
+            y += 10;
+
+            var sections = [
+                { title: 'Employee Details', content: 'Name: ' + document.getElementById('employeeName').value + '\nEmail: ' + document.getElementById('employeeEmail').value + '\nID: ' + document.getElementById('employeeId').value + '\nDepartment: ' + document.getElementById('department').value + '\nDesignation: ' + document.getElementById('designation').value + '\nProject: ' + document.getElementById('projectName').value + '\nDate: ' + document.getElementById('reportDate').value + '\nLogin: ' + document.getElementById('loginTime').value + ' | Logout: ' + document.getElementById('logoutTime').value + '\nTotal Hours: ' + (document.getElementById('totalHours').value || 'N/A') },
+                { title: 'Assigned Work', content: document.getElementById('assignedWork').value },
+                { title: 'Completed Work', content: document.getElementById('completedWork').value },
+                { title: 'Pending Work', content: document.getElementById('pendingWork').value },
+                { title: 'Blockers', content: document.getElementById('blockers').value || 'None' },
+                { title: "Tomorrow's Plan", content: document.getElementById('tomorrowPlan').value || 'N/A' },
+                { title: 'Status', content: 'Priority: ' + document.getElementById('taskPriority').value + ' | Status: ' + document.getElementById('overallStatus').value + ' | Completion: ' + completionRange.value + '%' }
+            ];
+
+            sections.forEach(function(section) {
+                if (y > 260) { doc.addPage(); y = 20; }
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.text(section.title, margin, y);
+                y += 6;
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                var lines = doc.splitTextToSize(section.content, pageWidth - 2 * margin);
+                lines.forEach(function(line) {
+                    if (y > 275) { doc.addPage(); y = 20; }
+                    doc.text(line, margin, y);
+                    y += 5;
+                });
+                y += 6;
+            });
+
+            var fileName = 'DailyReport_' + document.getElementById('employeeName').value.replace(/\s+/g, '_') + '_' + new Date().toISOString().slice(0, 10) + '.pdf';
+            doc.save(fileName);
+            showToast('success', 'PDF downloaded successfully!');
+        });
+
+        // ===== Print Report =====
+        printBtn.addEventListener('click', function() {
+            var printContent = '<html><head><title>Daily Status Report - CodeOrigin.ai</title>';
+            printContent += '<style>body{font-family:Arial,sans-serif;padding:20px;color:#333} h1{color:#d4a017;font-size:20px;border-bottom:2px solid #d4a017;padding-bottom:8px} h2{color:#333;font-size:14px;margin-top:16px;margin-bottom:4px} p{font-size:12px;white-space:pre-wrap;margin:0 0 8px} .meta{background:#f5f5f5;padding:10px;border-radius:4px;margin-bottom:12px}</style>';
+            printContent += '</head><body>';
+            printContent += '<h1>Daily Status Report - CodeOrigin.ai</h1>';
+            printContent += '<div class="meta"><p><strong>Employee:</strong> ' + document.getElementById('employeeName').value + ' | <strong>Date:</strong> ' + document.getElementById('reportDate').value + '</p>';
+            printContent += '<p><strong>Department:</strong> ' + document.getElementById('department').value + ' | <strong>Project:</strong> ' + document.getElementById('projectName').value + '</p>';
+            printContent += '<p><strong>Login:</strong> ' + document.getElementById('loginTime').value + ' | <strong>Logout:</strong> ' + document.getElementById('logoutTime').value + ' | <strong>Hours:</strong> ' + (document.getElementById('totalHours').value || 'N/A') + '</p></div>';
+            printContent += '<h2>Assigned Work</h2><p>' + document.getElementById('assignedWork').value + '</p>';
+            printContent += '<h2>Completed Work</h2><p>' + document.getElementById('completedWork').value + '</p>';
+            printContent += '<h2>Pending Work</h2><p>' + document.getElementById('pendingWork').value + '</p>';
+            printContent += '<h2>Blockers</h2><p>' + (document.getElementById('blockers').value || 'None') + '</p>';
+            printContent += '<h2>Tomorrow\'s Plan</h2><p>' + (document.getElementById('tomorrowPlan').value || 'N/A') + '</p>';
+            printContent += '<h2>Status</h2><p>Priority: ' + document.getElementById('taskPriority').value + ' | Status: ' + document.getElementById('overallStatus').value + ' | Completion: ' + completionRange.value + '%</p>';
+            printContent += '<hr><p style="font-size:10px;color:#888;text-align:center">Generated by CodeOrigin.ai Sprint Tracker</p>';
+            printContent += '</body></html>';
+            var printWindow = window.open('', '_blank');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.print();
+        });
+
+
+        // ===== Copy to Clipboard =====
+        copyBtn.addEventListener('click', function() {
+            var reportText = buildReportText();
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(reportText).then(function() {
+                    showToast('success', 'Report copied to clipboard!');
+                }).catch(function() {
+                    fallbackCopy(reportText);
+                });
+            } else {
+                fallbackCopy(reportText);
+            }
+        });
+
+        function fallbackCopy(text) {
+            var textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('success', 'Report copied to clipboard!');
+            } catch(e) {
+                showToast('error', 'Failed to copy. Please try again.');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // ===== Clear Form =====
+        clearBtn.addEventListener('click', function() {
+            var modal = new bootstrap.Modal(document.getElementById('clearModal'));
+            modal.show();
+        });
+
+        confirmClearBtn.addEventListener('click', function() {
+            var allInputs = form.querySelectorAll('input, textarea, select');
+            allInputs.forEach(function(el) {
+                if (!el.readOnly) {
+                    if (el.tagName === 'SELECT') { el.selectedIndex = 0; }
+                    else { el.value = ''; }
+                }
+            });
+            // Reset specific defaults
+            document.getElementById('hrEmail').value = 'hr@codeorigin.ai';
+            completionRange.value = 50;
+            rangeValue.textContent = '50%';
+            // Clear counters
+            textareas.forEach(function(item) {
+                document.getElementById(item.counter).textContent = '0/2000';
+                document.getElementById(item.counter).classList.remove('over-limit');
+            });
+            // Clear localStorage draft
+            localStorage.removeItem(DRAFT_KEY);
+            // Reset progress
+            updateProgress();
+            clearAllErrors();
+            totalHours.value = '';
+            // Close modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('clearModal'));
+            if (modal) modal.hide();
+            showToast('info', 'Form cleared successfully');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // ===== Keyboard Shortcuts =====
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S - Save draft
+            if (e.ctrlKey && e.key === 's') {
                 e.preventDefault();
+                saveDraft();
+                showToast('info', 'Draft saved!');
+            }
+            // Ctrl+Enter - Submit
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                submitReport();
+            }
+            // Ctrl+P - Print
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                printBtn.click();
+            }
+            // Escape - Close modals
+            if (e.key === 'Escape') {
+                var openModals = document.querySelectorAll('.modal.show');
+                openModals.forEach(function(m) {
+                    var instance = bootstrap.Modal.getInstance(m);
+                    if (instance) instance.hide();
+                });
+            }
+        });
 
-                if (!validateForm()) {
-                    showToast('error', 'Please fill in all required fields correctly.');
-                    return;
-                }
+        // ===== Initial Progress Update =====
+        updateProgress();
 
-                var btnText = document.getElementById('btnText');
-                var btnSpinner = document.getElementById('btnSpinner');
-                var submitBtn = document.getElementById('submitBtn');
-
-                // Show loading state
-                btnText.style.display = 'none';
-                btnSpinner.style.display = 'inline-flex';
-                submitBtn.disabled = true;
-
-                var employeeEmail = document.getElementById('employeeEmail').value.trim();
-                var managerEmail = document.getElementById('managerEmail').value.trim();
-                var ccEmails = employeeEmail + ',' + managerEmail;
-
-                var templateParams = {
-                    employee_name: document.getElementById('employeeName').value.trim(),
-                    employee_email: employeeEmail,
-                    manager_email: managerEmail,
-                    report_date: document.getElementById('reportDate').value,
-                    login_time: document.getElementById('loginTime').value,
-                    project_name: document.getElementById('projectName').value.trim(),
-                    assigned_work: document.getElementById('assignedWork').value.trim(),
-                    completed_work: document.getElementById('completedWork').value.trim(),
-                    pending_work: document.getElementById('pendingWork').value.trim(),
-                    blockers: document.getElementById('blockers').value.trim() || 'None',
-                    cc_emails: ccEmails
-                };
-
-                emailjs.send('service_mc808ed', 'template_qf9u9op', templateParams)
-                    .then(function(response) {
-                        showToast('success', 'Daily report submitted successfully! Check your email for confirmation.');
-                        // Clear work fields only, keep employee details
-                        document.getElementById('assignedWork').value = '';
-                        document.getElementById('completedWork').value = '';
-                        document.getElementById('pendingWork').value = '';
-                        document.getElementById('blockers').value = '';
-                        // Reset button
-                        btnText.style.display = 'inline-flex';
-                        btnSpinner.style.display = 'none';
-                        submitBtn.disabled = false;
-                    })
-                    .catch(function(error) {
-                        showToast('error', 'Failed to send report. Error: ' + (error.text || 'Unknown error. Please try again.'));
-                        btnText.style.display = 'inline-flex';
-                        btnSpinner.style.display = 'none';
-                        submitBtn.disabled = false;
-                    });
-            });
-        })();
+    })();
     </script>
 </body>
 </html>
