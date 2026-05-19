@@ -8,9 +8,8 @@
     <!-- TensorFlow.js and COCO-SSD -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
-    <!-- Three.js r128 (stable global build with THREE.GLTFLoader via script tags) -->
+    <!-- Three.js r128 (stable global build) -->
     <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
-    <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { overflow: hidden; font-family: 'Rajdhani', sans-serif; background: #020510; }
@@ -408,99 +407,18 @@
 
 
     // ─── Load 3D Human Model ───
-    // Using Ready Player Me half-body avatar with ARKit + Oculus Viseme morph targets
-    const MODEL_URL = 'https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb?morphTargets=ARKit,Oculus+Visemes&textureAtlas=1024';
-    // Fallback: generate procedural human if CDN fails
-    let useProcedural = false;
+    // Use procedural 3D human directly (no external CDN dependency)
+    let useProcedural = true;
 
     function loadModel() {
-        document.getElementById('modelLoadStatus').textContent = 'Loading 3D Human Model...';
-        document.getElementById('loadFill').style.width = '30%';
-        document.getElementById('loadPercent').textContent = '30%';
-
-        const loader = new THREE.GLTFLoader();
-        loader.load(MODEL_URL,
-            function(gltf) {
-                const model = gltf.scene;
-                model.position.set(0, 0, 0);
-                model.scale.set(1, 1, 1);
-
-                // Find mesh with morph targets
-                model.traverse(function(child) {
-                    if (child.isMesh) {
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                        // Enhance materials for realistic skin
-                        if (child.material) {
-                            enhanceSkinMaterial(child);
-                        }
-                        // Collect morph target names
-                        if (child.morphTargetDictionary && Object.keys(child.morphTargetDictionary).length > 0) {
-                            avatarMesh = child;
-                            morphDict = child.morphTargetDictionary;
-                            console.log('Morph targets found:', Object.keys(morphDict).length, Object.keys(morphDict).slice(0, 20));
-                        }
-                    }
-                    if (child.isBone) {
-                        const n = child.name.toLowerCase();
-                        if (n.includes('head') && !headBone) headBone = child;
-                        else if (n.includes('neck') && !neckBone) neckBone = child;
-                        else if (n.includes('spine') && !n.includes('1') && !n.includes('2')) spineBone = child;
-                        else if (n.includes('leftshoulder') || n.includes('shoulder_l')) lShoulderBone = child;
-                        else if (n.includes('rightshoulder') || n.includes('shoulder_r')) rShoulderBone = child;
-                        else if (n.includes('leftarm') || n.includes('upperarm_l')) lArmBone = child;
-                        else if (n.includes('rightarm') || n.includes('upperarm_r')) rArmBone = child;
-                    }
-                });
-
-                if (gltf.scene.children[0] && gltf.scene.children[0].skeleton) {
-                    skeleton = gltf.scene.children[0].skeleton;
-                }
-
-                scene.add(model);
-                modelLoaded = true;
-                onModelReady();
-            },
-            function(progress) {
-                if (progress.total > 0) {
-                    const pct = Math.round((progress.loaded / progress.total) * 70) + 30;
-                    document.getElementById('loadFill').style.width = pct + '%';
-                    document.getElementById('loadPercent').textContent = pct + '%';
-                }
-            },
-            function(error) {
-                console.warn('GLB load failed, using procedural avatar:', error);
-                useProcedural = true;
-                createProceduralHuman();
-                modelLoaded = true;
-                onModelReady();
-            }
-        );
+        document.getElementById('modelLoadStatus').textContent = 'Building 3D Human Avatar...';
+        document.getElementById('loadFill').style.width = '60%';
+        document.getElementById('loadPercent').textContent = '60%';
+        createProceduralHuman();
+        modelLoaded = true;
+        onModelReady();
     }
 
-
-    // ─── Enhance Materials for Realistic Skin (Subsurface Scattering approximation) ───
-    function enhanceSkinMaterial(mesh) {
-        if (Array.isArray(mesh.material)) {
-            mesh.material.forEach(mat => applySkinEnhancements(mat));
-        } else {
-            applySkinEnhancements(mesh.material);
-        }
-    }
-
-    function applySkinEnhancements(mat) {
-        if (!mat.isMeshStandardMaterial && !mat.isMeshPhysicalMaterial) return;
-        // Convert to physical material for better skin
-        mat.roughness = 0.55;
-        mat.metalness = 0.0;
-        mat.envMapIntensity = 0.6;
-        // Approximate SSS with emissive tint
-        if (mat.color && mat.color.r > 0.5) {
-            mat.emissive = new THREE.Color(0.02, 0.005, 0.003);
-            mat.emissiveIntensity = 0.5;
-        }
-        mat.needsUpdate = true;
-    }
 
     // ─── Procedural Human Fallback (if GLB fails to load) ───
     function createProceduralHuman() {
